@@ -16,7 +16,7 @@ return new class extends Migration {
 			$table->string('title');
 			$table->text('description');
 			$table->string('thumbnail');
-			$table->json('media');
+			$table->json('media')->nullable();
 			$table->foreignId('genre_id')->nullable()->constrained();
 			$table->dateTime('released_at');
 			$table->foreignId('user_id')->nullable()->constrained();
