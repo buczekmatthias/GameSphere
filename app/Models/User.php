@@ -5,6 +5,7 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
 use App\Enum\GameCollectionType;
+use App\Enum\UserRole;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -117,5 +118,30 @@ class User extends Authenticatable
 	public function upcomingReleases(): BelongsToMany
 	{
 		return $this->games()->wherePivot('list_type', value: GameCollectionType::UPCOMING_RELEASES->value);
+	}
+
+	public function isUser(): bool
+	{
+		return $this->role === UserRole::USER->value;
+	}
+
+	public function isGameCreator(): bool
+	{
+		return $this->role === UserRole::GAME_CREATOR->value;
+	}
+
+	public function isModerator(): bool
+	{
+		return $this->role === UserRole::MODERATOR->value;
+	}
+
+	public function isAdmin(): bool
+	{
+		return $this->role === UserRole::ADMIN->value;
+	}
+
+	public function isDeveloper(): bool
+	{
+		return $this->role === UserRole::DEVELOPER->value;
 	}
 }

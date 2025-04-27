@@ -18,18 +18,26 @@ export interface NavItem {
     isActive?: boolean;
 }
 
+export interface Routes {
+    current: string;
+    ziggy: Config;
+    location: string;
+}
+
 export interface SharedData extends PageProps {
     auth: Auth;
-    ziggy: Config & { location: string };
+    routes: Routes;
     sidebarOpen: boolean;
 }
 
 export interface User {
     id: number;
     name: string;
+    username: string;
     email: string;
     avatar?: string;
     email_verified_at: string | null;
+    role: string;
     created_at: string;
     updated_at: string;
 }

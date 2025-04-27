@@ -12,7 +12,7 @@ defineProps<{
 const form = useForm({});
 
 const submit = () => {
-    form.post(route('verification.send'));
+    form.post(route('security.verification.send'));
 };
 </script>
 
@@ -30,7 +30,7 @@ const submit = () => {
                 Resend verification email
             </Button>
 
-            <TextLink :href="route('logout')" method="post" as="button" class="mx-auto block text-sm"> Log out </TextLink>
+            <TextLink :href="route('security.logout')" method="post" as="button" class="mx-auto block text-sm"> Log out </TextLink>
         </form>
     </AuthLayout>
 </template>

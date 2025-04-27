@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 use Inertia\Middleware;
 use Tighten\Ziggy\Ziggy;
 
@@ -39,11 +40,12 @@ class HandleInertiaRequests extends Middleware
 		return [
 			...parent::share($request),
 			'auth' => [
-				'user' => $request->user(),
+				'user' => $request->user() ?? ['name' => 'Guest', 'avatar' => null, 'role' => 'guest'],
 			],
 			'ziggy' => [
-				...(new Ziggy)->toArray(),
-				'location' => $request->url(),
+				...(new Ziggy(ziggyRoutes()))->toArray(),
+				'current' => Route::currentRouteName(),
+				'location' => $request->url()
 			],
 			'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
 		];

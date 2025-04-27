@@ -10,13 +10,14 @@ import { LoaderCircle } from 'lucide-vue-next';
 
 const form = useForm({
     name: '',
+    username: '',
     email: '',
     password: '',
     password_confirmation: '',
 });
 
 const submit = () => {
-    form.post(route('register'), {
+    form.post(route('security.register'), {
         onFinish: () => form.reset('password', 'password_confirmation'),
     });
 };
@@ -32,6 +33,12 @@ const submit = () => {
                     <Label for="name">Name</Label>
                     <Input id="name" type="text" required autofocus :tabindex="1" autocomplete="name" v-model="form.name" placeholder="Full name" />
                     <InputError :message="form.errors.name" />
+                </div>
+
+                <div class="grid gap-2">
+                    <Label for="username">Username</Label>
+                    <Input id="username" type="text" required :tabindex="2" autocomplete="username" v-model="form.username" placeholder="example" />
+                    <InputError :message="form.errors.username" />
                 </div>
 
                 <div class="grid gap-2">
@@ -74,9 +81,9 @@ const submit = () => {
                 </Button>
             </div>
 
-            <div class="text-center text-sm text-muted-foreground">
+            <div class="text-muted-foreground text-center text-sm">
                 Already have an account?
-                <TextLink :href="route('login')" class="underline underline-offset-4" :tabindex="6">Log in</TextLink>
+                <TextLink :href="route('security.login')" class="underline underline-offset-4" :tabindex="6">Log in</TextLink>
             </div>
         </form>
     </AuthBase>
