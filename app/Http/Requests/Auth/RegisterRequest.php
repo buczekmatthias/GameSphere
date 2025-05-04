@@ -4,7 +4,6 @@ namespace App\Http\Requests\Auth;
 
 use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rules;
 
 class RegisterRequest extends FormRequest
@@ -14,7 +13,7 @@ class RegisterRequest extends FormRequest
 	 */
 	public function authorize(): bool
 	{
-		return Auth::user() === null;
+		return $this->user() === null;
 	}
 
 	/**

@@ -13,6 +13,10 @@ import { type BreadcrumbItem } from '@/types';
 
 const breadcrumbItems: BreadcrumbItem[] = [
     {
+        title: 'Settings',
+        href: '',
+    },
+    {
         title: 'Password settings',
         href: route('settings.password.edit'),
     },

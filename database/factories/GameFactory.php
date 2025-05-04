@@ -18,7 +18,7 @@ class GameFactory extends Factory
 	{
 		return [
 			'slug' => fake()->unique()->uuid(),
-			'title' => fake()->word(),
+			'title' => fake()->unique()->word(),
 			'description' => fake()->sentences(6, true),
 			'thumbnail' => '',
 			'released_at' => fake()->dateTimeBetween('-10 years', '+5 years')

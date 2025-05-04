@@ -12,6 +12,11 @@ class Game extends Model
 {
 	use HasFactory;
 
+	public function getRouteKeyName()
+	{
+		return 'slug';
+	}
+
 	protected $fillable = [
 		'slug',
 		'title',

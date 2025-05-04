@@ -11,12 +11,24 @@ class Review extends Model
 {
 	use HasFactory;
 
+	public function getRouteKeyName()
+	{
+		return 'slug';
+	}
+
 	protected $fillable = [
 		'slug',
 		'content',
 		'ratings',
 		'is_verified'
 	];
+
+	protected function casts(): array
+	{
+		return [
+			'ratings' => 'array',
+		];
+	}
 
 	public function user(): BelongsTo
 	{

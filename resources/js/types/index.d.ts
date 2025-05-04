@@ -43,3 +43,38 @@ export interface User {
 }
 
 export type BreadcrumbItemType = BreadcrumbItem;
+
+export interface Game {
+    id: number;
+    slug: string;
+    title: string;
+    description: string;
+    thumbnail: string;
+    media: array;
+    creator: User;
+    released_at: string;
+    created_at: string;
+    updated_at: string;
+}
+
+export interface Genre {
+    id: number;
+    slug: string;
+    name: string;
+    discussions_count: number;
+    games_count: number;
+}
+
+export interface Review {
+    slug: string;
+    content: string;
+    ratings: object;
+    is_verified: boolean;
+}
+
+export interface Discussion {
+    slug: string;
+    title: string;
+    author: User;
+    comments_count: number;
+}

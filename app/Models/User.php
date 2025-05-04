@@ -18,6 +18,11 @@ class User extends Authenticatable
 	/** @use HasFactory<\Database\Factories\UserFactory> */
 	use HasFactory, Notifiable;
 
+	public function getRouteKeyName()
+	{
+		return 'username';
+	}
+
 	/**
 	 * The attributes that are mass assignable.
 	 *
@@ -143,5 +148,18 @@ class User extends Authenticatable
 	public function isDeveloper(): bool
 	{
 		return $this->role === UserRole::DEVELOPER->value;
+	}
+
+	public function canAddGame(): bool
+	{
+		return in_array(
+			$this->role,
+			[
+				UserRole::GAME_CREATOR->value,
+				UserRole::MODERATOR->value,
+				UserRole::ADMIN->value,
+				UserRole::DEVELOPER->value
+			]
+		);
 	}
 }

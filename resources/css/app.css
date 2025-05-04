@@ -166,7 +166,7 @@
     }
 
     body {
-        @apply bg-background text-foreground;
+        @apply bg-background text-foreground !leading-[165%];
     }
 
     input {
@@ -184,5 +184,14 @@
     }
     body {
         @apply bg-background text-foreground;
+    }
+}
+
+@layer components {
+    .form-box {
+        @apply flex flex-col gap-1.5;
+    }
+    .form-box label {
+        @apply text-sm;
     }
 }

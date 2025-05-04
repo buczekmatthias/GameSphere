@@ -12,7 +12,15 @@ withDefaults(defineProps<Props>(), {
 </script>
 
 <template>
-    <AppLayout :breadcrumbs="breadcrumbs">
+    <AppLayout
+        :breadcrumbs="[
+            {
+                title: 'Home',
+                href: route('home'),
+            },
+            ...breadcrumbs,
+        ]"
+    >
         <slot />
     </AppLayout>
 </template>

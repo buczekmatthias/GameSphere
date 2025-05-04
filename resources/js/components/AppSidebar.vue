@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import NavFooter from '@/components/NavFooter.vue';
+import AppLogo from '@/components/AppLogo.vue';
 import NavMain from '@/components/NavMain.vue';
 import NavUser from '@/components/NavUser.vue';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
-import { SharedData, type NavItem } from '@/types';
+import { SharedData, User, type NavItem } from '@/types';
 import { Link, usePage } from '@inertiajs/vue3';
-import { Home, LayoutGrid } from 'lucide-vue-next';
-import AppLogo from './AppLogo.vue';
+import { Gamepad2, Home, Plus } from 'lucide-vue-next';
+import { computed, onBeforeMount } from 'vue';
 
 const mainNavItems: { [key: string]: NavItem[] } = {
     app: [
@@ -16,17 +16,27 @@ const mainNavItems: { [key: string]: NavItem[] } = {
             icon: Home,
         },
     ],
+    games: [
+        {
+            title: 'List of games',
+            href: route('games.index'),
+            icon: Gamepad2,
+        },
+    ],
 };
 
-const footerNavItems: NavItem[] = [
-    {
-        title: 'Dashboard',
-        href: '',
-        icon: LayoutGrid,
-    },
-];
-
 const page = usePage<SharedData>();
+const user = computed(() => page.props.auth.user as User);
+
+onBeforeMount(() => {
+    if (['game_creator', 'moderator', 'admin', 'developer'].includes(user.value.role)) {
+        mainNavItems['games'].push({
+            title: 'Add new game',
+            href: route('games.create'),
+            icon: Plus,
+        });
+    }
+});
 </script>
 
 <template>
@@ -48,8 +58,7 @@ const page = usePage<SharedData>();
         </SidebarContent>
 
         <SidebarFooter>
-            <NavFooter :items="footerNavItems" v-if="['moderator', 'admin', 'developer'].includes(page.props.auth.user.role)" />
-            <NavUser />
+            <NavUser :user="user" />
         </SidebarFooter>
     </Sidebar>
     <slot />
