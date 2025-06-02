@@ -10,10 +10,8 @@ defineProps<{
 
 <template>
     <Link :href="route('games.show', { game: game.slug })" class="group flex flex-col gap-2">
-        <Avatar
-            class="group-hover:border-primary h-80 w-full overflow-hidden rounded-lg border-2 border-solid border-transparent object-cover duration-150"
-        >
-            <AvatarImage :src="game.thumbnail" :alt="game.title" />
+        <Avatar class="group-hover:border-primary h-80 w-full overflow-hidden rounded-lg border-2 border-solid border-transparent duration-150">
+            <AvatarImage :src="game.thumbnail" :alt="game.title" class="object-cover" />
             <AvatarFallback class="rounded-lg text-black dark:text-white" />
         </Avatar>
 

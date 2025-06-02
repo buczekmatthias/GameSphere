@@ -1,19 +1,17 @@
 <script setup lang="ts">
+import DatePicker from '@/components/DatePicker.vue';
 import InputError from '@/components/InputError.vue';
 import InputInfo from '@/components/InputInfo.vue';
-import Button from '@/components/ui/button/Button.vue';
-import { Calendar } from '@/components/ui/calendar';
-import Input from '@/components/ui/input/Input.vue';
-import Label from '@/components/ui/label/Label.vue';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import Textarea from '@/components/ui/textarea/Textarea.vue';
+import { transformDate } from '@/composables/useTransformDatePicker';
 import AppLayout from '@/layouts/AppLayout.vue';
-import { cn } from '@/lib/utils';
 import type { BreadcrumbItem, Genre } from '@/types';
 import { Head, useForm } from '@inertiajs/vue3';
-import { DateFormatter } from '@internationalized/date';
-import { CalendarIcon, LoaderCircle } from 'lucide-vue-next';
+import { LoaderCircle } from 'lucide-vue-next';
 import { computed } from 'vue';
 
 defineProps<{
@@ -30,8 +28,6 @@ const form = useForm({
     released_at: '' as any,
     genre: '',
 });
-
-const df = new DateFormatter('en-UK', { dateStyle: 'long' });
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -57,7 +53,7 @@ const isFormValid = () => {
 const submitForm = () => {
     form.transform((data) => ({
         ...data,
-        released_at: `${data.released_at.year}-${data.released_at.month.toString().padStart(2, '0')}-${data.released_at.day.toString().padStart(2, '0')}`,
+        released_at: transformDate(data.released_at),
     })).post(route('games.store'));
 };
 </script>
@@ -108,20 +104,7 @@ const submitForm = () => {
 
             <div class="form-box">
                 <Label for="released_at">Released at</Label>
-                <Popover>
-                    <PopoverTrigger as-child>
-                        <Button
-                            variant="outline"
-                            :class="cn('w-[280px] justify-start text-left font-normal', !form.released_at && 'text-muted-foreground')"
-                        >
-                            <CalendarIcon class="mr-2 h-4 w-4" />
-                            {{ form.released_at ? df.format(form.released_at.toDate()) : 'Pick a date' }}
-                        </Button>
-                    </PopoverTrigger>
-                    <PopoverContent class="w-auto p-0">
-                        <Calendar v-model="form.released_at" initial-focus />
-                    </PopoverContent>
-                </Popover>
+                <DatePicker v-model="form.released_at" />
                 <InputError :message="form.errors.released_at" />
             </div>
 

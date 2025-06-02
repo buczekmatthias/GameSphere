@@ -4,14 +4,15 @@ import { useInitials } from '@/composables/useInitials';
 import type { User } from '@/types';
 import { computed } from 'vue';
 
-interface Props {
-    user: User;
-    showUsername?: boolean;
-}
-
-const props = withDefaults(defineProps<Props>(), {
-    showUsername: false,
-});
+const props = withDefaults(
+    defineProps<{
+        user: User;
+        showUsername?: boolean;
+    }>(),
+    {
+        showUsername: false,
+    },
+);
 
 const { getInitials } = useInitials();
 
@@ -21,7 +22,7 @@ const showAvatar = computed(() => props.user.avatar && props.user.avatar !== '')
 
 <template>
     <Avatar class="h-8 w-8 overflow-hidden rounded-lg">
-        <AvatarImage v-if="showAvatar" :src="user.avatar" :alt="user.name" />
+        <AvatarImage v-if="showAvatar" :src="user.avatar!" :alt="user.name" />
         <AvatarFallback class="rounded-lg text-black dark:text-white">
             {{ getInitials(user.name) }}
         </AvatarFallback>

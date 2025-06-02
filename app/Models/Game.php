@@ -26,6 +26,14 @@ class Game extends Model
 		'released_at',
 	];
 
+	protected function casts(): array
+	{
+		return [
+			'media' => 'array',
+			'released_at' => 'date:Y-m-d',
+		];
+	}
+
 	public function creator(): BelongsTo
 	{
 		return $this->belongsTo(User::class, 'user_id');

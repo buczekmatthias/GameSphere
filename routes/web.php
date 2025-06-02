@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\DiscussionController;
 use App\Http\Controllers\GameController;
 use App\Http\Controllers\HomepageController;
 use App\Http\Controllers\UserProfileController;
@@ -9,7 +10,10 @@ Route::get('/', HomepageController::class)->name('home');
 
 Route::get('/u/{user:username}', UserProfileController::class)->name('user.profile');
 
-Route::resource('games', GameController::class);
+Route::post('/games/{game}', [GameController::class, 'update'])->name('games.update');
+Route::resource('games', GameController::class)->except('update');
+
+Route::resource('discussions', DiscussionController::class);
 
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';

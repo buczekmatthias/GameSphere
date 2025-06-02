@@ -22,6 +22,8 @@ return [
 			'user.profile',
 			'games.index',
 			'games.show',
+			'discussions.index',
+			'discussions.show'
 		],
 		'user' => [
 			'settings.profile.edit',
@@ -31,15 +33,20 @@ return [
 			'settings.password.update',
 			'settings.password.destroy',
 			'settings.appearance',
-		],
+			'discussions.create',
+			'discussions.store',
+			'discussions.edit',
+			'discussions.update', ],
 		'game_creator' => [
 			'games.store',
 			'games.create',
 			'games.edit',
 			'games.update',
-			'games.destroy',
 		],
-		'mod' => [],
+		'mod' => [
+			'games.destroy',
+			'discussions.destroy',
+		],
 		'admin' => [],
 		'dev' => []
 	]

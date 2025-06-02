@@ -18,20 +18,20 @@ export interface NavItem {
     isActive?: boolean;
 }
 
-export interface Routes {
+export interface Ziggy {
     current: string;
     ziggy: Config;
     location: string;
+    query: object;
 }
 
 export interface SharedData extends PageProps {
     auth: Auth;
-    routes: Routes;
+    ziggy: Ziggy;
     sidebarOpen: boolean;
 }
 
 export interface User {
-    id: number;
     name: string;
     username: string;
     email: string;
@@ -44,21 +44,37 @@ export interface User {
 
 export type BreadcrumbItemType = BreadcrumbItem;
 
+export interface PaginationLink {
+    url?: string;
+    label: string;
+    active: boolean;
+}
+
+export interface Pagination {
+    meta: {
+        current_page: number;
+        from: number;
+        last_page: number;
+        per_page: number;
+        to: number;
+        total: number;
+    };
+}
+
 export interface Game {
-    id: number;
     slug: string;
     title: string;
     description: string;
     thumbnail: string;
-    media: array;
+    media: { filename: string; path: string; type: string }[];
     creator: User;
+    genre: Genre;
     released_at: string;
     created_at: string;
     updated_at: string;
 }
 
 export interface Genre {
-    id: number;
     slug: string;
     name: string;
     discussions_count: number;
@@ -70,6 +86,8 @@ export interface Review {
     content: string;
     ratings: object;
     is_verified: boolean;
+    user: User & { is_email_verified: boolean };
+    created_at: string;
 }
 
 export interface Discussion {
@@ -77,4 +95,5 @@ export interface Discussion {
     title: string;
     author: User;
     comments_count: number;
+    created_at: string;
 }
