@@ -3,6 +3,8 @@ import Discussion from '@/components/Discussion.vue';
 import DiscussionSkeleton from '@/components/fallbacks/DiscussionSkeleton.vue';
 import ReviewSkeleton from '@/components/fallbacks/ReviewSkeleton.vue';
 import Modal from '@/components/Modal.vue';
+import NewDiscussionForm from '@/components/NewDiscussionForm.vue';
+import NewReviewForm from '@/components/NewReviewForm.vue';
 import Pagination from '@/components/Pagination.vue';
 import Preview from '@/components/Preview.vue';
 import Review from '@/components/Review.vue';
@@ -87,9 +89,16 @@ const tab = computed(() => {
                 </div>
             </div>
             <Tabs :default-value="tab">
-                <TabsList>
-                    <TabsTrigger value="reviews">Reviews</TabsTrigger>
-                    <TabsTrigger value="discussions">Discussions</TabsTrigger>
+                <TabsList class="w-full">
+                    <TabsTrigger
+                        v-for="i in ['reviews', 'discussions']"
+                        :value="i"
+                        :key="i"
+                        class="capitalize"
+                        :class="{ 'cursor-pointer': tab !== i }"
+                    >
+                        {{ i }}
+                    </TabsTrigger>
                 </TabsList>
                 <TabsContent value="reviews">
                     <WhenVisible data="reviews">
@@ -97,6 +106,7 @@ const tab = computed(() => {
                             <ReviewSkeleton />
                         </template>
 
+                        <NewReviewForm :slug="game.slug" />
                         <template v-if="reviews!.data.length > 0">
                             <div class="flex flex-col gap-4">
                                 <Pagination page-name="reviews_page" :pagination="getPaginationData(reviews!)" />
@@ -114,6 +124,7 @@ const tab = computed(() => {
                             <DiscussionSkeleton />
                         </template>
 
+                        <NewDiscussionForm :slug="game.slug" type="game" />
                         <template v-if="discussions!.data.length > 0">
                             <div class="flex flex-col gap-4">
                                 <Pagination page-name="discussions_page" :pagination="getPaginationData(discussions!)" />

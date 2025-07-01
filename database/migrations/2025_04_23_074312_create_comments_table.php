@@ -12,6 +12,7 @@ return new class extends Migration {
 	{
 		Schema::create('comments', function (Blueprint $table) {
 			$table->id();
+			$table->uuid('slug')->unique();
 			$table->text('content');
 			$table->json('media')->nullable();
 			$table->foreignId('discussion_id')->constrained()->cascadeOnDelete();

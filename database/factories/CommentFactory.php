@@ -17,6 +17,7 @@ class CommentFactory extends Factory
 	public function definition(): array
 	{
 		return [
+			'slug' => fake()->unique()->uuid(),
 			'content' => fake()->text(500),
 		];
 	}

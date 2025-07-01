@@ -12,6 +12,7 @@ return new class extends Migration {
 	{
 		Schema::create('reports', function (Blueprint $table) {
 			$table->id();
+			$table->uuid('slug')->unique();
 			$table->string('reason');
 			$table->foreignId('user_id')->constrained()->cascadeOnDelete();
 			$table->timestamps();

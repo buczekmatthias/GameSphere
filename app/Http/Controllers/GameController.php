@@ -98,8 +98,8 @@ class GameController extends Controller
 
 		return Inertia::render('game/Show', [
 			'game' => ShowGameResource::make($game),
-			'reviews' => Inertia::defer(fn () => ReviewResource::collection($game->reviews()->with(['user'])->paginate(30, pageName: 'reviews_page'))),
-			'discussions' => Inertia::defer(fn () => DiscussionResource::collection($game->discussions()->with('author')->withCount('comments')->paginate(30, pageName: 'discussions_page'))),
+			'reviews' => Inertia::defer(fn () => ReviewResource::collection($game->reviews()->with(['user'])->orderBy('created_at', 'DESC')->paginate(30, pageName: 'reviews_page'))),
+			'discussions' => Inertia::defer(fn () => DiscussionResource::collection($game->discussions()->with('author')->withCount('comments')->orderBy('created_at', 'DESC')->paginate(30, pageName: 'discussions_page'))),
 		]);
 	}
 

@@ -43,7 +43,7 @@ class HandleInertiaRequests extends Middleware
 				'user' => $request->user() ?? ['name' => 'Guest', 'avatar' => null, 'role' => 'guest'],
 			],
 			'ziggy' => [
-				...(new Ziggy(ziggyRoutes()))->toArray(),
+				...(new Ziggy())->toArray(),
 				'current' => Route::currentRouteName(),
 				'location' => $request->url(),
 				'query' => $request->query()

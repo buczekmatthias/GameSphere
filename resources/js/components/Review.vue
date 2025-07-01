@@ -4,6 +4,7 @@ import { Card } from '@/components/ui/card';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import UserInfo from '@/components/UserInfo.vue';
 import { Review } from '@/types';
+import { Link } from '@inertiajs/vue3';
 import { MailCheck, Star } from 'lucide-vue-next';
 import { capitalize, computed } from 'vue';
 
@@ -34,7 +35,12 @@ const avgRating = computed(() =>
                 </TooltipProvider>
             </template>
         </div>
-        <p class="text-sm text-slate-300">{{ review.created_at }}</p>
+        <div class="flex justify-between">
+            <p class="text-sm text-slate-300">{{ review.created_at }}</p>
+            <Link :href="route('reviews.destroy', { review: review.slug })" method="delete" class="text-destructive cursor-pointer text-sm">
+                Delete review
+            </Link>
+        </div>
         <p>{{ review.content }}</p>
         <Accordion type="single" class="w-full" collapsible>
             <AccordionItem value="rating">

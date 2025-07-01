@@ -30,7 +30,7 @@
             }
         </style>
 
-        @routes(ziggyRoutes())
+        @routes()
         @vite(['resources/js/app.ts'])
         @inertiaHead
     </head>

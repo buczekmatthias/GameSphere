@@ -61,12 +61,18 @@ export interface Pagination {
     };
 }
 
+export interface Media {
+    filename: string;
+    path: string;
+    type: string;
+}
+
 export interface Game {
     slug: string;
     title: string;
     description: string;
     thumbnail: string;
-    media: { filename: string; path: string; type: string }[];
+    media: Media[];
     creator: User;
     genre: Genre;
     released_at: string;
@@ -84,16 +90,47 @@ export interface Genre {
 export interface Review {
     slug: string;
     content: string;
-    ratings: object;
+    ratings: ReviewRatings;
     is_verified: boolean;
     user: User & { is_email_verified: boolean };
     created_at: string;
 }
 
+export interface ReviewRatings {
+    gameplay: number;
+    graphics: number;
+    storyline: number;
+    replayability: number;
+    sound_and_music: number;
+    performance: number;
+}
+
 export interface Discussion {
     slug: string;
+    shortTitle: string;
     title: string;
     author: User;
+    discussable: DiscussableGame | DiscussableGenre;
+    discussable_type: string;
+    comments: Pagination & { data: DiscussionComment[] };
     comments_count: number;
     created_at: string;
+}
+
+export interface DiscussionComment {
+    slug: string;
+    content: string;
+    media: Media[];
+    user: User;
+    created_at: string;
+}
+
+export interface DiscussableGame {
+    slug: string;
+    title: string;
+}
+
+export interface DiscussableGenre {
+    slug: string;
+    name: string;
 }

@@ -20,7 +20,7 @@ class GameSeeder extends Seeder
 		$creators = User::select('id')->where('role', UserRole::GAME_CREATOR->value)->get();
 		$users = User::select('id')->get();
 
-		for ($i = 0; $i < 200; $i++) {
+		for ($i = 0; $i < 100; $i++) {
 			Game::factory()
 			->for(collect($genres)->random())
 			->for(collect($creators)->random(), 'creator')
