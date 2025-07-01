@@ -70,6 +70,7 @@ export interface Media {
 export interface Game {
     slug: string;
     title: string;
+    shortTitle: string;
     description: string;
     thumbnail: string;
     media: Media[];
@@ -83,6 +84,7 @@ export interface Game {
 export interface Genre {
     slug: string;
     name: string;
+    shortName: string;
     discussions_count: number;
     games_count: number;
 }

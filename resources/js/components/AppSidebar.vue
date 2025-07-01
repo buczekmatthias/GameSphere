@@ -5,7 +5,7 @@ import NavUser from '@/components/NavUser.vue';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { SharedData, User, type NavItem } from '@/types';
 import { Link, usePage } from '@inertiajs/vue3';
-import { Gamepad2, Home, Plus } from 'lucide-vue-next';
+import { Blocks, Gamepad2, Home, MessageCircle, Plus } from 'lucide-vue-next';
 import { computed, onBeforeMount } from 'vue';
 
 const mainNavItems: { [key: string]: NavItem[] } = {
@@ -21,6 +21,20 @@ const mainNavItems: { [key: string]: NavItem[] } = {
             title: 'List of games',
             href: route('games.index'),
             icon: Gamepad2,
+        },
+    ],
+    discussions: [
+        {
+            title: 'List of discussions',
+            href: route('discussions.index'),
+            icon: MessageCircle,
+        },
+    ],
+    genres: [
+        {
+            title: 'List of genres',
+            href: route('genres.index'),
+            icon: Blocks,
         },
     ],
 };

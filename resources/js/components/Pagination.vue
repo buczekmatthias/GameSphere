@@ -47,6 +47,11 @@ const pages = computed(() => Array.from(Array(props.pagination.meta.last_page).k
 
 const query = computed(() => (usePage().props.ziggy as Ziggy & { query: { per_page: string } }).query);
 
+const rangeString = computed(
+    () => `${props.pagination.meta.from} - ${props.pagination.meta.to > props.pagination.meta.total ? props.pagination.meta.total : props.pagination.meta.to} of
+            ${props.pagination.meta.total}`,
+);
+
 const preferredPerPage = ref<number>(props.pagination.meta.per_page);
 
 watch(currentPage, () => router.get('', { ...query.value, [props.pageName]: currentPage.value }, { preserveScroll: true }));
@@ -54,8 +59,8 @@ watch(preferredPerPage, () => router.get('', { ...query.value, per_page: preferr
 </script>
 
 <template>
-    <div class="col-span-full flex items-center gap-2">
-        <p class="mr-auto">{{ pagination.meta.from }} - {{ pagination.meta.to }} of {{ pagination.meta.total }}</p>
+    <div class="col-span-full flex items-center gap-2" v-if="pagination.meta.total > 0">
+        <p class="mr-auto">{{ rangeString }}</p>
         <Select v-if="customizablePerPage" v-model="preferredPerPage" required>
             <SelectTrigger class="cursor-pointer">
                 <SelectValue placeholder="Select items per page" />

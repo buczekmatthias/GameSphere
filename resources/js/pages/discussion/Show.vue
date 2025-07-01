@@ -19,7 +19,7 @@ const props = defineProps<{
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: 'Discussions',
-        href: '',
+        href: route('discussions.index'),
     },
     {
         title: props.discussion.shortTitle,
@@ -58,7 +58,9 @@ const breadcrumbs: BreadcrumbItem[] = [
                     </template>
                     <template v-else>
                         <Blocks class="h-5" />
-                        <TextLink :href="''">{{ (discussion.discussable as DiscussableGenre).name }}</TextLink>
+                        <TextLink :href="route('genres.show', { genre: discussion.discussable.slug })">
+                            {{ (discussion.discussable as DiscussableGenre).name }}
+                        </TextLink>
                     </template>
                 </div>
                 <UpdateDiscussionForm :old-title="discussion.title" :slug="discussion.slug" />

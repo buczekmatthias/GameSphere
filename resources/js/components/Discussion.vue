@@ -10,7 +10,7 @@ defineProps<{
 
 <template>
     <div class="border-border flex flex-col gap-3 rounded-md border border-solid p-3">
-        <p class="text-xl font-semibold">{{ discussion.title }}</p>
+        <p class="truncate text-xl font-semibold">{{ discussion.title }}</p>
         <div class="flex flex-wrap items-center gap-3">
             <div class="flex gap-0.5">
                 <Calendar class="h-5" />

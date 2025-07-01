@@ -30,7 +30,7 @@ const breadcrumbs: BreadcrumbItem[] = [
         href: route('games.index'),
     },
     {
-        title: props.game.title,
+        title: props.game.shortTitle,
         href: route('games.show', { game: props.game.slug }),
     },
 ];
