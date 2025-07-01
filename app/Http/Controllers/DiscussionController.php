@@ -4,16 +4,27 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\Discussion\StoreRequest;
 use App\Http\Requests\Discussion\UpdateRequest;
+use App\Http\Resources\Discussion\ListDiscussionResource;
 use App\Http\Resources\Discussion\ShowDiscussionResource;
 use App\Models\Discussion;
 use App\Models\Game;
 use App\Models\Genre;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
 
 class DiscussionController extends Controller
 {
+	public function index()
+	{
+		return Inertia::render('discussion/Index', [
+			'discussions' => ListDiscussionResource::collection(
+				Discussion::with(['author', 'discussable'])->withCount('comments')->orderBy('created_at', 'DESC')->paginate(15)
+			)
+		]);
+	}
+
 	/**
 	 * Store a newly created resource in storage.
 	 */
@@ -31,6 +42,8 @@ class DiscussionController extends Controller
 
 		$discussion->user_id = Auth::user()->id;
 		$discussion->save();
+
+		Storage::makeDirectory("discussions/{$discussion->slug}");
 
 		return back();
 	}
@@ -53,8 +66,7 @@ class DiscussionController extends Controller
 	 */
 	public function update(Discussion $discussion, UpdateRequest $request)
 	{
-		$discussion->title = $request->post('title');
-		$discussion->save();
+		$discussion->update($request->validated());
 
 		return back(303);
 	}
@@ -64,8 +76,16 @@ class DiscussionController extends Controller
 	 */
 	public function destroy(Discussion $discussion)
 	{
+		foreach ($discussion->comments as $comment) {
+			foreach ($comment->media as $file) {
+				Storage::delete("discussions/{$discussion->slug}/{$comment->slug}/{$file}");
+			}
+			Storage::delete("discussions/{$discussion->slug}/{$comment->slug}");
+		}
+		Storage::deleteDirectory("discussions/{$discussion->slug}");
+
 		$discussion->delete();
 
-		return back(303);
+		return to_route('discussions.index');
 	}
 }

@@ -7,7 +7,7 @@ import { ComboboxContent, ComboboxPortal, useForwardPropsEmits } from 'reka-ui'
 
 const props = withDefaults(defineProps<ComboboxContentProps & { class?: HTMLAttributes['class'], viewportClass?: HTMLAttributes['class'] }>(), {
   position: 'popper',
-  align: 'center',
+  align: 'end',
   sideOffset: 4,
 })
 const emits = defineEmits<ComboboxContentEmits>()

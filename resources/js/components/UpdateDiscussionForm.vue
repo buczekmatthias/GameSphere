@@ -36,7 +36,7 @@ const updateDiscussionForm = useForm({
 
 const submitForm = () => {
     if (updateDiscussionForm.title.length > 0) {
-        updateDiscussionForm.post(route('discussions.update', { discussion: props.slug }), {
+        updateDiscussionForm.patch(route('discussions.update', { discussion: props.slug }), {
             onSuccess: () => (isOpen.value = false),
         });
     }
@@ -48,7 +48,7 @@ const submitForm = () => {
         <form class="grid items-start gap-4 px-4" @submit.prevent="submitForm">
             <div class="grid gap-2">
                 <Label html-for="title">Title</Label>
-                <Input id="title" v-model="updateDiscussionForm.title" />
+                <Input id="title" v-model="updateDiscussionForm.title" :default-value="oldTitle" />
                 <InputError :message="updateDiscussionForm.errors.title" />
             </div>
             <Button type="submit" class="sticky bottom-0" :disabled="updateDiscussionForm.processing">
@@ -60,7 +60,7 @@ const submitForm = () => {
 
     <Dialog v-if="isDesktop" v-model:open="isOpen">
         <DialogTrigger as-child>
-            <Button variant="outline" class="mb-4 w-full"> Update discussion </Button>
+            <Button variant="outline" class="w-full">Update discussion </Button>
         </DialogTrigger>
         <DialogContent class="sm:max-w-[425px]">
             <DialogHeader>
@@ -73,7 +73,7 @@ const submitForm = () => {
 
     <Drawer v-else v-model:open="isOpen">
         <DrawerTrigger as-child>
-            <Button variant="outline" class="mb-4 w-full"> Update discussion </Button>
+            <Button variant="outline" class="w-full">Update discussion</Button>
         </DrawerTrigger>
         <DrawerContent>
             <DrawerHeader class="text-left">

@@ -1,13 +1,11 @@
 <?php
 
-namespace App\Http\Requests\Settings;
+namespace App\Http\Requests\Comment;
 
-use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Validation\Rule;
 
-class ProfileUpdateRequest extends FormRequest
+class StoreRequest extends FormRequest
 {
 	/**
 	 * Determine if the user is authorized to make this request.
@@ -25,14 +23,10 @@ class ProfileUpdateRequest extends FormRequest
 	public function rules(): array
 	{
 		return [
-			'name' => ['required', 'string', 'max:255', 'not_in:Guest,guest,test,Test'],
-			'email' => [
-				'required',
-				'string',
-				'email',
-				'max:255',
-				Rule::unique(User::class)->ignore($this->user()->id),
-			],
+			'discussion_slug' => ['uuid', 'exists:discussions,slug'],
+			'content' => ['string', 'required'],
+			'media' => ['array', 'max:4'],
+			'media.*' => ['file', 'required', 'mimes:jpg,png,webp,mp4', 'max:20000'],
 		];
 	}
 }

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CommentController;
 use App\Http\Controllers\DiscussionController;
 use App\Http\Controllers\GameController;
 use App\Http\Controllers\HomepageController;
@@ -15,7 +16,8 @@ Route::post('/games/{game}', [GameController::class, 'update'])->name('games.upd
 Route::resource('games', GameController::class)->except('update');
 
 Route::resource('reviews', ReviewController::class)->only(['store', 'destroy']);
-Route::resource('discussions', DiscussionController::class)->except(['index', 'create', 'edit']);
+Route::resource('discussions', DiscussionController::class)->except(['create', 'edit']);
+Route::resource('comments', CommentController::class)->only(['store', 'update', 'destroy']);
 
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';

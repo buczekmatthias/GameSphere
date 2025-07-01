@@ -23,7 +23,7 @@ class CommentResource extends JsonResource
 					->map(
 						fn (string $file) => [
 							'filename' => $file,
-							'path' => asset(Storage::url("discussions/{$this->slug}/{$file}")),
+							'path' => asset(Storage::url("discussions/{$this->discussion->slug}/{$this->slug}/{$file}")),
 							'type' => str_contains('.mp4', $file) ? 'video' : 'image'
 						]
 					)->toArray()

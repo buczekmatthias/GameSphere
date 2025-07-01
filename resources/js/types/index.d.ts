@@ -111,7 +111,7 @@ export interface Discussion {
     title: string;
     author: User;
     discussable: DiscussableGame | DiscussableGenre;
-    discussable_type: string;
+    discussable_type: 'game' | 'genre';
     comments: Pagination & { data: DiscussionComment[] };
     comments_count: number;
     created_at: string;

@@ -20,7 +20,10 @@ class DiscussionResource extends JsonResource
 			'title' => Str::limit($this->title, 55, preserveWords: true),
 			'author' => $this->whenLoaded(
 				'author',
-				fn () => $this->author->name
+				fn () => [
+					'name' => $this->author->name,
+					'username' => $this->author->username
+				]
 			),
 			'comments_count' => $this->whenCounted('comments'),
 			'created_at' => $this->created_at->format('Y-m-d')

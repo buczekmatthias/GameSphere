@@ -25,8 +25,7 @@ const mainNavItems: { [key: string]: NavItem[] } = {
     ],
 };
 
-const page = usePage<SharedData>();
-const user = computed(() => page.props.auth.user as User);
+const user = computed(() => usePage<SharedData>().props.auth.user as User);
 
 onBeforeMount(() => {
     if (['game_creator', 'moderator', 'admin', 'developer'].includes(user.value.role)) {

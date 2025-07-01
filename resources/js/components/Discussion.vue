@@ -11,19 +11,20 @@ defineProps<{
 <template>
     <div class="border-border flex flex-col gap-3 rounded-md border border-solid p-3">
         <p class="text-xl font-semibold">{{ discussion.title }}</p>
-        <div class="flex gap-2">
+        <div class="flex flex-wrap items-center gap-3">
             <div class="flex gap-0.5">
                 <Calendar class="h-5" />
                 <p class="text-sm">{{ discussion.created_at }}</p>
             </div>
             <div class="flex gap-0.5">
                 <User class="h-5" />
-                <p class="truncate text-sm">{{ discussion.author }}</p>
+                <TextLink class="text-sm" :href="route('user.profile', { user: discussion.author.username })">{{ discussion.author.name }}</TextLink>
             </div>
             <div class="flex gap-0.5">
                 <MessageCircle class="h-5" />
                 <p class="text-sm">{{ discussion.comments_count }}</p>
             </div>
+            <slot name="extra-items"></slot>
         </div>
         <TextLink :href="route('discussions.show', { discussion: discussion.slug })" class="self-start">Read discussion</TextLink>
     </div>

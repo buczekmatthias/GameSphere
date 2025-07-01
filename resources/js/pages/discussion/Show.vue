@@ -1,11 +1,15 @@
 <script setup lang="ts">
 import Modal from '@/components/Modal.vue';
+import NewCommentForm from '@/components/NewCommentForm.vue';
 import Pagination from '@/components/Pagination.vue';
 import Preview from '@/components/Preview.vue';
 import TextLink from '@/components/TextLink.vue';
+import { Button } from '@/components/ui/button';
+import UpdateCommentForm from '@/components/UpdateCommentForm.vue';
+import UpdateDiscussionForm from '@/components/UpdateDiscussionForm.vue';
 import AppLayout from '@/layouts/AppLayout.vue';
 import type { BreadcrumbItem, DiscussableGame, DiscussableGenre, Discussion as DiscussionType } from '@/types';
-import { Head } from '@inertiajs/vue3';
+import { Head, Link } from '@inertiajs/vue3';
 import { Blocks, Calendar, Gamepad2, MessageCircle, User } from 'lucide-vue-next';
 
 const props = defineProps<{
@@ -48,17 +52,22 @@ const breadcrumbs: BreadcrumbItem[] = [
                 <div class="flex items-center gap-1">
                     <template v-if="discussion.discussable_type === 'game'">
                         <Gamepad2 class="h-5" />
-                        <TextLink :href="route('games.show', { game: discussion.discussable.slug })">{{
-                            (discussion.discussable as DiscussableGame).title
-                        }}</TextLink>
+                        <TextLink :href="route('games.show', { game: discussion.discussable.slug })">
+                            {{ (discussion.discussable as DiscussableGame).title }}
+                        </TextLink>
                     </template>
                     <template v-else>
                         <Blocks class="h-5" />
                         <TextLink :href="''">{{ (discussion.discussable as DiscussableGenre).name }}</TextLink>
                     </template>
                 </div>
+                <UpdateDiscussionForm :old-title="discussion.title" :slug="discussion.slug" />
+                <Button variant="destructive" as-child>
+                    <Link :href="route('discussions.destroy', { discussion: discussion.slug })" method="delete">Delete discussion</Link>
+                </Button>
             </div>
             <div class="flex flex-col gap-4">
+                <NewCommentForm :discussion-slug="discussion.slug" />
                 <div
                     class="border-border flex flex-col gap-3 rounded-md border border-solid p-2"
                     v-for="comment in discussion.comments.data"
@@ -84,7 +93,18 @@ const breadcrumbs: BreadcrumbItem[] = [
                             </div>
                         </Modal>
                     </div>
-                    <p class="text-sm text-slate-300">{{ comment.created_at }}</p>
+                    <div class="flex gap-4">
+                        <p class="text-sm text-slate-300">{{ comment.created_at }}</p>
+                        <UpdateCommentForm :old-content="comment.content" :media="comment.media" :slug="comment.slug" />
+                        <Link
+                            :href="route('comments.destroy', { comment: comment.slug })"
+                            :preserve-scroll="true"
+                            method="delete"
+                            class="text-destructive cursor-pointer text-sm"
+                        >
+                            Delete
+                        </Link>
+                    </div>
                 </div>
                 <Pagination :pagination="discussion.comments" />
             </div>

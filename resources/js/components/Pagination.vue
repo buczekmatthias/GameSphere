@@ -11,6 +11,7 @@ import {
     ComboboxList,
     ComboboxTrigger,
 } from '@/components/ui/combobox';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
 import { Pagination, Ziggy } from '@/types';
@@ -94,12 +95,14 @@ watch(preferredPerPage, () => router.get('', { ...query.value, per_page: preferr
                 <ComboboxEmpty> No page found. </ComboboxEmpty>
 
                 <ComboboxGroup>
-                    <ComboboxItem v-for="page in pages" :key="page" :value="page" class="cursor-pointer">
-                        {{ page }}
-                        <ComboboxItemIndicator v-if="page === currentPage">
-                            <Check :class="cn('ml-auto h-4 w-4')" />
-                        </ComboboxItemIndicator>
-                    </ComboboxItem>
+                    <ScrollArea :class="{ 'h-[50vh]': pages.length > 15 }">
+                        <ComboboxItem v-for="page in pages" :key="page" :value="page" class="cursor-pointer">
+                            {{ page }}
+                            <ComboboxItemIndicator v-if="page === currentPage">
+                                <Check :class="cn('ml-auto h-4 w-4')" />
+                            </ComboboxItemIndicator>
+                        </ComboboxItem>
+                    </ScrollArea>
                 </ComboboxGroup>
             </ComboboxList>
         </Combobox>

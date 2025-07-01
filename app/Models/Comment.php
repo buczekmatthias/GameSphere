@@ -22,6 +22,13 @@ class Comment extends Model
 		'media'
 	];
 
+	protected function casts(): array
+	{
+		return [
+			'media' => 'array',
+		];
+	}
+
 	public function discussion(): BelongsTo
 	{
 		return $this->belongsTo(Discussion::class);
