@@ -65,7 +65,7 @@ const breadcrumbs: BreadcrumbItem[] = [
                 </div>
                 <UpdateDiscussionForm :old-title="discussion.title" :slug="discussion.slug" />
                 <Button variant="destructive" as-child>
-                    <Link :href="route('discussions.destroy', { discussion: discussion.slug })" method="delete">Delete discussion</Link>
+                    <Link :href="route('discussions.destroy', { discussion: discussion.slug })" method="delete" as="button">Delete discussion</Link>
                 </Button>
             </div>
             <div class="flex flex-col gap-4">
@@ -99,6 +99,7 @@ const breadcrumbs: BreadcrumbItem[] = [
                         <p class="text-sm text-slate-300">{{ comment.created_at }}</p>
                         <UpdateCommentForm :old-content="comment.content" :media="comment.media" :slug="comment.slug" />
                         <Link
+                            as="button"
                             :href="route('comments.destroy', { comment: comment.slug })"
                             :preserve-scroll="true"
                             method="delete"

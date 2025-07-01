@@ -37,7 +37,12 @@ const avgRating = computed(() =>
         </div>
         <div class="flex justify-between">
             <p class="text-sm text-slate-300">{{ review.created_at }}</p>
-            <Link :href="route('reviews.destroy', { review: review.slug })" method="delete" class="text-destructive cursor-pointer text-sm">
+            <Link
+                as="button"
+                :href="route('reviews.destroy', { review: review.slug })"
+                method="delete"
+                class="text-destructive cursor-pointer text-sm"
+            >
                 Delete review
             </Link>
         </div>

@@ -58,7 +58,7 @@ onBeforeMount(() => {
             <SidebarMenu>
                 <SidebarMenuItem>
                     <SidebarMenuButton size="lg" as-child>
-                        <Link :href="route('home')">
+                        <Link :href="route('home')" as="button">
                             <AppLogo />
                         </Link>
                     </SidebarMenuButton>

@@ -9,12 +9,12 @@ defineProps<{
 </script>
 
 <template>
-    <Link :href="route('games.show', { game: game.slug })" class="group flex flex-col gap-2">
+    <Link :href="route('games.show', { game: game.slug })" class="group flex flex-col" as="button">
         <Avatar class="group-hover:border-primary h-80 w-full overflow-hidden rounded-lg border-2 border-solid border-transparent duration-150">
             <AvatarImage :src="game.thumbnail" :alt="game.title" class="object-cover" />
             <AvatarFallback class="rounded-lg text-black dark:text-white" />
         </Avatar>
 
-        <p class="truncate">{{ game.title }}</p>
+        <p class="self-start truncate">{{ game.title }}</p>
     </Link>
 </template>

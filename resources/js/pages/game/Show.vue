@@ -48,10 +48,10 @@ const tab = computed(() => {
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex flex-col gap-4 p-6 md:p-4">
             <Button as-child>
-                <Link :href="route('games.destroy', { game: game.slug })" method="delete"> Delete game </Link>
+                <Link :href="route('games.destroy', { game: game.slug })" method="delete" as="button"> Delete game </Link>
             </Button>
             <Button as-child>
-                <Link :href="route('games.edit', { game: game.slug })"> Edit game </Link>
+                <Link :href="route('games.edit', { game: game.slug })" as="button"> Edit game </Link>
             </Button>
             <div class="flex gap-4 max-md:flex-col">
                 <Avatar class="h-80 w-64 overflow-hidden rounded-lg object-cover">

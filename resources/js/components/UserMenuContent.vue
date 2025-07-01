@@ -42,7 +42,7 @@ defineProps<Props>();
     </template>
     <template v-else>
         <DropdownMenuItem :as-child="true">
-            <Link :href="route('user.profile', { user: user.username })" class="block w-full cursor-pointer px-1 py-1.5">
+            <Link :href="route('user.profile', { user: user.username })" class="block w-full cursor-pointer px-1 py-1.5" as="button">
                 <UserInfo :user="user" :show-username="user.role === 'guest' ? false : true" />
             </Link>
         </DropdownMenuItem>

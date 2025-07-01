@@ -6,7 +6,7 @@ defineOptions({
 });
 
 interface Props {
-    size: number;
+    size?: number;
 }
 
 defineProps<Props>();
