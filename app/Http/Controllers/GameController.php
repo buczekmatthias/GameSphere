@@ -34,7 +34,7 @@ class GameController extends Controller
 			$games->whereDate('released_at', $request->get('released_at'));
 		}
 
-		return Inertia::render('game/Index', [
+		return Inertia::render('app/game/Index', [
 			'games' => GamesListResource::collection($games->paginate($request->get('per_page', 30)))
 		]);
 	}
@@ -44,7 +44,7 @@ class GameController extends Controller
 	 */
 	public function create(): Response
 	{
-		return Inertia::render('game/Create', [
+		return Inertia::render('app/game/Create', [
 			'genres' => Genre::select(['slug', 'name'])->get()
 		]);
 	}
@@ -96,7 +96,7 @@ class GameController extends Controller
 	{
 		$game->load(['genre', 'creator']);
 
-		return Inertia::render('game/Show', [
+		return Inertia::render('app/game/Show', [
 			'game' => ShowGameResource::make($game),
 			'reviews' => Inertia::defer(fn () => ReviewResource::collection($game->reviews()->with(['user'])->orderBy('created_at', 'DESC')->paginate(30, pageName: 'reviews_page'))),
 			'discussions' => Inertia::defer(fn () => DiscussionResource::collection($game->discussions()->with('author')->withCount('comments')->orderBy('created_at', 'DESC')->paginate(30, pageName: 'discussions_page'))),
@@ -110,7 +110,7 @@ class GameController extends Controller
 	{
 		$game->load(['genre']);
 
-		return Inertia::render('game/Edit', [
+		return Inertia::render('app/game/Edit', [
 			'game' => EditGameResource::make($game),
 			'genres' => Genre::select(['slug', 'name'])->get()
 		]);

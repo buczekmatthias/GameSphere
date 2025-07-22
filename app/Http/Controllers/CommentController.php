@@ -8,9 +8,17 @@ use App\Models\Comment;
 use App\Models\Discussion;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Inertia\Inertia;
 
 class CommentController extends Controller
 {
+	public function show(Comment $comment)
+	{
+		return Inertia::render('app/Comment', [
+			'comment' => $comment
+		]);
+	}
+
 	/**
 	 * Store a newly created resource in storage.
 	 */

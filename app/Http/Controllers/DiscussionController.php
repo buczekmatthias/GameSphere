@@ -18,7 +18,7 @@ class DiscussionController extends Controller
 {
 	public function index()
 	{
-		return Inertia::render('discussion/Index', [
+		return Inertia::render('app/discussion/Index', [
 			'discussions' => ListDiscussionResource::collection(
 				Discussion::with(['author', 'discussable'])->withCount('comments')->orderBy('created_at', 'DESC')->paginate(15)
 			)
@@ -56,7 +56,7 @@ class DiscussionController extends Controller
 		$discussion->load(['author', 'discussable']);
 		$discussion->loadCount('comments');
 
-		return Inertia::render('discussion/Show', [
+		return Inertia::render('app/discussion/Show', [
 			'discussion' => ShowDiscussionResource::make($discussion)
 		]);
 	}

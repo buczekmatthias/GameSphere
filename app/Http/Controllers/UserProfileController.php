@@ -10,7 +10,7 @@ class UserProfileController extends Controller
 {
 	public function __invoke(User $user): Response
 	{
-		return Inertia::render('UserProfile', [
+		return Inertia::render('app/UserProfile', [
 			'user' => $user
 		]);
 	}

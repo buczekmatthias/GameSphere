@@ -10,7 +10,7 @@ class HomepageController extends Controller
 {
 	public function __invoke(): Response
 	{
-		return Inertia::render('Homepage', [
+		return Inertia::render('app/Homepage', [
 			'games' => Inertia::defer(fn () => Game::orderBy('released_at', 'DESC')->limit(40)->get())
 		]);
 	}

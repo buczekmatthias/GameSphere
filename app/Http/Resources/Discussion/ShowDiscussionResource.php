@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\Discussion;
 
+use App\Services\MorphTypeToLowerString;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Str;
@@ -35,7 +36,7 @@ class ShowDiscussionResource extends JsonResource
 			),
 			'discussable_type' => $this->whenLoaded(
 				'discussable',
-				fn () => str_contains($this->discussable_type, 'Game') ? 'game' : 'genre'
+				fn () => MorphTypeToLowerString::getTransformedString($this->discussable_type)
 			),
 			'comments' => [
 				'data' => CommentResource::collection($comments),

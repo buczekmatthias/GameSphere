@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Services\ReportsServices;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Inertia\Middleware;
@@ -37,18 +38,21 @@ class HandleInertiaRequests extends Middleware
 	 */
 	public function share(Request $request): array
 	{
-		return [
-			...parent::share($request),
-			'auth' => [
-				'user' => $request->user() ?? ['name' => 'Guest', 'avatar' => null, 'role' => 'guest'],
+		return array_merge(
+			parent::share($request),
+			[
+				'auth' => [
+					'user' => $request->user() ?? ['name' => 'Guest', 'avatar' => null, 'role' => 'guest'],
+				],
+				'ziggy' => [
+					...(new Ziggy())->toArray(),
+					'current' => Route::currentRouteName(),
+					'location' => $request->url(),
+					'query' => $request->query()
+				],
+				'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
 			],
-			'ziggy' => [
-				...(new Ziggy())->toArray(),
-				'current' => Route::currentRouteName(),
-				'location' => $request->url(),
-				'query' => $request->query()
-			],
-			'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
-		];
+			ReportsServices::hasReportableContent() ? ReportsServices::getReportReasons() : []
+		);
 	}
 }

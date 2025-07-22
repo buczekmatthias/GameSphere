@@ -9,7 +9,8 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
 class Report extends Model
 {
 	protected $fillable = [
-		'reason'
+		'reason',
+		'status'
 	];
 
 	public function user(): BelongsTo

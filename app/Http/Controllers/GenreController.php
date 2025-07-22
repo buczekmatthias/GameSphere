@@ -14,7 +14,7 @@ class GenreController extends Controller
 	 */
 	public function index()
 	{
-		return Inertia::render('genre/Index', [
+		return Inertia::render('app/genre/Index', [
 			'genres' => ListResource::collection(
 				Genre::withCount(['discussions', 'games'])->orderBy('name', 'ASC')->paginate(30)
 			)
@@ -26,7 +26,7 @@ class GenreController extends Controller
 	 */
 	public function show(Genre $genre)
 	{
-		return Inertia::render('genre/Show', [
+		return Inertia::render('app/genre/Show', [
 			'genre' => ShowResource::make($genre)
 		]);
 	}

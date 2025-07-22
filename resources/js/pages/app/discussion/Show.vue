@@ -71,9 +71,10 @@ const breadcrumbs: BreadcrumbItem[] = [
             <div class="flex flex-col gap-4">
                 <NewCommentForm :discussion-slug="discussion.slug" />
                 <div
-                    class="border-border flex flex-col gap-3 rounded-md border border-solid p-2"
+                    class="border-border flex flex-col items-start gap-3 rounded-md border border-solid p-2"
                     v-for="comment in discussion.comments.data"
                     :key="comment.slug"
+                    :id="comment.slug"
                 >
                     <TextLink class="truncate text-lg" :href="route('user.profile', { user: comment.user.username })">
                         {{ comment.user.name }}

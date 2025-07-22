@@ -7,9 +7,17 @@ use Illuminate\Support\Str;
 use App\Models\Game;
 use App\Http\Requests\Review\StoreRequest;
 use App\Models\Review;
+use Inertia\Inertia;
 
 class ReviewController extends Controller
 {
+	public function show(Review $review)
+	{
+		return Inertia::render('app/Review', [
+			'review' => $review
+		]);
+	}
+
 	/**
 	 * Store a newly created resource in storage.
 	 */

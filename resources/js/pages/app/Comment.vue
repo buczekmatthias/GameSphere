@@ -1,30 +1,30 @@
 <script setup lang="ts">
 import AppLayout from '@/layouts/AppLayout.vue';
-import type { BreadcrumbItem, User } from '@/types';
+import type { BreadcrumbItem, DiscussionComment } from '@/types';
 import { Head } from '@inertiajs/vue3';
 
 const props = defineProps<{
-    user: User;
+    comment: DiscussionComment;
 }>();
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Profile',
+        title: 'Comment',
         href: '',
     },
     {
-        title: props.user.username,
+        title: props.comment.shortSlug,
         href: '',
     },
 ];
 </script>
 
 <template>
-    <Head :title="`${user.name}\'s profile`" />
+    <Head :title="`Comment: #${comment.slug}`" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="p-6 md:p-4">
-            {{ user }}
+            {{ comment }}
         </div>
     </AppLayout>
 </template>

@@ -91,6 +91,7 @@ export interface Genre {
 
 export interface Review {
     slug: string;
+    shortSlug: string;
     content: string;
     ratings: ReviewRatings;
     is_verified: boolean;
@@ -121,10 +122,12 @@ export interface Discussion {
 
 export interface DiscussionComment {
     slug: string;
+    shortSlug: string;
     content: string;
     media: Media[];
     user: User;
     created_at: string;
+    discussion: Discussion;
 }
 
 export interface DiscussableGame {
@@ -135,4 +138,14 @@ export interface DiscussableGame {
 export interface DiscussableGenre {
     slug: string;
     name: string;
+}
+
+export interface Report {
+    slug: string;
+    reason: string;
+    status: string;
+    user: User;
+    reportable: Comment | Discussion | Game | User | Review | 'string';
+    reportable_type: 'comment' | 'discussion' | 'game' | 'user' | 'review';
+    created_at: string;
 }
