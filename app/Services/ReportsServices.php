@@ -9,7 +9,7 @@ final class ReportsServices
 {
 	public static function getReportReasons(): array
 	{
-		return ['report_reasons' => array_column(ReportReason::cases(), 'value')];
+		return array_column(ReportReason::cases(), 'value');
 	}
 
 	public static function hasReportableContent(): bool

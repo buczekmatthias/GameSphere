@@ -7,7 +7,7 @@ use App\Models\Report;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
-class ReportController extends Controller
+class UserReportsController extends Controller
 {
 	/**
 	 * Handle the incoming request.

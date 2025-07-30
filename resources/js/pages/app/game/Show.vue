@@ -7,9 +7,11 @@ import NewDiscussionForm from '@/components/NewDiscussionForm.vue';
 import NewReviewForm from '@/components/NewReviewForm.vue';
 import Pagination from '@/components/Pagination.vue';
 import Preview from '@/components/Preview.vue';
+import ReportModal from '@/components/ReportModal.vue';
 import Review from '@/components/Review.vue';
 import TextLink from '@/components/TextLink.vue';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { buttonVariants } from '@/components/ui/button';
 import Button from '@/components/ui/button/Button.vue';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { getPaginationData } from '@/composables/usePagination';
@@ -53,6 +55,12 @@ const tab = computed(() => {
             <Button as-child>
                 <Link :href="route('games.edit', { game: game.slug })" as="button"> Edit game </Link>
             </Button>
+            <ReportModal
+                :contentId="game.slug"
+                contentType="game"
+                triggerContent="Report game"
+                :triggerClass="buttonVariants({ variant: 'destructive' })"
+            />
             <div class="flex gap-4 max-md:flex-col">
                 <Avatar class="h-80 w-64 overflow-hidden rounded-lg object-cover">
                     <AvatarImage :src="game.thumbnail" :alt="game.title" />

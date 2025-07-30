@@ -52,7 +52,7 @@ class HandleInertiaRequests extends Middleware
 				],
 				'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
 			],
-			ReportsServices::hasReportableContent() ? ReportsServices::getReportReasons() : []
+			ReportsServices::hasReportableContent() ? ['report_reasons' => ReportsServices::getReportReasons()] : []
 		);
 	}
 }

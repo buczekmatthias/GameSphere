@@ -29,6 +29,7 @@ export interface SharedData extends PageProps {
     auth: Auth;
     ziggy: Ziggy;
     sidebarOpen: boolean;
+    report_reasons: Record<number, string>;
 }
 
 export interface User {
@@ -140,12 +141,14 @@ export interface DiscussableGenre {
     name: string;
 }
 
+export type ReportableType = 'comment' | 'discussion' | 'game' | 'user' | 'review';
+
 export interface Report {
     slug: string;
     reason: string;
     status: string;
     user: User;
     reportable: Comment | Discussion | Game | User | Review | 'string';
-    reportable_type: 'comment' | 'discussion' | 'game' | 'user' | 'review';
+    reportable_type: ReportableType;
     created_at: string;
 }

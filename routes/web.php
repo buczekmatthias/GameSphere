@@ -5,15 +5,18 @@ use App\Http\Controllers\DiscussionController;
 use App\Http\Controllers\GameController;
 use App\Http\Controllers\GenreController;
 use App\Http\Controllers\HomepageController;
-use App\Http\Controllers\ReportController;
+use App\Http\Controllers\UserReportsController;
 use App\Http\Controllers\ReviewController;
+use App\Http\Controllers\StoreReportController;
 use App\Http\Controllers\UserProfileController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', HomepageController::class)->name('home');
 
 Route::get('/u/{user:username}', UserProfileController::class)->name('user.profile');
-Route::get('/my-reports', ReportController::class)->name('user.reports');
+Route::get('/my-reports', UserReportsController::class)->name('user.reports');
+
+Route::post('/reports', StoreReportController::class)->name('reports.store');
 
 Route::post('/games/{game}', [GameController::class, 'update'])->name('games.update');
 Route::resource('games', GameController::class)->except('update');

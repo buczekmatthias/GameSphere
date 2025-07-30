@@ -8,7 +8,13 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 class Report extends Model
 {
+	public function getRouteKeyName()
+	{
+		return 'slug';
+	}
+
 	protected $fillable = [
+		'slug',
 		'reason',
 		'status'
 	];
