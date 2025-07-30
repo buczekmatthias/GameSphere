@@ -14,9 +14,9 @@ import {
     DrawerTitle,
     DrawerTrigger,
 } from '@/components/ui/drawer';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
+import { Textarea } from '@/components/ui/textarea';
 import { Media } from '@/types';
 import { useForm } from '@inertiajs/vue3';
 import { createReusableTemplate, useMediaQuery } from '@vueuse/core';
@@ -63,7 +63,7 @@ const toggleItem = (filename: string) => {
         <form class="grid items-start gap-4 px-4" @submit.prevent="submitForm">
             <div class="grid gap-2">
                 <Label html-for="content">Content</Label>
-                <Input id="content" v-model="updateCommentForm.content" :default-value="oldContent" />
+                <Textarea id="content" v-model="updateCommentForm.content" :default-value="oldContent" class="h-36 resize-none" />
                 <InputError :message="updateCommentForm.errors.content" />
             </div>
             <template v-if="media.length > 0">

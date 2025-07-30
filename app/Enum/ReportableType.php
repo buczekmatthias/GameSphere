@@ -8,4 +8,5 @@ enum ReportableType: string
 	case COMMENT = 'comment';
 	case GAME = 'game';
 	case REVIEW = 'review';
+	case USER = 'user';
 }

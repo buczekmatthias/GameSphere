@@ -30,7 +30,8 @@ class UserReportsTableResource extends JsonResource
 					ReportableType::DISCUSSION->value => route('discussions.show', ['discussion' => $this->reportable->slug]),
 					ReportableType::COMMENT->value => route('comments.show', ['comment' => $this->reportable->slug]),
 					ReportableType::GAME->value => route('games.show', ['game' => $this->reportable->slug]),
-					ReportableType::REVIEW->value => route('reviews.show', ['discussion' => $this->reportable->slug]),
+					ReportableType::REVIEW->value => route('reviews.show', ['review' => $this->reportable->slug]),
+					ReportableType::USER->value => route('user.profile', ['user' => $this->reportable->username])
 				}
 			),
 			'reportable_type' => $this->whenLoaded(

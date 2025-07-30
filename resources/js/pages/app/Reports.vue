@@ -26,7 +26,7 @@ defineProps<{
                 <TableHeader>
                     <TableRow>
                         <TableHead class="w-24">#</TableHead>
-                        <TableHead class="w-80">Slug</TableHead>
+                        <TableHead class="w-80">Id</TableHead>
                         <TableHead>Reason</TableHead>
                         <TableHead class="w-32">Item</TableHead>
                         <TableHead class="w-24">Status</TableHead>

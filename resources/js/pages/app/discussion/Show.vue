@@ -3,8 +3,9 @@ import Modal from '@/components/Modal.vue';
 import NewCommentForm from '@/components/NewCommentForm.vue';
 import Pagination from '@/components/Pagination.vue';
 import Preview from '@/components/Preview.vue';
+import ReportModal from '@/components/ReportModal.vue';
 import TextLink from '@/components/TextLink.vue';
-import { Button } from '@/components/ui/button';
+import { Button, buttonVariants } from '@/components/ui/button';
 import UpdateCommentForm from '@/components/UpdateCommentForm.vue';
 import UpdateDiscussionForm from '@/components/UpdateDiscussionForm.vue';
 import AppLayout from '@/layouts/AppLayout.vue';
@@ -63,6 +64,12 @@ const breadcrumbs: BreadcrumbItem[] = [
                         </TextLink>
                     </template>
                 </div>
+                <ReportModal
+                    :contentId="discussion.slug"
+                    contentType="discussion"
+                    triggerContent="Report discussion"
+                    :triggerClass="buttonVariants({ variant: 'destructive' })"
+                />
                 <UpdateDiscussionForm :old-title="discussion.title" :slug="discussion.slug" />
                 <Button variant="destructive" as-child>
                     <Link :href="route('discussions.destroy', { discussion: discussion.slug })" method="delete" as="button">Delete discussion</Link>
@@ -108,6 +115,12 @@ const breadcrumbs: BreadcrumbItem[] = [
                         >
                             Delete
                         </Link>
+                        <ReportModal
+                            :contentId="comment.slug"
+                            contentType="comment"
+                            triggerContent="Report comment"
+                            triggerClass="text-destructive cursor-pointer text-sm"
+                        />
                     </div>
                 </div>
                 <Pagination :pagination="discussion.comments" />

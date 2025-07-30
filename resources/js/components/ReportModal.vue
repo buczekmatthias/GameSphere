@@ -5,7 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ReportableType, SharedData } from '@/types';
 import { useForm, usePage } from '@inertiajs/vue3';
-import { computed } from 'vue';
+import { LoaderCircle } from 'lucide-vue-next';
+import { computed, ref } from 'vue';
 
 const reportReasons = computed((): Record<number, string> => usePage<SharedData>().props.report_reasons);
 
@@ -24,12 +25,20 @@ const reportForm = useForm({
 
 const handleSubmit = (e: Event) => {
     e.preventDefault();
-    reportForm.post(route('reports.store'));
+    reportForm.post(route('reports.store'), {
+        preserveScroll: true,
+        onFinish: () => {
+            reportForm.reason = '';
+            isOpen.value = false;
+        },
+    });
 };
+
+const isOpen = ref<boolean>(false);
 </script>
 
 <template>
-    <Dialog>
+    <Dialog :open="isOpen" @update:open="isOpen = $event">
         <DialogTrigger :class="triggerClass">
             {{ triggerContent }}
         </DialogTrigger>
@@ -49,7 +58,10 @@ const handleSubmit = (e: Event) => {
             </Select>
 
             <DialogFooter>
-                <Button @click="handleSubmit" variant="destructive" :disabled="reportForm.reason.length === 0"> Submit report </Button>
+                <Button @click="handleSubmit" variant="destructive" :disabled="reportForm.reason.length === 0 || reportForm.processing">
+                    <LoaderCircle v-if="reportForm.processing" class="h-4 w-4 animate-spin" />
+                    Submit report
+                </Button>
             </DialogFooter>
         </DialogContent>
     </Dialog>

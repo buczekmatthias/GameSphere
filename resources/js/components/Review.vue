@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import ReportModal from '@/components/ReportModal.vue';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Card } from '@/components/ui/card';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
@@ -35,18 +36,12 @@ const avgRating = computed(() =>
                 </TooltipProvider>
             </template>
         </div>
-        <div class="flex justify-between">
-            <p class="text-sm text-slate-300">{{ review.created_at }}</p>
-            <Link
-                as="button"
-                :href="route('reviews.destroy', { review: review.slug })"
-                method="delete"
-                class="text-destructive cursor-pointer text-sm"
-            >
-                Delete review
-            </Link>
-        </div>
+        <p class="text-sm text-slate-300">{{ review.created_at }}</p>
         <p>{{ review.content }}</p>
+        <div class="text-destructive flex gap-4 text-sm [&>*]:cursor-pointer">
+            <Link as="button" :href="route('reviews.destroy', { review: review.slug })" method="delete"> Delete review </Link>
+            <ReportModal :contentId="review.slug" contentType="review" triggerContent="Report review" />
+        </div>
         <Accordion type="single" class="w-full" collapsible>
             <AccordionItem value="rating">
                 <AccordionTrigger class="cursor-pointer">
