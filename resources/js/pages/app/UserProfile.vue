@@ -26,12 +26,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="p-6 md:p-4">
-            <ReportModal
-                :contentId="user.username"
-                contentType="user"
-                triggerContent="Report user"
-                :triggerClass="buttonVariants({ variant: 'destructive' })"
-            />
+            <ReportModal :contentId="user.username" contentType="user" :triggerClass="buttonVariants({ variant: 'destructive' })" />
             <p>{{ user }}</p>
         </div>
     </AppLayout>

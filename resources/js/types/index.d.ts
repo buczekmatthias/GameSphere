@@ -97,6 +97,7 @@ export interface Review {
     ratings: ReviewRatings;
     is_verified: boolean;
     user: User & { is_email_verified: boolean };
+    game: Game;
     created_at: string;
 }
 

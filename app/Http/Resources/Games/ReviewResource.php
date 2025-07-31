@@ -4,6 +4,7 @@ namespace App\Http\Resources\Games;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Str;
 
 class ReviewResource extends JsonResource
 {
@@ -16,6 +17,7 @@ class ReviewResource extends JsonResource
 	{
 		return [
 			'slug' => $this->slug,
+			'shortSlug' => Str::limit($this->slug, 20),
 			'content' => $this->content,
 			'ratings' => gettype($this->ratings) === 'string' ? json_decode($this->ratings, true) : $this->ratings,
 			'is_verified' => $this->is_verified,

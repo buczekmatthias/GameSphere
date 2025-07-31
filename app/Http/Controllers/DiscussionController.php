@@ -84,6 +84,8 @@ class DiscussionController extends Controller
 		}
 		Storage::deleteDirectory("discussions/{$discussion->slug}");
 
+		$discussion->reports()->delete();
+
 		$discussion->delete();
 
 		return to_route('discussions.index');

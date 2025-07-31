@@ -55,12 +55,7 @@ const tab = computed(() => {
             <Button as-child>
                 <Link :href="route('games.edit', { game: game.slug })" as="button"> Edit game </Link>
             </Button>
-            <ReportModal
-                :contentId="game.slug"
-                contentType="game"
-                triggerContent="Report game"
-                :triggerClass="buttonVariants({ variant: 'destructive' })"
-            />
+            <ReportModal :contentId="game.slug" contentType="game" :triggerClass="buttonVariants({ variant: 'destructive' })" />
             <div class="flex gap-4 max-md:flex-col">
                 <Avatar class="h-80 w-64 overflow-hidden rounded-lg object-cover">
                     <AvatarImage :src="game.thumbnail" :alt="game.title" />

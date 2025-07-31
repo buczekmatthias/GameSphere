@@ -29,7 +29,7 @@ const avgRating = computed(() =>
                         <TooltipTrigger as-child>
                             <MailCheck />
                         </TooltipTrigger>
-                        <TooltipContent>
+                        <TooltipContent side="left">
                             <p>Verified user</p>
                         </TooltipContent>
                     </Tooltip>
@@ -40,7 +40,7 @@ const avgRating = computed(() =>
         <p>{{ review.content }}</p>
         <div class="text-destructive flex gap-4 text-sm [&>*]:cursor-pointer">
             <Link as="button" :href="route('reviews.destroy', { review: review.slug })" method="delete"> Delete review </Link>
-            <ReportModal :contentId="review.slug" contentType="review" triggerContent="Report review" />
+            <ReportModal :contentId="review.slug" contentType="review" />
         </div>
         <Accordion type="single" class="w-full" collapsible>
             <AccordionItem value="rating">

@@ -14,7 +14,6 @@ const props = defineProps<{
     contentId: string;
     contentType: ReportableType;
     triggerClass?: string;
-    triggerContent: string;
 }>();
 
 const reportForm = useForm({
@@ -39,9 +38,7 @@ const isOpen = ref<boolean>(false);
 
 <template>
     <Dialog :open="isOpen" @update:open="isOpen = $event">
-        <DialogTrigger :class="triggerClass">
-            {{ triggerContent }}
-        </DialogTrigger>
+        <DialogTrigger :class="triggerClass"> Report </DialogTrigger>
         <DialogContent>
             <DialogHeader>
                 <DialogTitle>Report content</DialogTitle>

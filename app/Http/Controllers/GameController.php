@@ -190,6 +190,7 @@ class GameController extends Controller
 
 		Storage::deleteDirectory("games/{$game->slug}");
 
+		$game->reports()->delete();
 		$game->discussions()->delete();
 		$game->delete();
 

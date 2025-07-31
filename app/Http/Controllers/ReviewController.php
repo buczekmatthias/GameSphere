@@ -6,15 +6,19 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use App\Models\Game;
 use App\Http\Requests\Review\StoreRequest;
+use App\Http\Resources\Games\ReviewResource;
 use App\Models\Review;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class ReviewController extends Controller
 {
 	public function show(Review $review)
 	{
+		$review->load(['user', 'game']);
+
 		return Inertia::render('app/Review', [
-			'review' => $review
+			'review' => ReviewResource::make($review)
 		]);
 	}
 
@@ -38,9 +42,14 @@ class ReviewController extends Controller
 	/**
 	 * Remove the specified resource from storage.
 	 */
-	public function destroy(Review $review)
+	public function destroy(Review $review, Request $request)
 	{
+		$review->reports()->delete();
 		$review->delete();
+
+		if ($request->get('to_homepage')) {
+			return to_route('home', 303);
+		}
 
 		return back(303);
 	}

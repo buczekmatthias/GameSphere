@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\Comment\StoreRequest;
 use App\Http\Requests\Comment\UpdateRequest;
+use App\Http\Resources\Discussion\CommentResource;
 use App\Models\Comment;
 use App\Models\Discussion;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
@@ -14,8 +16,10 @@ class CommentController extends Controller
 {
 	public function show(Comment $comment)
 	{
+		$comment->load(['user', 'discussion']);
+
 		return Inertia::render('app/Comment', [
-			'comment' => $comment
+			'comment' => CommentResource::make($comment)
 		]);
 	}
 
@@ -75,14 +79,22 @@ class CommentController extends Controller
 	/**
 	 * Remove the specified resource from storage.
 	 */
-	public function destroy(Comment $comment)
+	public function destroy(Comment $comment, Request $request)
 	{
-		foreach ($comment->media as $file) {
-			Storage::delete("discussions/{$comment->discussion->slug}/{$comment->slug}/{$file}");
+		if ($comment->media) {
+			foreach ($comment->media as $file) {
+				Storage::delete("discussions/{$comment->discussion->slug}/{$comment->slug}/{$file}");
+			}
 		}
 		Storage::deleteDirectory("discussions/{$comment->discussion->slug}/{$comment->slug}");
 
+		$comment->reports()->delete();
+
 		$comment->delete();
+
+		if ($request->get('to_homepage')) {
+			return to_route('home', status: 303);
+		}
 
 		return back(303);
 	}

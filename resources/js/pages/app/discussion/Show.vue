@@ -8,6 +8,7 @@ import TextLink from '@/components/TextLink.vue';
 import { Button, buttonVariants } from '@/components/ui/button';
 import UpdateCommentForm from '@/components/UpdateCommentForm.vue';
 import UpdateDiscussionForm from '@/components/UpdateDiscussionForm.vue';
+import UserInfo from '@/components/UserInfo.vue';
 import AppLayout from '@/layouts/AppLayout.vue';
 import type { BreadcrumbItem, DiscussableGame, DiscussableGenre, Discussion as DiscussionType } from '@/types';
 import { Head, Link } from '@inertiajs/vue3';
@@ -64,12 +65,7 @@ const breadcrumbs: BreadcrumbItem[] = [
                         </TextLink>
                     </template>
                 </div>
-                <ReportModal
-                    :contentId="discussion.slug"
-                    contentType="discussion"
-                    triggerContent="Report discussion"
-                    :triggerClass="buttonVariants({ variant: 'destructive' })"
-                />
+                <ReportModal :contentId="discussion.slug" contentType="discussion" :triggerClass="buttonVariants({ variant: 'destructive' })" />
                 <UpdateDiscussionForm :old-title="discussion.title" :slug="discussion.slug" />
                 <Button variant="destructive" as-child>
                     <Link :href="route('discussions.destroy', { discussion: discussion.slug })" method="delete" as="button">Delete discussion</Link>
@@ -81,11 +77,10 @@ const breadcrumbs: BreadcrumbItem[] = [
                     class="border-border flex flex-col items-start gap-3 rounded-md border border-solid p-2"
                     v-for="comment in discussion.comments.data"
                     :key="comment.slug"
-                    :id="comment.slug"
                 >
-                    <TextLink class="truncate text-lg" :href="route('user.profile', { user: comment.user.username })">
-                        {{ comment.user.name }}
-                    </TextLink>
+                    <Link class="mr-auto flex gap-3" :href="route('user.profile', { user: comment.user.username })" as="button">
+                        <UserInfo :show-username="true" :user="comment.user" />
+                    </Link>
                     <p>{{ comment.content }}</p>
                     <div v-if="comment.media.length > 0">
                         <Modal>
@@ -115,12 +110,7 @@ const breadcrumbs: BreadcrumbItem[] = [
                         >
                             Delete
                         </Link>
-                        <ReportModal
-                            :contentId="comment.slug"
-                            contentType="comment"
-                            triggerContent="Report comment"
-                            triggerClass="text-destructive cursor-pointer text-sm"
-                        />
+                        <ReportModal :contentId="comment.slug" contentType="comment" triggerClass="text-destructive cursor-pointer text-sm" />
                     </div>
                 </div>
                 <Pagination :pagination="discussion.comments" />
