@@ -3,7 +3,7 @@ import UserInfo from '@/components/UserInfo.vue';
 import { DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
 import type { User } from '@/types';
 import { Link, router } from '@inertiajs/vue3';
-import { LayoutGrid, LogIn, LogOut, Settings, UserRoundPlus } from 'lucide-vue-next';
+import { LogIn, LogOut, Settings, UserRoundPlus } from 'lucide-vue-next';
 
 interface Props {
     user: User;
@@ -48,12 +48,6 @@ defineProps<Props>();
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-            <DropdownMenuItem :as-child="true" v-if="['moderator', 'admin', 'developer'].includes(user.role)">
-                <Link class="block w-full cursor-pointer" :href="route('home')" prefetch as="button">
-                    <LayoutGrid class="mr-2 h-4 w-4" />
-                    Dashboard
-                </Link>
-            </DropdownMenuItem>
             <DropdownMenuItem :as-child="true">
                 <Link class="block w-full cursor-pointer" :href="route('settings.profile.edit')" prefetch as="button">
                     <Settings class="mr-2 h-4 w-4" />

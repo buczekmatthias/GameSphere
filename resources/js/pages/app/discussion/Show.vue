@@ -34,7 +34,7 @@ const breadcrumbs: BreadcrumbItem[] = [
     <Head :title="discussion.title" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
-        <div class="flex flex-col gap-4 p-6 md:p-4">
+        <div class="main-container flex flex-col gap-4">
             <div class="grid grid-cols-1 gap-2 md:grid-cols-2 lg:grid-cols-[auto_auto_auto_auto] lg:self-start">
                 <p class="col-span-full mb-2 text-2xl">{{ discussion.title }}</p>
                 <div class="flex items-center gap-1">

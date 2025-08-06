@@ -62,7 +62,7 @@ const submitForm = () => {
     <Head title="Add new game" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
-        <form @submit.prevent="submitForm" class="flex flex-col gap-4 p-6 md:p-4">
+        <form @submit.prevent="submitForm" class="main-container flex flex-col gap-4">
             <div class="form-box">
                 <Label for="title">Title</Label>
                 <Input id="title" type="text" required autofocus v-model="form.title" placeholder="Example title" />

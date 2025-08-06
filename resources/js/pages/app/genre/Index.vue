@@ -22,7 +22,7 @@ const breadcrumbs: BreadcrumbItem[] = [
     <Head title="Genres" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
-        <div class="flex flex-col gap-4 p-6 md:p-4">
+        <div class="main-container flex flex-col gap-4">
             <Genre v-for="genre in genres.data" :key="genre.name" :genre="genre" />
             <Pagination :pagination="getPaginationData(genres)" />
         </div>

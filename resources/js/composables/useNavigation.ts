@@ -1,5 +1,17 @@
 import { NavItem, User } from '@/types';
-import { Blocks, Gamepad2, Home, MessageCircle, MessageCircleWarning, Plus } from 'lucide-vue-next';
+import {
+    Blocks,
+    ChartNoAxesCombined,
+    Gamepad2,
+    Home,
+    LayoutDashboard,
+    MessageCircle,
+    MessageCircleWarning,
+    Plus,
+    Rss,
+    Star,
+    UserIcon,
+} from 'lucide-vue-next';
 import { onBeforeMount } from 'vue';
 
 // TODO: Move this to back-end
@@ -24,7 +36,7 @@ export function getNavigationElements(user: User): { [key: string]: NavItem[] } 
             {
                 title: 'List of discussions',
                 href: route('discussions.index'),
-                icon: MessageCircle,
+                icon: Rss,
             },
         ],
         genres: [
@@ -44,6 +56,13 @@ export function getNavigationElements(user: User): { [key: string]: NavItem[] } 
                 icon: MessageCircleWarning,
             });
         }
+        if (['moderator', 'admin', 'developer'].includes(user.role)) {
+            items['app'].push({
+                title: 'Dashboard',
+                href: route('admin.dashboard'),
+                icon: LayoutDashboard,
+            });
+        }
 
         if (['game_creator', 'moderator', 'admin', 'developer'].includes(user.role)) {
             items['games'].push({
@@ -55,4 +74,49 @@ export function getNavigationElements(user: User): { [key: string]: NavItem[] } 
     });
 
     return items;
+}
+
+export function getAdminNavigationElements(): NavItem[] {
+    return [
+        {
+            title: 'Dashboard',
+            href: route('admin.dashboard'),
+            icon: ChartNoAxesCombined,
+        },
+        {
+            title: 'Games',
+            href: '',
+            icon: Gamepad2,
+        },
+        {
+            title: 'Reviews',
+            href: '',
+            icon: Star,
+        },
+        {
+            title: 'Discussions',
+            href: '',
+            icon: Rss,
+        },
+        {
+            title: 'Comments',
+            href: '',
+            icon: MessageCircle,
+        },
+        {
+            title: 'Genres',
+            href: '',
+            icon: Blocks,
+        },
+        {
+            title: 'Users',
+            href: '',
+            icon: UserIcon,
+        },
+        {
+            title: 'Reports',
+            href: '',
+            icon: MessageCircleWarning,
+        },
+    ];
 }

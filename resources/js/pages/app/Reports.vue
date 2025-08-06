@@ -21,7 +21,7 @@ defineProps<{
     <Head title="My reports" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
-        <div class="p-6 md:p-4">
+        <div class="main-container">
             <Table>
                 <TableHeader>
                     <TableRow>

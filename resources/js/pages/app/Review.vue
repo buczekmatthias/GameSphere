@@ -33,7 +33,7 @@ const avgRating = computed(() =>
     <Head :title="`Review: #${review.slug}`" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
-        <div class="flex flex-col gap-4 p-6 md:p-4">
+        <div class="main-container flex flex-col gap-4">
             <div class="flex items-center gap-3">
                 <Link class="mr-auto flex gap-3" :href="route('user.profile', { user: review.user.username })">
                     <UserInfo :show-username="true" :user="review.user" />

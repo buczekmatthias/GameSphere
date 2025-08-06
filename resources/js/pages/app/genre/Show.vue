@@ -34,7 +34,7 @@ const breadcrumbs: BreadcrumbItem[] = [
     <Head :title="genre.name" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
-        <div class="flex flex-col gap-10 p-6 md:p-4">
+        <div class="main-container flex flex-col gap-10">
             <div class="flex flex-col gap-4">
                 <p class="text-3xl font-semibold">Games</p>
                 <div class="mb-4 flex flex-col gap-2">

@@ -203,4 +203,8 @@
     .form-box label {
         @apply text-sm;
     }
+
+    .main-container {
+        @apply p-6 md:p-4;
+    }
 }

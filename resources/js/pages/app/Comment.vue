@@ -29,7 +29,7 @@ const breadcrumbs: BreadcrumbItem[] = [
     <Head :title="`Comment: #${comment.slug}`" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
-        <div class="flex flex-col items-start gap-3 p-6 md:p-4">
+        <div class="main-container flex flex-col items-start gap-3">
             <Link class="mr-auto flex gap-3" :href="route('user.profile', { user: comment.user.username })" as="button">
                 <UserInfo :show-username="true" :user="comment.user" />
             </Link>

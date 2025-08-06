@@ -44,7 +44,7 @@ const searchEntires = () => {
     <Head title="Games" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
-        <div class="grid grid-cols-2 gap-4 p-6 md:p-4 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
+        <div class="main-container grid grid-cols-2 gap-4 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
             <div class="col-span-full grid grid-cols-[3fr_1fr] gap-2">
                 <Input type="text" v-model="title" class="col-span-full" placeholder="Game title" />
                 <DatePicker v-model="released_at" />

@@ -24,7 +24,7 @@ const breadcrumbs: BreadcrumbItem[] = [
     <Head title="Discussions" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
-        <div class="flex flex-col gap-4 p-6 md:p-4">
+        <div class="main-container flex flex-col gap-4">
             <template v-for="discussion in discussions.data" :key="discussion.slug">
                 <Discussion :discussion="discussion">
                     <template #extra-items>
