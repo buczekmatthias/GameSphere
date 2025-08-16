@@ -25,11 +25,15 @@ const props = withDefaults(
         pagination: Pagination;
         pageName?: string;
         prefPerPage?: number[];
+        reloadOnly?: string[];
+        showCounter?: boolean;
     }>(),
     {
         customizablePerPage: false,
         pageName: () => 'page',
         prefPerPage: () => [10, 30, 50, 100],
+        reloadOnly: () => [],
+        showCounter: true,
     },
 );
 
@@ -54,13 +58,15 @@ const rangeString = computed(
 
 const preferredPerPage = ref<number>(props.pagination.meta.per_page);
 
-watch(currentPage, () => router.get('', { ...query.value, [props.pageName]: currentPage.value }, { preserveScroll: true }));
-watch(preferredPerPage, () => router.get('', { ...query.value, per_page: preferredPerPage.value, [props.pageName]: 1 }, { preserveScroll: true }));
+watch(currentPage, () => router.reload({ only: props.reloadOnly, data: { ...query.value, [props.pageName]: currentPage.value } }));
+watch(preferredPerPage, () =>
+    router.reload({ only: props.reloadOnly, data: { ...query.value, per_page: preferredPerPage.value, [props.pageName]: 1 } }),
+);
 </script>
 
 <template>
     <div class="col-span-full flex items-center gap-2" v-if="pagination.meta.total > 0">
-        <p class="mr-auto">{{ rangeString }}</p>
+        <p class="mr-auto" v-if="showCounter">{{ rangeString }}</p>
         <Select v-if="customizablePerPage" v-model="preferredPerPage" required>
             <SelectTrigger class="cursor-pointer">
                 <SelectValue placeholder="Select items per page" />

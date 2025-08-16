@@ -16,6 +16,7 @@ export interface NavItem {
     href: string;
     icon?: LucideIcon;
     isActive?: boolean;
+    group?: string;
 }
 
 export interface Ziggy {
@@ -149,7 +150,7 @@ export interface Report {
     reason: string;
     status: string;
     user: User;
-    reportable: Comment | Discussion | Game | User | Review | 'string';
+    reportable: string;
     reportable_type: ReportableType;
     created_at: string;
 }

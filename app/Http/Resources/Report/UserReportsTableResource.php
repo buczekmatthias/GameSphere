@@ -38,6 +38,10 @@ class UserReportsTableResource extends JsonResource
 				'reportable',
 				fn () => $s
 			),
+			'user' => $this->whenLoaded(
+				'user',
+				fn () => ['name' => $this->user->name, 'username' => $this->user->username]
+			),
 			'created_at' => $this->created_at->format('Y-m-d')
 		];
 	}

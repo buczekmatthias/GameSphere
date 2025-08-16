@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import AppLogo from '@/components/AppLogo.vue';
 import AppLogoIcon from '@/components/AppLogoIcon.vue';
-import Breadcrumbs from '@/components/Breadcrumbs.vue';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
@@ -25,7 +24,7 @@ interface Props {
     breadcrumbs?: BreadcrumbItem[];
 }
 
-const props = withDefaults(defineProps<Props>(), {
+withDefaults(defineProps<Props>(), {
     breadcrumbs: () => [],
 });
 
@@ -34,9 +33,9 @@ const user = computed(() => page.props.auth.user as User);
 
 const isCurrentRoute = computed(() => (url: string) => page.props.ziggy.location === url);
 
-const activeItemStyles = computed(
-    () => (url: string) => (isCurrentRoute.value(url) ? 'text-neutral-900 dark:bg-neutral-900 dark:text-neutral-100' : ''),
-);
+const isActiveGroup = computed(() => (group: string) => !page.props.ziggy.current.includes('index') && page.props.ziggy.current.includes(group));
+
+const activeItemStyles = computed(() => (url: string) => (isCurrentRoute.value(url) ? 'text-slate-50 bg-primary/75 pointer-events-none' : ''));
 
 const mainNavItems: NavItem[] = getAdminNavigationElements();
 </script>
@@ -66,15 +65,12 @@ const mainNavItems: NavItem[] = getAdminNavigationElements();
                                         :key="item.title"
                                         :href="item.href"
                                         class="hover:bg-accent flex w-full items-center gap-x-3 rounded-lg px-3 py-2 text-sm font-medium"
-                                        :class="[
-                                            activeItemStyles(item.href),
-                                            isCurrentRoute(item.href)
-                                                ? 'border-r-primary pointer-events-none rounded-none border-r-2 border-solid'
-                                                : '',
-                                        ]"
+                                        :class="[activeItemStyles(item.href)]"
                                     >
                                         <component v-if="item.icon" :is="item.icon" class="h-5 w-5" />
                                         {{ item.title }}
+
+                                        <div v-if="isActiveGroup(item.group!)" class="bg-primary ml-auto w-0.5 self-stretch"></div>
                                     </Link>
                                 </nav>
                             </div>
@@ -98,7 +94,7 @@ const mainNavItems: NavItem[] = getAdminNavigationElements();
                                         {{ item.title }}
                                     </NavigationMenuLink>
                                 </Link>
-                                <div v-if="isCurrentRoute(item.href)" class="bg-primary absolute bottom-0 left-0 h-0.5 w-full translate-y-px"></div>
+                                <div v-if="isActiveGroup(item.group!)" class="bg-primary absolute bottom-0 left-0 h-0.5 w-full translate-y-px"></div>
                             </NavigationMenuItem>
                         </NavigationMenuList>
                     </NavigationMenu>
@@ -125,12 +121,6 @@ const mainNavItems: NavItem[] = getAdminNavigationElements();
                         </DropdownMenuContent>
                     </DropdownMenu>
                 </div>
-            </div>
-        </div>
-
-        <div v-if="props.breadcrumbs.length > 1" class="border-sidebar-border/70 flex w-full border-b">
-            <div class="mx-auto flex h-12 w-full items-center justify-start px-4 text-neutral-500 md:max-w-7xl">
-                <Breadcrumbs :breadcrumbs="breadcrumbs" />
             </div>
         </div>
     </div>

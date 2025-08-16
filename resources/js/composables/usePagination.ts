@@ -1,6 +1,6 @@
 import { Pagination } from '@/types';
 
-export function getPaginationData(pagination: Pagination): object {
+export function getPaginationData(pagination: Pagination): Pagination {
     return {
         meta: {
             current_page: pagination.meta.current_page,

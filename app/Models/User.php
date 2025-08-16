@@ -6,6 +6,7 @@ namespace App\Models;
 
 use App\Enum\GameCollectionType;
 use App\Enum\UserRole;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -161,5 +162,15 @@ class User extends Authenticatable
 				UserRole::DEVELOPER->value
 			]
 		);
+	}
+
+	public function scopeThisMonth(Builder $query)
+	{
+		return $query->where('created_at', '>=', now()->startOfMonth());
+	}
+
+	public function scopeLastMonth(Builder $query)
+	{
+		return $query->whereBetween('created_at', [now()->startOfMonth()->subMonth(), now()->startOfMonth()]);
 	}
 }

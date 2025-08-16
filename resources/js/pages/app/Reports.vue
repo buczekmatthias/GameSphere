@@ -39,7 +39,7 @@ defineProps<{
                         <TableCell>{{ report.slug }}</TableCell>
                         <TableCell>{{ report.reason }}</TableCell>
                         <TableCell>
-                            <TextLink :href="report.reportable as string">Show {{ report.reportable_type }}</TextLink>
+                            <TextLink :href="report.reportable">Show {{ report.reportable_type }}</TextLink>
                         </TableCell>
                         <TableCell class="capitalize">{{ report.status }}</TableCell>
                         <TableCell>{{ report.created_at }}</TableCell>

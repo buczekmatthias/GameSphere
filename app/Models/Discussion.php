@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -41,5 +42,15 @@ class Discussion extends Model
 	public function reports(): MorphMany
 	{
 		return $this->morphMany(Report::class, 'reportable');
+	}
+
+	public function scopeThisMonth(Builder $query)
+	{
+		return $query->where('created_at', '>=', now()->startOfMonth());
+	}
+
+	public function scopeLastMonth(Builder $query)
+	{
+		return $query->whereBetween('created_at', [now()->startOfMonth()->subMonth(), now()->startOfMonth()]);
 	}
 }

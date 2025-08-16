@@ -87,36 +87,43 @@ export function getAdminNavigationElements(): NavItem[] {
             title: 'Games',
             href: '',
             icon: Gamepad2,
+            group: 'admin.games',
         },
         {
             title: 'Reviews',
             href: '',
             icon: Star,
+            group: 'admin.reviews',
         },
         {
             title: 'Discussions',
             href: '',
             icon: Rss,
+            group: 'admin.discussions',
         },
         {
             title: 'Comments',
             href: '',
             icon: MessageCircle,
+            group: 'admin.comments',
         },
         {
             title: 'Genres',
             href: '',
             icon: Blocks,
+            group: 'admin.genres',
         },
         {
             title: 'Users',
             href: '',
             icon: UserIcon,
+            group: 'admin.users',
         },
         {
             title: 'Reports',
-            href: '',
+            href: route('admin.reports.index'),
             icon: MessageCircleWarning,
+            group: 'admin.reports',
         },
     ];
 }
