@@ -85,7 +85,7 @@ export function getAdminNavigationElements(): NavItem[] {
         },
         {
             title: 'Games',
-            href: '',
+            href: route('admin.games.index'),
             icon: Gamepad2,
             group: 'admin.games',
         },

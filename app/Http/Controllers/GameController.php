@@ -92,7 +92,7 @@ class GameController extends Controller
 	/**
 	 * Display the specified resource.
 	 */
-	public function show(Game $game, Request $request): Response
+	public function show(Game $game): Response
 	{
 		$game->load(['genre', 'creator']);
 

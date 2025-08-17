@@ -74,8 +74,10 @@ export interface Game {
     title: string;
     shortTitle: string;
     description: string;
+    short_description: string;
     thumbnail: string;
     media: Media[];
+    media_count: number;
     creator: User;
     genre: Genre;
     released_at: string;

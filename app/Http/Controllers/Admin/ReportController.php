@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Report\UpdateReportStatusRequest;
 use App\Http\Resources\Report\UserReportsTableResource;
 use App\Models\Report;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class ReportController extends Controller
@@ -13,10 +14,14 @@ class ReportController extends Controller
 	/**
 	 * Display a listing of the resource.
 	 */
-	public function index()
+	public function index(Request $request)
 	{
 		return Inertia::render('admin/report/Index', [
-			'reports' => UserReportsTableResource::collection(Report::with(['reportable'])->orderBy('created_at', 'DESC')->paginate(50))
+			'reports' => UserReportsTableResource::collection(
+				Report::with(['reportable'])
+					->orderBy($request->get('column', 'created_at'), $request->get('order', 'asc'))
+					->paginate(50)
+			)
 		]);
 	}
 
