@@ -71,7 +71,7 @@ const avgRating = computed(() =>
                 </div>
             </div>
             <div class="text-destructive flex gap-4 text-sm [&>*]:cursor-pointer">
-                <Link as="button" :href="route('reviews.destroy', { review: review.slug, to_homepage: true })" method="delete">Delete review</Link>
+                <Link as="button" :href="route('reviews.destroy', { review: review.slug, to_route: 'home' })" method="delete">Delete review</Link>
                 <ReportModal :contentId="review.slug" contentType="review" />
             </div>
         </div>

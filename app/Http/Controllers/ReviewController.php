@@ -47,8 +47,8 @@ class ReviewController extends Controller
 		$review->reports()->delete();
 		$review->delete();
 
-		if ($request->get('to_homepage')) {
-			return to_route('home', 303);
+		if ($request->get('to_route')) {
+			return to_route($request->get('to_route'), 303);
 		}
 
 		return back(303);

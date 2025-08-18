@@ -16,24 +16,24 @@ class ReportController extends Controller
 	 */
 	public function index(Request $request)
 	{
-		return Inertia::render('admin/report/Index', [
-			'reports' => UserReportsTableResource::collection(
-				Report::with(['reportable'])
-					->orderBy($request->get('column', 'created_at'), $request->get('order', 'asc'))
-					->paginate(50)
-			)
-		]);
-	}
+		$entries = Report::with(['reportable', 'user']);
+		$column = strtolower($request->get('column', 'content'));
+		$order = strtolower($request->get('order', 'desc'));
 
-	/**
-	 * Display the specified resource.
-	 */
-	public function show(Report $report)
-	{
-		$report->load(['reportable', 'user']);
+		if (!in_array($order, ['asc', 'desc'])) {
+			$order = 'desc';
+		}
+		if (!in_array($column, ['reason', 'user', 'status', 'created_at'])) {
+			$column = 'created_at';
+		}
 
-		return Inertia::render('admin/report/Show', [
-			'report' => UserReportsTableResource::make($report)
+		match ($column) {
+			'user' => $entries->join('users', 'users.id', '=', 'reports.user_id')->orderBy('users.name', $order),
+			default => $entries->orderBy($column, $order),
+		};
+
+		return Inertia::render('admin/Report', [
+			'reports' => UserReportsTableResource::collection($entries->paginate(50))
 		]);
 	}
 

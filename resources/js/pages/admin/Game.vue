@@ -19,7 +19,7 @@ import type { Game, Pagination as PaginationType } from '@/types';
 import { Head, Link } from '@inertiajs/vue3';
 import { Ellipsis, Eye, Pen, Trash } from 'lucide-vue-next';
 
-const props = defineProps<{
+defineProps<{
     games: PaginationType & { data: Game[] };
 }>();
 
@@ -99,7 +99,7 @@ const tableHeaders = [
                 </TableRow>
             </Table>
 
-            <Pagination :pagination="getPaginationData(props.games)" :reload-only="['games']" />
+            <Pagination :pagination="getPaginationData(games)" :reload-only="['games']" />
         </div>
     </AdminLayout>
 </template>

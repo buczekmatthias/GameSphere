@@ -91,7 +91,7 @@ export function getAdminNavigationElements(): NavItem[] {
         },
         {
             title: 'Reviews',
-            href: '',
+            href: route('admin.reviews.index'),
             icon: Star,
             group: 'admin.reviews',
         },
