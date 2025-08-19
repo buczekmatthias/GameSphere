@@ -2,11 +2,21 @@
 import Trend from '@/components/Admin/Trend.vue';
 import Pagination from '@/components/Pagination.vue';
 import TextLink from '@/components/TextLink.vue';
+import { Button } from '@/components/ui/button';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { getPaginationData } from '@/composables/usePagination';
 import AdminLayout from '@/layouts/AdminLayout.vue';
 import type { Pagination as PaginationType, Report } from '@/types';
-import { Head } from '@inertiajs/vue3';
+import { Head, Link } from '@inertiajs/vue3';
+import { Ban, CircleX, Ellipsis } from 'lucide-vue-next';
 
 interface Entries {
     games: { this_month: number; last_month: number };
@@ -48,6 +58,8 @@ defineProps<{
                                 <TableRow>
                                     <TableHead class="w-80">Slug</TableHead>
                                     <TableHead>Reason</TableHead>
+                                    <TableHead>User</TableHead>
+                                    <TableHead>Entry</TableHead>
                                     <TableHead class="w-32">Created at</TableHead>
                                     <TableHead class="w-16"></TableHead>
                                 </TableRow>
@@ -56,9 +68,47 @@ defineProps<{
                                 <TableRow v-for="report in active_reports.data" :key="report.slug">
                                     <TableCell>{{ report.slug }}</TableCell>
                                     <TableCell>{{ report.reason }}</TableCell>
+                                    <TableCell>
+                                        <TextLink :href="route('user.profile', { user: report.user.username })">{{ report.user.name }}</TextLink>
+                                    </TableCell>
+                                    <TableCell>
+                                        <TextLink :href="report.reportable">Show {{ report.reportable_type }}</TextLink>
+                                    </TableCell>
                                     <TableCell>{{ report.created_at }}</TableCell>
                                     <TableCell>
-                                        <TextLink :href="route('admin.reports.show', { report: report.slug })">View report</TextLink>
+                                        <DropdownMenu>
+                                            <DropdownMenuTrigger as-child>
+                                                <Button variant="outline">
+                                                    <Ellipsis class="size-4" />
+                                                </Button>
+                                            </DropdownMenuTrigger>
+                                            <DropdownMenuContent class="w-56">
+                                                <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                                                <DropdownMenuSeparator />
+                                                <DropdownMenuItem as-child>
+                                                    <Link
+                                                        :href="route('admin.reports.update', { report: report.slug, status: 'closed' })"
+                                                        method="patch"
+                                                        as="button"
+                                                        class="w-full cursor-pointer"
+                                                    >
+                                                        <CircleX class="size-4" />
+                                                        Close
+                                                    </Link>
+                                                </DropdownMenuItem>
+                                                <DropdownMenuItem as-child>
+                                                    <Link
+                                                        :href="route('admin.reports.update', { report: report.slug, status: 'rejected' })"
+                                                        method="patch"
+                                                        as="button"
+                                                        class="w-full cursor-pointer"
+                                                    >
+                                                        <Ban class="size-4" />
+                                                        Reject
+                                                    </Link>
+                                                </DropdownMenuItem>
+                                            </DropdownMenuContent>
+                                        </DropdownMenu>
                                     </TableCell>
                                 </TableRow>
                             </TableBody>

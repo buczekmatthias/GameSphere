@@ -30,6 +30,8 @@ const tableHeaders = [
     { label: 'Status', is_sortable: true, column: 'status' },
     { label: 'Created at', is_sortable: true, column: 'created_at' },
 ];
+
+const reloadOnly: string[] = ['reports'];
 </script>
 
 <template>
@@ -37,7 +39,7 @@ const tableHeaders = [
 
     <AdminLayout>
         <div class="main-container flex flex-col gap-4">
-            <Table :reload-only="['reports']" :headers="tableHeaders">
+            <Table :reload-only="reloadOnly" :headers="tableHeaders">
                 <TableRow v-for="report in reports.data" :key="report.slug">
                     <TableCell>{{ report.slug }}</TableCell>
                     <TableCell>{{ report.reason }}</TableCell>
@@ -113,7 +115,7 @@ const tableHeaders = [
                 </TableRow>
             </Table>
 
-            <Pagination :pagination="getPaginationData(reports)" :reload-only="['reports']" />
+            <Pagination :pagination="getPaginationData(reports)" :reload-only="reloadOnly" />
         </div>
     </AdminLayout>
 </template>

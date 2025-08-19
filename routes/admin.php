@@ -1,9 +1,11 @@
 <?php
 
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\DiscussionController;
 use App\Http\Controllers\Admin\GameController;
 use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\ReviewController;
+use App\Http\Controllers\Admin\UserController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () {
@@ -14,4 +16,10 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
 	Route::get('/games', GameController::class)->name('games.index');
 
 	Route::resource('reviews', ReviewController::class)->only(['index', 'show']);
+
+	Route::get('/users', [UserController::class, 'index'])->name('users.index');
+	Route::patch('/users/{user}/role', [UserController::class, 'updateRole'])->name('users.role');
+	Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
+
+	Route::get('/discussions', DiscussionController::class)->name('discussion.index');
 });

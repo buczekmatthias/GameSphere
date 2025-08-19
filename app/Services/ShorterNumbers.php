@@ -12,6 +12,6 @@ final class ShorterNumbers
 			return $number;
 		}
 
-		return Number::forHumans($number, 1, abbreviate: true);
+		return Number::forHumans($number, 1, 2, abbreviate: true);
 	}
 }

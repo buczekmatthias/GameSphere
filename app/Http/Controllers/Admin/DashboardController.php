@@ -41,7 +41,7 @@ class DashboardController extends Controller
 					'trend' => $this->getTrend($discussion_this, $discussion_last)
 				],
 			],
-			'active_reports' => UserReportsTableResource::collection(Report::activeReports()->orderBy('created_at', 'DESC')->paginate(15))
+			'active_reports' => UserReportsTableResource::collection(Report::activeReports()->with(['reportable', 'user'])->orderBy('created_at', 'DESC')->paginate(15))
 		]);
 	}
 
@@ -58,6 +58,6 @@ class DashboardController extends Controller
 		$diff = $current - $last;
 		$trend = ($diff / $last) * 100;
 
-		return $trend;
+		return number_format($trend, 2, ".", "");
 	}
 }

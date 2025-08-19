@@ -24,6 +24,8 @@ defineProps<{
     review: Review;
     reports: PaginationType & { data: Report[] };
 }>();
+
+const reloadOnly: string[] = ['reports'];
 </script>
 
 <template>
@@ -148,7 +150,7 @@ defineProps<{
                     </TableBody>
                 </Table>
 
-                <Pagination :pagination="getPaginationData(reports)" :reload-only="['reports']" />
+                <Pagination :pagination="getPaginationData(reports)" :reload-only="reloadOnly" />
             </template>
             <template v-else>
                 <p>No reports to display</p>

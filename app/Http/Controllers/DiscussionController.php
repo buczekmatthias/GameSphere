@@ -9,6 +9,7 @@ use App\Http\Resources\Discussion\ShowDiscussionResource;
 use App\Models\Discussion;
 use App\Models\Game;
 use App\Models\Genre;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -74,7 +75,7 @@ class DiscussionController extends Controller
 	/**
 	 * Remove the specified resource from storage.
 	 */
-	public function destroy(Discussion $discussion)
+	public function destroy(Discussion $discussion, Request $request)
 	{
 		foreach ($discussion->comments as $comment) {
 			foreach ($comment->media as $file) {
@@ -88,6 +89,10 @@ class DiscussionController extends Controller
 
 		$discussion->delete();
 
-		return to_route('discussions.index');
+		if ($request->get('return_back')) {
+			return back(303);
+		}
+
+		return to_route('discussions.index', status: 303);
 	}
 }

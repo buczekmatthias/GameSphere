@@ -78,7 +78,7 @@ class User extends Authenticatable
 
 	public function genres(): BelongsToMany
 	{
-		return $this->belongsToMany(Genre::class);
+		return $this->belongsToMany(Genre::class, 'game_user');
 	}
 
 	public function createdReports(): HasMany
@@ -89,6 +89,11 @@ class User extends Authenticatable
 	public function reports(): MorphMany
 	{
 		return $this->morphMany(Report::class, 'reportable');
+	}
+
+	public function createdGames(): HasMany
+	{
+		return $this->hasMany(Game::class);
 	}
 
 	public function games(): BelongsToMany

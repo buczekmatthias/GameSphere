@@ -97,7 +97,7 @@ export function getAdminNavigationElements(): NavItem[] {
         },
         {
             title: 'Discussions',
-            href: '',
+            href: route('admin.discussion.index'),
             icon: Rss,
             group: 'admin.discussions',
         },
@@ -115,7 +115,7 @@ export function getAdminNavigationElements(): NavItem[] {
         },
         {
             title: 'Users',
-            href: '',
+            href: route('admin.users.index'),
             icon: UserIcon,
             group: 'admin.users',
         },

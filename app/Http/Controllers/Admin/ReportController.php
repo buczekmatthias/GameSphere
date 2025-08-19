@@ -46,8 +46,6 @@ class ReportController extends Controller
 			'status' => $request->validated()['status']
 		]);
 
-		$report->save();
-
 		return back(303);
 	}
 

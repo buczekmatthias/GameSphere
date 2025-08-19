@@ -15,6 +15,10 @@ class ListDiscussionResource extends JsonResource
 	 */
 	public function toArray(Request $request): array
 	{
+		if ($this->whenLoaded('reportable')) {
+			$s = MorphTypeToLowerString::getTransformedString($this->discussable_type);
+		}
+
 		return [
 			'slug' => $this->slug,
 			'title' => $this->title,
@@ -24,15 +28,16 @@ class ListDiscussionResource extends JsonResource
 			),
 			'discussable' => $this->whenLoaded(
 				'discussable',
-				fn () => str_contains($this->discussable_type, 'Game')
-					? new GameResource($this->discussable)
-					: new GenreResource($this->discussable)
+				fn () => $s === 'game'
+					? route('games.show', ['game' => $this->discussable->slug])
+					: route('genres.show', ['genre' => $this->discussable->slug])
 			),
 			'discussable_type' => $this->whenLoaded(
 				'discussable',
-				fn () => MorphTypeToLowerString::getTransformedString($this->discussable_type)
+				fn () => $s
 			),
 			'comments_count' => $this->whenCounted('comments'),
+			'reports_count' => $this->whenCounted('reports'),
 			'created_at' => $this->created_at->format('Y-m-d')
 		];
 	}
