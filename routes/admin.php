@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\CommentController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\DiscussionController;
 use App\Http\Controllers\Admin\GameController;
@@ -21,5 +22,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
 	Route::patch('/users/{user}/role', [UserController::class, 'updateRole'])->name('users.role');
 	Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
 
-	Route::get('/discussions', DiscussionController::class)->name('discussion.index');
+	Route::get('/discussions', DiscussionController::class)->name('discussions.index');
+
+	Route::get('/comments', CommentController::class)->name('comments.index');
 });

@@ -97,13 +97,13 @@ export function getAdminNavigationElements(): NavItem[] {
         },
         {
             title: 'Discussions',
-            href: route('admin.discussion.index'),
+            href: route('admin.discussions.index'),
             icon: Rss,
             group: 'admin.discussions',
         },
         {
             title: 'Comments',
-            href: '',
+            href: route('admin.comments.index'),
             icon: MessageCircle,
             group: 'admin.comments',
         },

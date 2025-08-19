@@ -1,0 +1,40 @@
+<?php
+
+namespace App\Http\Controllers\Admin;
+
+use App\Http\Controllers\Controller;
+use App\Http\Resources\Admin\Comment\CommentListResource;
+use App\Models\Comment;
+use Illuminate\Http\Request;
+use Inertia\Inertia;
+
+class CommentController extends Controller
+{
+	/**
+	 * Handle the incoming request.
+	 */
+	public function __invoke(Request $request)
+	{
+		$entries = Comment::with(['user', 'discussion'])->withCount(['reports']);
+		$column = strtolower($request->get('column', 'content'));
+		$order = strtolower($request->get('order', 'asc'));
+
+		if (!in_array($order, ['asc', 'desc'])) {
+			$order = 'asc';
+		}
+		if (!in_array($column, ['content', 'discussion', 'user', 'reports', 'created_at'])) {
+			$column = 'content';
+		}
+
+		match ($column) {
+			'content', 'created_at' => $entries->orderBy($column, $order),
+			'discussion' => $entries->join('discussions', 'discussions.id', '=', 'comments.discussion_id')->orderBy('discussions.title', $order),
+			'user' => $entries->join('users', 'users.id', '=', 'comments.user_id')->orderBy('users.name', $order),
+			'reports' => $entries->orderBy("reports_count", $order),
+		};
+
+		return Inertia::render('admin/Comment', [
+			'comments' => CommentListResource::collection($entries->paginate(50)),
+		]);
+	}
+}
