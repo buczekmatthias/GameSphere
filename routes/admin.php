@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\CommentController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\DiscussionController;
 use App\Http\Controllers\Admin\GameController;
+use App\Http\Controllers\Admin\GenreController;
 use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\ReviewController;
 use App\Http\Controllers\Admin\UserController;
@@ -25,4 +26,6 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
 	Route::get('/discussions', DiscussionController::class)->name('discussions.index');
 
 	Route::get('/comments', CommentController::class)->name('comments.index');
+
+	Route::resource('genres', GenreController::class)->except(['show', 'create']);
 });

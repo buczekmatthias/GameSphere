@@ -109,7 +109,7 @@ export function getAdminNavigationElements(): NavItem[] {
         },
         {
             title: 'Genres',
-            href: '',
+            href: route('admin.genres.index'),
             icon: Blocks,
             group: 'admin.genres',
         },
