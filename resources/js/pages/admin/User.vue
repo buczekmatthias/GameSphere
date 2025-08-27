@@ -12,6 +12,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { TableCell, TableRow } from '@/components/ui/table';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import UserRole from '@/components/UserRole.vue';
 import { getPaginationData } from '@/composables/usePagination';
 import AdminLayout from '@/layouts/AdminLayout.vue';
 import type { Pagination as PaginationType, User } from '@/types';
@@ -35,8 +36,6 @@ const tableHeaders = [
 ];
 
 const reloadOnly: string[] = ['users'];
-
-const formatRole = computed(() => (role: string) => role.replaceAll('_', ' '));
 
 const getRoleIndex = computed(() => (currentRole: string) => props.roles.indexOf(currentRole));
 
@@ -67,7 +66,9 @@ const getRolesBelow = computed(() => (currentRole: string) => {
                 <TableRow v-for="user in users.data" :key="user.username">
                     <TableCell>{{ user.name }}</TableCell>
                     <TableCell>{{ user.username }}</TableCell>
-                    <TableCell class="capitalize">{{ formatRole(user.role) }}</TableCell>
+                    <TableCell>
+                        <UserRole :role="user.role" class="text-center" />
+                    </TableCell>
                     <TableCell>{{ user.email }}</TableCell>
                     <TableCell class="[&>*]:mx-auto">
                         <TooltipProvider v-if="user.email_verified_at">
@@ -122,7 +123,7 @@ const getRolesBelow = computed(() => (currentRole: string) => {
                                         class="w-full cursor-pointer"
                                     >
                                         <ChevronUp class="size-4" />
-                                        Promote to {{ formatRole(role) }}
+                                        Promote to {{ role.replaceAll('_', ' ') }}
                                     </Link>
                                 </DropdownMenuItem>
                                 <DropdownMenuSeparator v-if="getRolesBelow(user.role).length > 0" />
@@ -134,7 +135,7 @@ const getRolesBelow = computed(() => (currentRole: string) => {
                                         class="w-full cursor-pointer"
                                     >
                                         <ChevronDown class="size-4" />
-                                        Demote to {{ formatRole(role) }}
+                                        Demote to {{ role.replaceAll('_', ' ') }}
                                     </Link>
                                 </DropdownMenuItem>
                                 <!-- END TODO -->

@@ -78,7 +78,7 @@ class User extends Authenticatable
 
 	public function genres(): BelongsToMany
 	{
-		return $this->belongsToMany(Genre::class, 'game_user');
+		return $this->belongsToMany(Genre::class, 'genre_user');
 	}
 
 	public function createdReports(): HasMany

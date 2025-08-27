@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import ReportModal from '@/components/ReportModal.vue';
+import TextLink from '@/components/TextLink.vue';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Card } from '@/components/ui/card';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
@@ -9,9 +10,15 @@ import { Link } from '@inertiajs/vue3';
 import { MailCheck, Star } from 'lucide-vue-next';
 import { capitalize, computed } from 'vue';
 
-const props = defineProps<{
-    review: Review;
-}>();
+const props = withDefaults(
+    defineProps<{
+        review: Review;
+        withLink?: boolean;
+    }>(),
+    {
+        withLink: false,
+    },
+);
 
 const avgRating = computed(() =>
     (Object.values(props.review.ratings).reduce((a, b) => a + b, 0) / Object.keys(props.review.ratings).length).toFixed(1),
@@ -21,19 +28,29 @@ const avgRating = computed(() =>
 <template>
     <Card>
         <div class="flex items-center gap-3">
-            <UserInfo :show-username="true" :user="review.user" />
-            <p v-if="review.user.role !== 'user'" class="text-sm">{{ capitalize(review.user.role) }}</p>
-            <template v-if="review.user.is_email_verified">
-                <TooltipProvider>
-                    <Tooltip>
-                        <TooltipTrigger as-child>
-                            <MailCheck />
-                        </TooltipTrigger>
-                        <TooltipContent side="left">
-                            <p>Verified user</p>
-                        </TooltipContent>
-                    </Tooltip>
-                </TooltipProvider>
+            <TextLink
+                v-if="withLink && review.game"
+                as="button"
+                :href="route('games.show', { game: review.game.slug })"
+                class="flex items-center gap-2 self-start"
+            >
+                Show game
+            </TextLink>
+            <template v-if="review.user">
+                <UserInfo :show-username="true" :user="review.user" />
+                <p v-if="review.user.role !== 'user'" class="text-sm">{{ capitalize(review.user.role) }}</p>
+                <template v-if="review.user.is_email_verified">
+                    <TooltipProvider>
+                        <Tooltip>
+                            <TooltipTrigger as-child>
+                                <MailCheck />
+                            </TooltipTrigger>
+                            <TooltipContent side="left">
+                                <p>Verified user</p>
+                            </TooltipContent>
+                        </Tooltip>
+                    </TooltipProvider>
+                </template>
             </template>
         </div>
         <p class="text-sm text-slate-300">{{ review.created_at }}</p>

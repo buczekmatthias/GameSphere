@@ -5,16 +5,22 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ReportableType, SharedData } from '@/types';
 import { useForm, usePage } from '@inertiajs/vue3';
-import { LoaderCircle } from 'lucide-vue-next';
+import { AlertTriangle, LoaderCircle } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
 
 const reportReasons = computed((): Record<number, string> => usePage<SharedData>().props.report_reasons);
 
-const props = defineProps<{
-    contentId: string;
-    contentType: ReportableType;
-    triggerClass?: string;
-}>();
+const props = withDefaults(
+    defineProps<{
+        contentId: string;
+        contentType: ReportableType;
+        triggerClass?: string;
+        showIcon?: boolean;
+    }>(),
+    {
+        showIcon: false,
+    },
+);
 
 const reportForm = useForm({
     reason: '',
@@ -38,7 +44,10 @@ const isOpen = ref<boolean>(false);
 
 <template>
     <Dialog :open="isOpen" @update:open="isOpen = $event">
-        <DialogTrigger :class="triggerClass"> Report </DialogTrigger>
+        <DialogTrigger :class="triggerClass">
+            <AlertTriangle class="mt-0.5 size-4" v-if="showIcon" />
+            Reports
+        </DialogTrigger>
         <DialogContent>
             <DialogHeader>
                 <DialogTitle>Report content</DialogTitle>

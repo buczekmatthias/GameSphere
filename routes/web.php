@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', HomepageController::class)->name('home');
 
-Route::get('/u/{user:username}', UserProfileController::class)->name('user.profile');
+Route::get('/u/{user:username}/{tab?}', UserProfileController::class)->name('user.profile');
 Route::get('/my-reports', UserReportsController::class)->name('user.reports');
 
 Route::post('/reports', StoreReportController::class)->name('reports.store');

@@ -16,7 +16,7 @@ defineProps<{
                 <Calendar class="h-5" />
                 <p class="text-sm">{{ discussion.created_at }}</p>
             </div>
-            <div class="flex gap-0.5">
+            <div class="flex gap-0.5" v-if="discussion.author">
                 <User class="h-5" />
                 <TextLink class="text-sm" :href="route('user.profile', { user: discussion.author.username })">{{ discussion.author.name }}</TextLink>
             </div>

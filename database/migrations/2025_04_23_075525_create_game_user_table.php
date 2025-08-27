@@ -14,7 +14,6 @@ return new class extends Migration {
 			$table->foreignId('game_id')->constrained();
 			$table->foreignId('user_id')->constrained();
 			$table->string('list_type');
-			$table->timestamps();
 		});
 	}
 
