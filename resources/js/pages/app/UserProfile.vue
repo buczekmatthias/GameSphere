@@ -6,7 +6,7 @@ import UserProfileTab from '@/components/UserProfileTab.vue';
 import UserRole from '@/components/UserRole.vue';
 import { useInitials } from '@/composables/useInitials';
 import AppLayout from '@/layouts/AppLayout.vue';
-import type { BreadcrumbItem, Discussion, Game, Genre, Pagination as PaginationType, Review, User } from '@/types';
+import type { BreadcrumbItem, Discussion, DiscussionComment, Game, Genre, Pagination as PaginationType, Review, User } from '@/types';
 import { Head, Link, router } from '@inertiajs/vue3';
 import { Settings } from 'lucide-vue-next';
 import { capitalize, computed } from 'vue';
@@ -17,7 +17,7 @@ interface UserProfile extends User {
     genres: PaginationType & { data: Genre[] };
     reviews: PaginationType & { data: Review[] };
     discussions: PaginationType & { data: Discussion[] };
-    comments: PaginationType & { data: Comment[] };
+    comments: PaginationType & { data: DiscussionComment[] };
 }
 
 const props = defineProps<{
@@ -72,7 +72,7 @@ router.on('finish', () => {
         <div class="main-container flex flex-col gap-4">
             <div class="flex flex-col gap-3">
                 <Avatar class="h-72 w-72 overflow-hidden rounded-lg">
-                    <AvatarImage v-if="showAvatar" :src="user.avatar!" :alt="user.name" />
+                    <AvatarImage v-if="showAvatar" :src="user.avatar!" :alt="user.name" class="bg-gray-900 object-contain" />
                     <AvatarFallback class="rounded-lg text-4xl text-black dark:text-white">
                         {{ getInitials(user.name) }}
                     </AvatarFallback>

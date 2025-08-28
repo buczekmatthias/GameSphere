@@ -9,8 +9,10 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
+use Illuminate\Support\Str;
 
 class ProfileController extends Controller
 {
@@ -60,5 +62,38 @@ class ProfileController extends Controller
 		$request->session()->regenerateToken();
 
 		return redirect('/');
+	}
+
+	public function updateProfilePicture(Request $request): RedirectResponse
+	{
+		$pfp = $request->validate([
+			'pfp' => ['image', 'nullable'],
+		])['pfp'] ?? null;
+
+		$user = $request->user();
+
+		if ($request->get('delete_pfp')) {
+			Storage::delete("users/{$user->avatar}");
+
+			$user->avatar = null;
+
+			$user->save();
+		} elseif ($pfp) {
+			$pfpName = Str::uuid()."_".now()->timestamp.".".$pfp->extension();
+
+			Storage::delete("users/{$user->avatar}");
+
+			Storage::putFileAs(
+				"users",
+				$pfp,
+				$pfpName
+			);
+
+			$user->avatar = $pfpName;
+
+			$user->save();
+		}
+
+		return to_route('settings.profile.edit');
 	}
 }

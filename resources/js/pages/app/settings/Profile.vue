@@ -10,6 +10,7 @@ import { Label } from '@/components/ui/label';
 import AppLayout from '@/layouts/AppLayout.vue';
 import SettingsLayout from '@/layouts/settings/Layout.vue';
 import { type BreadcrumbItem, type SharedData, type User } from '@/types';
+import { computed, ref } from 'vue';
 
 interface Props {
     mustVerifyEmail: boolean;
@@ -30,16 +31,34 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 const page = usePage<SharedData>();
-const user = page.props.auth.user as User;
+const user = computed(() => page.props.auth.user as User);
 
-const form = useForm({
-    name: user.name,
-    email: user.email,
+const updateProfileForm = useForm({
+    name: user.value.name,
+    email: user.value.email,
 });
 
-const submit = () => {
-    form.patch(route('settings.profile.update'), {
+const submitProfileUpdateForm = () => {
+    updateProfileForm.patch(route('settings.profile.update'), {
         preserveScroll: true,
+    });
+};
+
+const pfpInput = ref<InstanceType<typeof Input> | null>(null);
+
+const updateProfilePictureForm = useForm({
+    pfp: null,
+});
+
+const submitProfilePictureUpdateForm = () => {
+    updateProfilePictureForm.post(route('settings.profile.update.picture'), {
+        preserveScroll: true,
+        onSuccess: () => {
+            updateProfilePictureForm.reset();
+            if (pfpInput.value?.input) {
+                pfpInput.value.input.value = '';
+            }
+        },
     });
 };
 </script>
@@ -52,11 +71,18 @@ const submit = () => {
             <div class="flex flex-col space-y-6">
                 <HeadingSmall title="Profile information" description="Update your name and email address" />
 
-                <form @submit.prevent="submit" class="space-y-6">
+                <form @submit.prevent="submitProfileUpdateForm" class="space-y-6">
                     <div class="grid gap-2">
                         <Label for="name">Name</Label>
-                        <Input id="name" class="mt-1 block w-full" v-model="form.name" required autocomplete="name" placeholder="Full name" />
-                        <InputError class="mt-2" :message="form.errors.name" />
+                        <Input
+                            id="name"
+                            class="mt-1 block w-full"
+                            v-model="updateProfileForm.name"
+                            required
+                            autocomplete="name"
+                            placeholder="Full name"
+                        />
+                        <InputError class="mt-2" :message="updateProfileForm.errors.name" />
                     </div>
 
                     <div class="grid gap-2">
@@ -65,12 +91,12 @@ const submit = () => {
                             id="email"
                             type="email"
                             class="mt-1 block w-full"
-                            v-model="form.email"
+                            v-model="updateProfileForm.email"
                             required
                             autocomplete="username"
                             placeholder="Email address"
                         />
-                        <InputError class="mt-2" :message="form.errors.email" />
+                        <InputError class="mt-2" :message="updateProfileForm.errors.email" />
                     </div>
 
                     <div v-if="mustVerifyEmail && !user.email_verified_at">
@@ -92,7 +118,7 @@ const submit = () => {
                     </div>
 
                     <div class="flex items-center gap-4">
-                        <Button :disabled="form.processing">Save</Button>
+                        <Button :disabled="updateProfileForm.processing">Save</Button>
 
                         <Transition
                             enter-active-class="transition ease-in-out"
@@ -100,7 +126,54 @@ const submit = () => {
                             leave-active-class="transition ease-in-out"
                             leave-to-class="opacity-0"
                         >
-                            <p v-show="form.recentlySuccessful" class="text-sm text-neutral-600">Saved.</p>
+                            <p v-show="updateProfileForm.recentlySuccessful" class="text-sm text-neutral-600">Saved.</p>
+                        </Transition>
+                    </div>
+                </form>
+            </div>
+
+            <div class="flex flex-col space-y-6">
+                <HeadingSmall title="Profile picture" description="Update or remove your profile picture" />
+
+                <form @submit.prevent="submitProfilePictureUpdateForm" class="gap-4">
+                    <div class="form-box">
+                        <Label for="profile_picture">Profile picture</Label>
+                        <Input
+                            class="cursor-pointer"
+                            id="profile_picture"
+                            type="file"
+                            ref="pfpInput"
+                            required
+                            @change="updateProfilePictureForm.pfp = $event.target.files[0]"
+                            accept="image/jpeg,image/png,image/webp"
+                        />
+                        <InputError :message="updateProfilePictureForm.errors.pfp" />
+                    </div>
+                    <Link
+                        :href="
+                            route('settings.profile.update.picture', {
+                                delete_pfp: true,
+                            })
+                        "
+                        preserve-scroll
+                        method="post"
+                        as="button"
+                        class="text-sm text-red-700 dark:text-red-500"
+                        v-if="user.avatar"
+                    >
+                        Delete profile picture
+                    </Link>
+
+                    <div class="mt-3 flex items-center gap-4">
+                        <Button :disabled="updateProfilePictureForm.processing">Update</Button>
+
+                        <Transition
+                            enter-active-class="transition ease-in-out"
+                            enter-from-class="opacity-0"
+                            leave-active-class="transition ease-in-out"
+                            leave-to-class="opacity-0"
+                        >
+                            <p v-show="updateProfilePictureForm.recentlySuccessful" class="text-sm text-neutral-600">Updated.</p>
                         </Transition>
                     </div>
                 </form>

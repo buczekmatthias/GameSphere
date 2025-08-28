@@ -32,7 +32,7 @@ class EditRequest extends FormRequest
 		return [
 			'title' => ['string', 'required'],
 			'description' => ['string', 'required', 'min:50'],
-			'thumbnail' => ['image', 'nullable'],
+			'thumbnail' => ['image'],
 			'media' => ['array', 'max:'.$availableMediaSlots],
 			'media.*' => ['file', 'required', 'mimes:jpg,png,webp,mp4', 'max:20000'],
 			'released_at' => ['date', 'nullable'],
