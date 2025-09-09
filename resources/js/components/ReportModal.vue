@@ -16,9 +16,11 @@ const props = withDefaults(
         contentType: ReportableType;
         triggerClass?: string;
         showIcon?: boolean;
+        showText?: boolean;
     }>(),
     {
         showIcon: false,
+        showText: true,
     },
 );
 
@@ -46,7 +48,7 @@ const isOpen = ref<boolean>(false);
     <Dialog :open="isOpen" @update:open="isOpen = $event">
         <DialogTrigger :class="triggerClass">
             <AlertTriangle class="mt-0.5 size-4" v-if="showIcon" />
-            Reports
+            <span v-if="showText">Report</span>
         </DialogTrigger>
         <DialogContent>
             <DialogHeader>

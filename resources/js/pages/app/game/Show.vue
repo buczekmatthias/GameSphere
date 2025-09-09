@@ -2,29 +2,35 @@
 import Discussion from '@/components/Discussion.vue';
 import DiscussionSkeleton from '@/components/fallbacks/DiscussionSkeleton.vue';
 import ReviewSkeleton from '@/components/fallbacks/ReviewSkeleton.vue';
+import GameActionDropdown from '@/components/GameActionDropdown.vue';
 import Modal from '@/components/Modal.vue';
 import NewDiscussionForm from '@/components/NewDiscussionForm.vue';
 import NewReviewForm from '@/components/NewReviewForm.vue';
 import Pagination from '@/components/Pagination.vue';
 import Preview from '@/components/Preview.vue';
-import ReportModal from '@/components/ReportModal.vue';
 import Review from '@/components/Review.vue';
 import TextLink from '@/components/TextLink.vue';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { buttonVariants } from '@/components/ui/button';
-import Button from '@/components/ui/button/Button.vue';
+import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { isLoggedIn } from '@/composables/useIsLoggedIn';
 import { getPaginationData } from '@/composables/usePagination';
 import AppLayout from '@/layouts/AppLayout.vue';
 import type { BreadcrumbItem, Discussion as DiscussionType, Game, Pagination as PaginationType, Review as ReviewType, Ziggy } from '@/types';
-import { Head, Link, usePage, WhenVisible } from '@inertiajs/vue3';
+import { Deferred, Head, usePage, WhenVisible } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
-const props = defineProps<{
-    game: Game;
-    reviews?: PaginationType & { data: ReviewType[] };
-    discussions?: PaginationType & { data: DiscussionType[] };
-}>();
+const props = withDefaults(
+    defineProps<{
+        game: Game;
+        userLists?: { [key: string]: boolean };
+        reviews?: PaginationType & { data: ReviewType[] };
+        discussions?: PaginationType & { data: DiscussionType[] };
+    }>(),
+    {
+        userLists: () => ({}),
+    },
+);
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -49,19 +55,21 @@ const tab = computed(() => {
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="main-container flex flex-col gap-4">
-            <Button as-child>
-                <Link :href="route('games.destroy', { game: game.slug })" method="delete" as="button"> Delete game </Link>
-            </Button>
-            <Button as-child>
-                <Link :href="route('games.edit', { game: game.slug })" as="button"> Edit game </Link>
-            </Button>
-            <ReportModal :contentId="game.slug" contentType="game" :triggerClass="buttonVariants({ variant: 'destructive' })" />
-            <div class="flex gap-4 max-md:flex-col">
+            <div class="grid grid-cols-[1fr_auto] gap-4 md:grid-cols-[auto_1fr_auto]">
                 <Avatar class="h-80 w-64 overflow-hidden rounded-lg object-cover">
                     <AvatarImage :src="game.thumbnail" :alt="game.title" />
                     <AvatarFallback class="rounded-lg text-black dark:text-white" />
                 </Avatar>
-                <div class="flex flex-col gap-4">
+                <template v-if="isLoggedIn()">
+                    <Deferred data="userLists">
+                        <template #fallback>
+                            <Skeleton class="h-24 w-12 self-end" />
+                        </template>
+
+                        <GameActionDropdown :game :lists="userLists" />
+                    </Deferred>
+                </template>
+                <div class="flex flex-col gap-4 md:col-start-2 md:row-start-1">
                     <h1 class="text-3xl">{{ game.title }}</h1>
                     <p class="text-sm leading-[165%]">{{ game.description }}</p>
                     <p>

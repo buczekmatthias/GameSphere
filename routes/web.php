@@ -19,6 +19,7 @@ Route::get('/my-reports', UserReportsController::class)->name('user.reports');
 Route::post('/reports', StoreReportController::class)->name('reports.store');
 
 Route::post('/games/{game}', [GameController::class, 'update'])->name('games.update');
+Route::post('/games/{game}/toggle-list', [GameController::class, 'toggleGameOnList'])->name('games.lists.toggle');
 Route::resource('games', GameController::class)->except('update');
 
 Route::resource('reviews', ReviewController::class)->only(['show', 'store', 'destroy']);

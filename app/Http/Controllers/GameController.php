@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enum\GameCollectionType;
 use App\Http\Requests\Game\EditRequest;
 use App\Http\Requests\Game\StoreRequest;
 use App\Http\Resources\Games\DiscussionResource;
@@ -11,7 +12,9 @@ use App\Http\Resources\Games\ShowGameResource;
 use App\Http\Resources\Games\ReviewResource;
 use App\Models\Game;
 use App\Models\Genre;
+use App\Services\UserGameListsServices;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -98,6 +101,7 @@ class GameController extends Controller
 
 		return Inertia::render('app/game/Show', [
 			'game' => ShowGameResource::make($game),
+			'userLists' => Inertia::defer(fn () => UserGameListsServices::checkIfGameIsInAnyUserGamesList($game)),
 			'reviews' => Inertia::defer(fn () => ReviewResource::collection($game->reviews()->with(['user'])->orderBy('created_at', 'DESC')->paginate(30, pageName: 'reviews_page'))),
 			'discussions' => Inertia::defer(fn () => DiscussionResource::collection($game->discussions()->with('author')->withCount('comments')->orderBy('created_at', 'DESC')->paginate(30, pageName: 'discussions_page'))),
 		]);
@@ -195,5 +199,26 @@ class GameController extends Controller
 		$game->delete();
 
 		return to_route('games.index', status: 303);
+	}
+
+	public function toggleGameOnList(Game $game, Request $request)
+	{
+		$list = $request->validate([
+			'list' => ['string', 'required', 'in:'.implode(",", array_column(GameCollectionType::cases(), 'value'))]
+		])['list'];
+
+		/** @var \App\Models\User */
+		$user = $request->user();
+
+		if (UserGameListsServices::checkIfGameIsInUserGameList($user->games()->withPivot(['list_type'])->get(), $game, $list)) {
+			DB::table('game_user')
+				->where('game_id', $game->id)
+				->where('list_type', $list)
+				->delete();
+		} else {
+			$user->games()->attach($game, ['list_type' => $list]);
+		}
+
+		return back();
 	}
 }
