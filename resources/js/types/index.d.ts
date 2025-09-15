@@ -92,6 +92,7 @@ export interface Genre {
     shortName: string;
     discussions_count: number;
     games_count: number;
+    isUsersFavorite: boolean;
 }
 
 export interface Review {

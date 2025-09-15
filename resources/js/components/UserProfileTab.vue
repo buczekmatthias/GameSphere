@@ -36,9 +36,7 @@ const reloadOnly: string[] = ['user'];
 
             <template v-if="type === 'games'">
                 <div class="grid grid-cols-2 gap-4 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
-                    <div class="flex flex-col gap-2">
-                        <Game v-for="game in content.data as GameType[]" :key="game.title" :game />
-                    </div>
+                    <Game v-for="game in content.data as GameType[]" :key="game.title" :game />
                 </div>
             </template>
 

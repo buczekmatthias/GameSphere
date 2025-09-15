@@ -26,6 +26,7 @@ Route::resource('reviews', ReviewController::class)->only(['show', 'store', 'des
 Route::resource('discussions', DiscussionController::class)->except(['create', 'edit']);
 Route::resource('comments', CommentController::class)->except(['index', 'create', 'edit']);
 Route::resource('genres', GenreController::class)->only(['index', 'show']);
+Route::post('/genres/{genre}/toggle-favorite', [GenreController::class, 'toggleFavoriteGenre'])->name('genres.favorite');
 
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';

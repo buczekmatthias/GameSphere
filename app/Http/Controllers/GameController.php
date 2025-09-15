@@ -210,7 +210,7 @@ class GameController extends Controller
 		/** @var \App\Models\User */
 		$user = $request->user();
 
-		if (UserGameListsServices::checkIfGameIsInUserGameList($user->games()->withPivot(['list_type'])->get(), $game, $list)) {
+		if ($user->games()->where('game_id', $game->id)->wherePivot('list_type', $list)->exists()) {
 			DB::table('game_user')
 				->where('game_id', $game->id)
 				->where('list_type', $list)

@@ -2,9 +2,9 @@
 
 namespace App\Services;
 
+use App\Enum\GameCollectionType;
 use App\Models\Game;
 use App\Models\User;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 
 final class UserGameListsServices
@@ -20,20 +20,14 @@ final class UserGameListsServices
 
 		$games = $user->games()->withPivot(['list_type'])->get();
 
-		return [
-			'wishlist' => self::checkIfGameIsInUserGameList($games, $game, 'wishlist'),
-			'owned' => self::checkIfGameIsInUserGameList($games, $game, 'owned'),
-			'playing' => self::checkIfGameIsInUserGameList($games, $game, 'playing'),
-			'completed' => self::checkIfGameIsInUserGameList($games, $game, 'completed'),
-			'favorite' => self::checkIfGameIsInUserGameList($games, $game, 'favorite'),
-			'upcoming_releases' => self::checkIfGameIsInUserGameList($games, $game, 'upcoming_releases')
-		];
-	}
+		$lists = [];
 
-	public static function checkIfGameIsInUserGameList(Collection $games, Game $game, string $list)
-	{
-		return $games->contains(function ($userGame) use ($game, $list) {
-			return $userGame->slug === $game->slug && $userGame->pivot->list_type === $list;
-		});
+		foreach (array_column(GameCollectionType::cases(), 'value') as $key) {
+			$lists[$key] = $games->contains(function ($userGame) use ($game, $key) {
+				return $userGame->slug === $game->slug && $userGame->pivot->list_type === $key;
+			});
+		}
+
+		return $lists;
 	}
 }

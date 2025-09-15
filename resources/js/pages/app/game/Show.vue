@@ -63,7 +63,10 @@ const tab = computed(() => {
                 <template v-if="isLoggedIn()">
                     <Deferred data="userLists">
                         <template #fallback>
-                            <Skeleton class="h-24 w-12 self-end" />
+                            <div class="flex flex-col gap-3">
+                                <Skeleton class="h-9 w-12" />
+                                <Skeleton class="h-9 w-12" />
+                            </div>
                         </template>
 
                         <GameActionDropdown :game :lists="userLists" />

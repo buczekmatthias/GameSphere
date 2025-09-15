@@ -17,6 +17,9 @@ class ShowResource extends JsonResource
 	 */
 	public function toArray(Request $request): array
 	{
+		/** @var \App\Models\User */
+		$user = $request->user();
+
 		$games = $this->games()->orderBy('created_at', 'ASC')->paginate(15, pageName: 'games');
 		$from = (($games->currentPage() - 1) * $games->perPage()) + 1;
 		$to = ($games->currentPage() - 1) * $games->perPage() + $games->count();
@@ -49,7 +52,8 @@ class ShowResource extends JsonResource
 					'to' => $to,
 					'total' => $discussions->total(),
 				]
-			]
+			],
+			'isUsersFavorite' => $user->genres()->where('genre_id', $this->id)->exists()
 		];
 	}
 }
