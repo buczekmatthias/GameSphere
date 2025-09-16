@@ -30,6 +30,7 @@ export interface SharedData extends PageProps {
     auth: Auth;
     ziggy: Ziggy;
     sidebarOpen: boolean;
+    can_interact: boolean;
     report_reasons: Record<number, string>;
 }
 
@@ -157,4 +158,8 @@ export interface Report {
     reportable: string;
     reportable_type: ReportableType;
     created_at: string;
+}
+
+export interface Permissions {
+    [key: string]: boolean;
 }

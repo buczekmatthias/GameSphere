@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import LoginRequired from '@/components/LoginRequired.vue';
 import Modal from '@/components/Modal.vue';
 import NewCommentForm from '@/components/NewCommentForm.vue';
 import Pagination from '@/components/Pagination.vue';
@@ -9,13 +10,15 @@ import { Button, buttonVariants } from '@/components/ui/button';
 import UpdateCommentForm from '@/components/UpdateCommentForm.vue';
 import UpdateDiscussionForm from '@/components/UpdateDiscussionForm.vue';
 import UserInfo from '@/components/UserInfo.vue';
+import { canInteract } from '@/composables/useCanInteract';
 import AppLayout from '@/layouts/AppLayout.vue';
-import type { BreadcrumbItem, DiscussableGame, DiscussableGenre, Discussion as DiscussionType } from '@/types';
+import type { BreadcrumbItem, DiscussableGame, DiscussableGenre, Discussion as DiscussionType, Permissions } from '@/types';
 import { Head, Link } from '@inertiajs/vue3';
 import { Blocks, Calendar, Gamepad2, MessageCircle, User } from 'lucide-vue-next';
 
 const props = defineProps<{
     discussion: DiscussionType;
+    permissions: Permissions;
 }>();
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -66,13 +69,14 @@ const breadcrumbs: BreadcrumbItem[] = [
                     </template>
                 </div>
                 <ReportModal :contentId="discussion.slug" contentType="discussion" :triggerClass="buttonVariants({ variant: 'destructive' })" />
-                <UpdateDiscussionForm :old-title="discussion.title" :slug="discussion.slug" />
-                <Button variant="destructive" as-child>
+                <UpdateDiscussionForm v-if="permissions.update" :old-title="discussion.title" :slug="discussion.slug" />
+                <Button v-if="permissions.destroy" variant="destructive" as-child>
                     <Link :href="route('discussions.destroy', { discussion: discussion.slug })" method="delete" as="button">Delete discussion</Link>
                 </Button>
             </div>
             <div class="flex flex-col gap-4">
-                <NewCommentForm :discussion-slug="discussion.slug" />
+                <NewCommentForm v-if="canInteract()" :discussion-slug="discussion.slug" />
+                <LoginRequired v-else />
                 <div
                     class="border-border flex flex-col items-start gap-3 rounded-md border border-solid p-2"
                     v-for="comment in discussion.comments.data"

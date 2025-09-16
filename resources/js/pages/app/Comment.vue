@@ -6,11 +6,12 @@ import TextLink from '@/components/TextLink.vue';
 import UpdateCommentForm from '@/components/UpdateCommentForm.vue';
 import UserInfo from '@/components/UserInfo.vue';
 import AppLayout from '@/layouts/AppLayout.vue';
-import type { BreadcrumbItem, DiscussionComment } from '@/types';
+import type { BreadcrumbItem, DiscussionComment, Permissions } from '@/types';
 import { Head, Link } from '@inertiajs/vue3';
 
 const props = defineProps<{
     comment: DiscussionComment;
+    permissions: Permissions;
 }>();
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -55,12 +56,13 @@ const breadcrumbs: BreadcrumbItem[] = [
                 <TextLink as="button" :href="route('discussions.show', { discussion: comment.discussion.slug })" class="cursor-pointer text-sm">
                     View discussion
                 </TextLink>
-                <UpdateCommentForm :old-content="comment.content" :media="comment.media" :slug="comment.slug" />
+                <UpdateCommentForm v-if="permissions.update" :old-content="comment.content" :media="comment.media" :slug="comment.slug" />
                 <Link
                     as="button"
                     :href="route('comments.destroy', { comment: comment.slug, to_homepage: true })"
                     method="delete"
                     class="text-destructive cursor-pointer text-sm"
+                    v-if="permissions.destroy"
                 >
                     Delete
                 </Link>

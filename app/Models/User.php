@@ -131,6 +131,19 @@ class User extends Authenticatable
 		return $this->games()->wherePivot('list_type', value: GameCollectionType::UPCOMING_RELEASES->value);
 	}
 
+	public function scopeThisMonth(Builder $query)
+	{
+		return $query->where('created_at', '>=', now()->startOfMonth());
+	}
+
+	public function scopeLastMonth(Builder $query)
+	{
+		return $query->whereBetween('created_at', [now()->startOfMonth()->subMonth(), now()->startOfMonth()]);
+	}
+
+	//
+	// Roles functions
+	//
 	public function isUser(): bool
 	{
 		return $this->role === UserRole::USER->value;
@@ -156,6 +169,18 @@ class User extends Authenticatable
 		return $this->role === UserRole::DEVELOPER->value;
 	}
 
+	public function isStaff(): bool
+	{
+		return in_array(
+			$this->role,
+			[
+				UserRole::MODERATOR->value,
+				UserRole::ADMIN->value,
+				UserRole::DEVELOPER->value
+			]
+		);
+	}
+
 	public function canAddGame(): bool
 	{
 		return in_array(
@@ -167,15 +192,5 @@ class User extends Authenticatable
 				UserRole::DEVELOPER->value
 			]
 		);
-	}
-
-	public function scopeThisMonth(Builder $query)
-	{
-		return $query->where('created_at', '>=', now()->startOfMonth());
-	}
-
-	public function scopeLastMonth(Builder $query)
-	{
-		return $query->whereBetween('created_at', [now()->startOfMonth()->subMonth(), now()->startOfMonth()]);
 	}
 }

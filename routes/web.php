@@ -14,19 +14,28 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', HomepageController::class)->name('home');
 
 Route::get('/u/{user:username}/{tab?}', UserProfileController::class)->name('user.profile');
-Route::get('/my-reports', UserReportsController::class)->name('user.reports');
 
-Route::post('/reports', StoreReportController::class)->name('reports.store');
+Route::middleware(['auth'])->group(function () {
+	Route::get('/my-reports', UserReportsController::class)->name('user.reports');
 
-Route::post('/games/{game}', [GameController::class, 'update'])->name('games.update');
-Route::post('/games/{game}/toggle-list', [GameController::class, 'toggleGameOnList'])->name('games.lists.toggle');
-Route::resource('games', GameController::class)->except('update');
+	Route::post('/reports', StoreReportController::class)->name('reports.store');
 
-Route::resource('reviews', ReviewController::class)->only(['show', 'store', 'destroy']);
-Route::resource('discussions', DiscussionController::class)->except(['create', 'edit']);
-Route::resource('comments', CommentController::class)->except(['index', 'create', 'edit']);
+	Route::post('/games/{game}', [GameController::class, 'update'])->name('games.update');
+	Route::post('/games/{game}/toggle-list', [GameController::class, 'toggleGameOnList'])->name('games.lists.toggle');
+	Route::resource('games', GameController::class)->middleware(['game.creator'])->except(['index', 'show']);
+
+	Route::post('/genres/{genre}/toggle-favorite', [GenreController::class, 'toggleFavoriteGenre'])->name('genres.favorite');
+
+	Route::resource('reviews', ReviewController::class)->only(['store', 'destroy']);
+	Route::resource('discussions', DiscussionController::class)->only(['store', 'update', 'destroy']);
+	Route::resource('comments', CommentController::class)->only(['store', 'update', 'destroy']);
+});
+
+Route::resource('games', GameController::class)->only(['index', 'show']);
+Route::resource('reviews', ReviewController::class)->only(['show']);
+Route::resource('discussions', DiscussionController::class)->only(['index', 'show']);
+Route::resource('comments', CommentController::class)->only(['show']);
 Route::resource('genres', GenreController::class)->only(['index', 'show']);
-Route::post('/genres/{genre}/toggle-favorite', [GenreController::class, 'toggleFavoriteGenre'])->name('genres.favorite');
 
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';

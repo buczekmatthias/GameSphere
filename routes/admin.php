@@ -10,7 +10,7 @@ use App\Http\Controllers\Admin\ReviewController;
 use App\Http\Controllers\Admin\UserController;
 use Illuminate\Support\Facades\Route;
 
-Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () {
+Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function () {
 	Route::get('/dashboard', DashboardController::class)->name('dashboard');
 
 	Route::resource('reports', ReportController::class)->only(['index', 'update', 'destroy']);

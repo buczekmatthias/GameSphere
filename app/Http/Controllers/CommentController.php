@@ -7,6 +7,7 @@ use App\Http\Requests\Comment\UpdateRequest;
 use App\Http\Resources\Discussion\CommentResource;
 use App\Models\Comment;
 use App\Models\Discussion;
+use App\Services\UserPermissions;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -14,12 +15,16 @@ use Inertia\Inertia;
 
 class CommentController extends Controller
 {
-	public function show(Comment $comment)
+	public function show(Comment $comment, Request $request)
 	{
 		$comment->load(['user', 'discussion']);
 
 		return Inertia::render('app/Comment', [
-			'comment' => CommentResource::make($comment)
+			'comment' => CommentResource::make($comment),
+			'permissions' => [
+				'update' => UserPermissions::checkPermissions('update', $comment),
+				'destroy' => UserPermissions::checkPermissions('delete', $comment),
+			]
 		]);
 	}
 

@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\Discussion\ListDiscussionResource;
+use App\Http\Resources\Admin\Discussion\ListDiscussionResource;
 use App\Models\Discussion;
 use Illuminate\Http\Request;
 use Inertia\Inertia;

@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-
 import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { canInteract } from '@/composables/useCanInteract';
 import { ReportableType, SharedData } from '@/types';
 import { useForm, usePage } from '@inertiajs/vue3';
 import { AlertTriangle, LoaderCircle } from 'lucide-vue-next';
@@ -45,7 +45,7 @@ const isOpen = ref<boolean>(false);
 </script>
 
 <template>
-    <Dialog :open="isOpen" @update:open="isOpen = $event">
+    <Dialog :open="isOpen" @update:open="isOpen = $event" v-if="canInteract()">
         <DialogTrigger :class="triggerClass">
             <AlertTriangle class="mt-0.5 size-4" v-if="showIcon" />
             <span v-if="showText">Report</span>

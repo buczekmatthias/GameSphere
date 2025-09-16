@@ -1,0 +1,33 @@
+<?php
+
+namespace App\Policies;
+
+use App\Models\Report;
+use App\Models\User;
+
+class ReportPolicy
+{
+	/**
+	 * Determine whether the user can create models.
+	 */
+	public function create(User $user): bool
+	{
+		return !is_null($user);
+	}
+
+	/**
+	 * Determine whether the user can update the model.
+	 */
+	public function update(User $user, Report $report): bool
+	{
+		return !is_null($user) && $user->isStaff();
+	}
+
+	/**
+	 * Determine whether the user can delete the model.
+	 */
+	public function delete(User $user, Report $report): bool
+	{
+		return !is_null($user) && $user->isStaff();
+	}
+}

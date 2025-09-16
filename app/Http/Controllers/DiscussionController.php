@@ -9,6 +9,7 @@ use App\Http\Resources\Discussion\ShowDiscussionResource;
 use App\Models\Discussion;
 use App\Models\Game;
 use App\Models\Genre;
+use App\Services\UserPermissions;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -52,13 +53,17 @@ class DiscussionController extends Controller
 	/**
 	 * Display the specified resource.
 	 */
-	public function show(Discussion $discussion)
+	public function show(Discussion $discussion, Request $request)
 	{
 		$discussion->load(['author', 'discussable']);
 		$discussion->loadCount('comments');
 
 		return Inertia::render('app/discussion/Show', [
-			'discussion' => ShowDiscussionResource::make($discussion)
+			'discussion' => ShowDiscussionResource::make($discussion),
+			'permissions' => [
+				'update' => UserPermissions::checkPermissions('update', $discussion),
+				'destroy' => UserPermissions::checkPermissions('delete', $discussion),
+			]
 		]);
 	}
 

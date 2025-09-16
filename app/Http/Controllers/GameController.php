@@ -15,6 +15,7 @@ use App\Models\Genre;
 use App\Services\UserGameListsServices;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -47,6 +48,8 @@ class GameController extends Controller
 	 */
 	public function create(): Response
 	{
+		Gate::authorize('create', Game::class);
+
 		return Inertia::render('app/game/Create', [
 			'genres' => Genre::select(['slug', 'name'])->get()
 		]);
