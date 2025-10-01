@@ -19,7 +19,8 @@ class ReviewResource extends JsonResource
 			'slug' => $this->slug,
 			'shortSlug' => Str::limit($this->slug, 20),
 			'content' => $this->content,
-			'ratings' => gettype($this->ratings) === 'string' ? json_decode($this->ratings, true) : $this->ratings,
+			'ratings' => $this->ratings,
+			'avg_rating' => round($this->average_rating, 1),
 			'is_verified' => $this->is_verified,
 			'user' => $this->whenLoaded(
 				'user',

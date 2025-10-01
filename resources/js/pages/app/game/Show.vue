@@ -13,11 +13,13 @@ import TextLink from '@/components/TextLink.vue';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { canInteract } from '@/composables/useCanInteract';
 import { isLoggedIn } from '@/composables/useIsLoggedIn';
 import { getPaginationData } from '@/composables/usePagination';
 import AppLayout from '@/layouts/AppLayout.vue';
 import type { BreadcrumbItem, Discussion as DiscussionType, Game, Pagination as PaginationType, Review as ReviewType, Ziggy } from '@/types';
 import { Deferred, Head, usePage, WhenVisible } from '@inertiajs/vue3';
+import { Blocks, Calendar, LucideIcon, Rss, Star, User } from 'lucide-vue-next';
 import { computed } from 'vue';
 
 const props = withDefaults(
@@ -43,6 +45,11 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
+const tabs: { [key: string]: LucideIcon } = {
+    reviews: Star,
+    discussions: Rss,
+};
+
 const tab = computed(() => {
     const query = (usePage().props.ziggy as Ziggy & { query: { discussions_page?: number } }).query;
 
@@ -55,7 +62,10 @@ const tab = computed(() => {
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="main-container flex flex-col gap-4">
-            <div class="grid grid-cols-[1fr_auto] gap-4 md:grid-cols-[auto_1fr_auto]">
+            <div
+                class="grid gap-4"
+                :class="isLoggedIn() ? 'ml:grid-cols-[auto_1fr_auto] grid-cols-[1fr_auto]' : 'grid-cols-1 md:grid-cols-[auto_1fr]'"
+            >
                 <Avatar class="h-80 w-64 overflow-hidden rounded-lg object-cover">
                     <AvatarImage :src="game.thumbnail" :alt="game.title" />
                     <AvatarFallback class="rounded-lg text-black dark:text-white" />
@@ -72,18 +82,30 @@ const tab = computed(() => {
                         <GameActionDropdown :game :lists="userLists" />
                     </Deferred>
                 </template>
-                <div class="flex flex-col gap-4 md:col-start-2 md:row-start-1">
+                <div class="ml:col-start-2 ml:row-start-1 flex flex-col gap-4">
                     <h1 class="text-3xl">{{ game.title }}</h1>
+                    <div class="flex divide-x">
+                        <div class="flex items-center gap-2.5 pr-3">
+                            <Star class="mt-0.5 size-5" />
+                            <p>{{ game.score }}</p>
+                        </div>
+                        <p class="pl-3">{{ game.reviews_count }} review(s)</p>
+                    </div>
                     <p class="text-sm leading-[165%]">{{ game.description }}</p>
-                    <p>
-                        Genre: <TextLink :href="''">{{ game.genre.name }}</TextLink>
-                    </p>
-                    <p>
-                        Release date: <TextLink :href="route('games.index', { released_at: game.released_at })">{{ game.released_at }}</TextLink>
-                    </p>
-                    <p>
-                        Creator: <TextLink :href="route('user.profile', { user: game.creator.username })">{{ game.creator.name }}</TextLink>
-                    </p>
+                    <div class="grid grid-cols-2 gap-4 lg:grid-cols-[repeat(3,auto)] lg:gap-6 lg:self-start">
+                        <div class="flex items-center gap-2">
+                            <Blocks class="mt-0.5 size-4" />
+                            <TextLink :href="route('genres.show', { genre: game.genre.slug })">{{ game.genre.name }}</TextLink>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <Calendar class="mt-0.5 size-4" />
+                            <TextLink :href="route('games.index', { released_at: game.released_at })">{{ game.released_at }}</TextLink>
+                        </div>
+                        <div class="flex items-center gap-2 max-lg:col-span-full">
+                            <User class="mt-0.5 size-4" />
+                            <TextLink :href="route('user.profile', { user: game.creator.username })">{{ game.creator.name }}</TextLink>
+                        </div>
+                    </div>
                     <div v-if="game.media.length > 0">
                         <Modal>
                             <template #trigger>
@@ -103,15 +125,16 @@ const tab = computed(() => {
                 </div>
             </div>
             <Tabs :default-value="tab">
-                <TabsList class="w-full">
+                <TabsList class="h-auto w-full">
                     <TabsTrigger
-                        v-for="i in ['reviews', 'discussions']"
-                        :value="i"
-                        :key="i"
-                        class="capitalize"
-                        :class="{ 'cursor-pointer': tab !== i }"
+                        v-for="[name, icon] in Object.entries(tabs)"
+                        :value="name"
+                        :key="name"
+                        class="py-2 capitalize"
+                        :class="{ 'cursor-pointer': tab !== name }"
                     >
-                        {{ i }}
+                        <component :is="icon" class="mr-1"></component>
+                        {{ name }}
                     </TabsTrigger>
                 </TabsList>
                 <TabsContent value="reviews">
@@ -120,7 +143,7 @@ const tab = computed(() => {
                             <ReviewSkeleton />
                         </template>
 
-                        <NewReviewForm :slug="game.slug" />
+                        <NewReviewForm :slug="game.slug" v-if="canInteract()" />
                         <template v-if="reviews!.data.length > 0">
                             <div class="flex flex-col gap-4">
                                 <Pagination page-name="reviews_page" :pagination="getPaginationData(reviews!)" />
@@ -138,7 +161,7 @@ const tab = computed(() => {
                             <DiscussionSkeleton />
                         </template>
 
-                        <NewDiscussionForm :slug="game.slug" type="game" />
+                        <NewDiscussionForm :slug="game.slug" type="game" v-if="canInteract()" />
                         <template v-if="discussions!.data.length > 0">
                             <div class="flex flex-col gap-4">
                                 <Pagination page-name="discussions_page" :pagination="getPaginationData(discussions!)" />

@@ -16,7 +16,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useForm } from '@inertiajs/vue3';
 import { createReusableTemplate, useMediaQuery } from '@vueuse/core';
-import { LoaderCircle } from 'lucide-vue-next';
+import { LoaderCircle, Plus } from 'lucide-vue-next';
 import { ref } from 'vue';
 
 // Reuse `form` section
@@ -53,11 +53,6 @@ const submitForm = () => {
                 <Input id="title" v-model="newDiscussionForm.title" />
                 <InputError :message="newDiscussionForm.errors.title" />
             </div>
-            <div class="grid gap-2">
-                <Label html-for="slug">Game slug</Label>
-                <Input id="slug" :default-value="slug" disabled />
-                <InputError :message="newDiscussionForm.errors.slug" />
-            </div>
             <Button type="submit" class="sticky bottom-0" :disabled="newDiscussionForm.processing">
                 <LoaderCircle v-if="newDiscussionForm.processing" class="h-4 w-4 animate-spin" />
                 Start discussion
@@ -67,7 +62,7 @@ const submitForm = () => {
 
     <Dialog v-if="isDesktop" v-model:open="isOpen">
         <DialogTrigger as-child>
-            <Button variant="outline" class="mb-4 w-full"> Create discussion </Button>
+            <Button variant="outline" class="mb-4 w-full py-5"> <Plus class="mt-0.5" /> Create discussion </Button>
         </DialogTrigger>
         <DialogContent class="sm:max-w-[425px]">
             <DialogHeader>
@@ -80,7 +75,7 @@ const submitForm = () => {
 
     <Drawer v-else v-model:open="isOpen">
         <DrawerTrigger as-child>
-            <Button variant="outline" class="mb-4 w-full"> Create discussion </Button>
+            <Button variant="outline" class="mb-4 w-full py-5"> <Plus class="mt-0.5" /> Create discussion </Button>
         </DrawerTrigger>
         <DrawerContent>
             <DrawerHeader class="text-left">

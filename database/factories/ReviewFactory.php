@@ -19,14 +19,14 @@ class ReviewFactory extends Factory
 		return [
 			'slug' => fake()->unique()->uuid(),
 			'content' => fake()->sentences(5, true),
-			'ratings' => json_encode([
+			'ratings' => [
 				'gameplay' => fake()->numberBetween(0, 5),
 				'graphics' => fake()->numberBetween(0, 5),
 				'storyline' => fake()->numberBetween(0, 5),
 				'replayability' => fake()->numberBetween(0, 5),
 				'sound_and_music' => fake()->numberBetween(0, 5),
 				'performance' => fake()->numberBetween(0, 5)
-			])
+			]
 		];
 	}
 }

@@ -44,4 +44,13 @@ class Review extends Model
 	{
 		return $this->morphMany(Report::class, 'reportable');
 	}
+
+	public function getAverageRatingAttribute()
+	{
+		if (empty($this->ratings)) {
+			return 0;
+		}
+
+		return array_sum($this->ratings) / count($this->ratings);
+	}
 }

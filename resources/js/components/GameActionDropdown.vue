@@ -14,14 +14,18 @@ import {
     DropdownMenuSubTrigger,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { canInteract, hasSpecialPermissions, isCurrentUserTheAuthor } from '@/composables/useCanInteract';
 import { Game } from '@/types';
 import { Link } from '@inertiajs/vue3';
-import { Check, EllipsisVertical } from 'lucide-vue-next';
+import { Check, EllipsisVertical, Pen, Trash } from 'lucide-vue-next';
+import { computed } from 'vue';
 
-defineProps<{
+const props = defineProps<{
     game: Game;
     lists: { [key: string]: boolean };
 }>();
+
+const canManageGame = computed((): boolean => canInteract() && (hasSpecialPermissions() || isCurrentUserTheAuthor(props.game.creator.username)));
 </script>
 
 <template>
@@ -67,15 +71,30 @@ defineProps<{
                         </DropdownMenuSubContent>
                     </DropdownMenuPortal>
                 </DropdownMenuSub>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem as-child>
-                    <Link :href="route('games.edit', { game: game.slug })" as="button" class="w-full cursor-pointer"> Edit game </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem as-child>
-                    <Link :href="route('games.destroy', { game: game.slug })" method="delete" class="w-full cursor-pointer" as="button">
-                        Delete game
-                    </Link>
-                </DropdownMenuItem>
+                <template v-if="canManageGame">
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem as-child>
+                        <Link
+                            :href="route('games.edit', { game: game.slug })"
+                            as="button"
+                            class="flex w-full cursor-pointer items-center justify-between gap-2"
+                        >
+                            Edit game
+                            <Pen class="size-4" />
+                        </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem as-child>
+                        <Link
+                            :href="route('games.destroy', { game: game.slug })"
+                            method="delete"
+                            class="flex w-full cursor-pointer items-center justify-between gap-2"
+                            as="button"
+                        >
+                            Delete game
+                            <Trash class="size-4" />
+                        </Link>
+                    </DropdownMenuItem>
+                </template>
             </DropdownMenuContent>
         </DropdownMenu>
     </div>

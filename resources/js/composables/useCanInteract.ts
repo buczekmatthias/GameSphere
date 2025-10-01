@@ -4,3 +4,11 @@ import { usePage } from '@inertiajs/vue3';
 export function canInteract(): boolean {
     return usePage<SharedData>().props.can_interact;
 }
+
+export function hasSpecialPermissions(): boolean {
+    return usePage<SharedData>().props.has_special_permissions;
+}
+
+export function isCurrentUserTheAuthor(username: string): boolean {
+    return usePage<SharedData>().props.auth.user.username === username;
+}

@@ -31,6 +31,7 @@ export interface SharedData extends PageProps {
     ziggy: Ziggy;
     sidebarOpen: boolean;
     can_interact: boolean;
+    has_special_permissions: boolean;
     report_reasons: Record<number, string>;
 }
 
@@ -85,6 +86,8 @@ export interface Game {
     created_at: string;
     updated_at: string;
     list: string;
+    score: number;
+    reviews_count: number;
 }
 
 export interface Genre {
@@ -101,6 +104,7 @@ export interface Review {
     shortSlug: string;
     content: string;
     ratings: ReviewRatings;
+    avg_rating: number;
     is_verified: boolean;
     user: User & { is_email_verified: boolean };
     game: Game;

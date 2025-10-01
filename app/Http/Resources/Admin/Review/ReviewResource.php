@@ -17,7 +17,7 @@ class ReviewResource extends JsonResource
 		return [
 			'slug' => $this->slug,
 			'content' => $this->content,
-			'ratings' => gettype($this->ratings) === 'string' ? json_decode($this->ratings, true) : $this->ratings,
+			'ratings' => $this->ratings,
 			'is_verified' => $this->is_verified,
 			'user' => $this->whenLoaded(
 				'user',

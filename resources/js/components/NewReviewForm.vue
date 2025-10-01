@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import InputError from '@/components/InputError.vue';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import {
     Drawer,
     DrawerClose,
@@ -12,13 +12,13 @@ import {
     DrawerTitle,
     DrawerTrigger,
 } from '@/components/ui/drawer';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { Textarea } from '@/components/ui/textarea';
 import { ReviewRatings } from '@/types';
 import { useForm } from '@inertiajs/vue3';
 import { createReusableTemplate, useMediaQuery } from '@vueuse/core';
-import { LoaderCircle, Star } from 'lucide-vue-next';
+import { LoaderCircle, Plus, Star } from 'lucide-vue-next';
 import { capitalize, ref } from 'vue';
 
 // Reuse `form` section
@@ -55,45 +55,40 @@ const submitForm = () => {
 
 <template>
     <UseTemplate>
-        <form class="grid items-start gap-4 px-4" @submit.prevent="submitForm">
-            <div class="grid gap-2">
-                <Label html-for="content">Content</Label>
-                <Textarea id="content" v-model="newReviewForm.content" class="h-48 resize-none" />
-                <InputError :message="newReviewForm.errors.content" />
-            </div>
-            <div class="grid gap-2">
-                <Label html-for="slug">Game slug</Label>
-                <Input id="slug" :default-value="slug" disabled />
-                <InputError :message="newReviewForm.errors.game_slug" />
-            </div>
-            <div class="grid grid-cols-2 gap-2">
-                <p class="col-span-full">Ratings</p>
-                <div class="grid gap-2" v-for="(k, ind) in Object.keys(newReviewForm.ratings)" :key="k">
-                    <p>{{ capitalize(k.replaceAll('_', ' ')) }}</p>
-                    <div class="flex gap-1.5">
-                        <Star
-                            v-for="i in 5"
-                            :key="i"
-                            @click="newReviewForm.ratings[k as keyof ReviewRatings] = i"
-                            class="cursor-pointer"
-                            :class="{
-                                'text-amber-400': i <= newReviewForm.ratings[k as keyof ReviewRatings],
-                            }"
-                        />
+        <ScrollArea>
+            <div class="max-h-[35vh] md:max-h-[55vh]">
+                <form class="grid items-start gap-4 px-4">
+                    <div class="grid gap-2">
+                        <Label html-for="content">Content</Label>
+                        <Textarea id="content" v-model="newReviewForm.content" class="h-48 resize-none" />
+                        <InputError :message="newReviewForm.errors.content" />
                     </div>
-                    <InputError :message="newReviewForm.errors.ratings?.[ind]" />
-                </div>
+                    <div class="flex flex-col gap-4">
+                        <p class="text-lg">Ratings</p>
+                        <div class="grid grid-cols-[1fr_auto] gap-2" v-for="(k, ind) in Object.keys(newReviewForm.ratings)" :key="k">
+                            <p>{{ capitalize(k.replaceAll('_', ' ')) }}</p>
+                            <div class="flex gap-3">
+                                <Star
+                                    v-for="i in 5"
+                                    :key="i"
+                                    @click="newReviewForm.ratings[k as keyof ReviewRatings] = i"
+                                    class="size-5 cursor-pointer"
+                                    :class="{
+                                        'text-amber-400': i <= newReviewForm.ratings[k as keyof ReviewRatings],
+                                    }"
+                                />
+                            </div>
+                            <InputError :message="newReviewForm.errors.ratings?.[ind]" />
+                        </div>
+                    </div>
+                </form>
             </div>
-            <Button type="submit" class="sticky bottom-0" :disabled="newReviewForm.processing">
-                <LoaderCircle v-if="newReviewForm.processing" class="h-4 w-4 animate-spin" />
-                Add review
-            </Button>
-        </form>
+        </ScrollArea>
     </UseTemplate>
 
     <Dialog v-if="isDesktop" v-model:open="isOpen">
         <DialogTrigger as-child>
-            <Button variant="outline" class="mb-4 w-full"> Create review </Button>
+            <Button variant="outline" class="mb-4 w-full py-5"> <Plus class="mt-0.5" /> Create review </Button>
         </DialogTrigger>
         <DialogContent class="sm:max-w-[425px]">
             <DialogHeader>
@@ -101,12 +96,18 @@ const submitForm = () => {
                 <DialogDescription> Share your opinion about the game </DialogDescription>
             </DialogHeader>
             <GridForm />
+            <DialogFooter class="pt-2">
+                <Button type="submit" class="sticky bottom-0" :disabled="newReviewForm.processing" @click="submitForm()">
+                    <LoaderCircle v-if="newReviewForm.processing" class="h-4 w-4 animate-spin" />
+                    Add review
+                </Button>
+            </DialogFooter>
         </DialogContent>
     </Dialog>
 
     <Drawer v-else v-model:open="isOpen">
         <DrawerTrigger as-child>
-            <Button variant="outline" class="mb-4 w-full"> Create review </Button>
+            <Button variant="outline" class="mb-4 w-full py-5"> <Plus class="mt-0.5" /> Create review </Button>
         </DrawerTrigger>
         <DrawerContent>
             <DrawerHeader class="text-left">
@@ -115,6 +116,10 @@ const submitForm = () => {
             </DrawerHeader>
             <GridForm />
             <DrawerFooter class="pt-2">
+                <Button type="submit" class="sticky bottom-0" :disabled="newReviewForm.processing" @click="submitForm()">
+                    <LoaderCircle v-if="newReviewForm.processing" class="h-4 w-4 animate-spin" />
+                    Add review
+                </Button>
                 <DrawerClose as-child>
                     <Button variant="outline"> Cancel </Button>
                 </DrawerClose>
