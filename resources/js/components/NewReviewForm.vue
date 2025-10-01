@@ -48,6 +48,7 @@ const submitForm = () => {
     if (newReviewForm.content.length > 0 && Object.values(newReviewForm.ratings).every((i) => i > 0)) {
         newReviewForm.post(route('reviews.store'), {
             onSuccess: () => (isOpen.value = false),
+            preserveScroll: true,
         });
     }
 };

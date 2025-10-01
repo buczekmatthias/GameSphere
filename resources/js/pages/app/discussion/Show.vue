@@ -14,7 +14,7 @@ import { canInteract } from '@/composables/useCanInteract';
 import AppLayout from '@/layouts/AppLayout.vue';
 import type { BreadcrumbItem, DiscussableGame, DiscussableGenre, Discussion as DiscussionType, Permissions } from '@/types';
 import { Head, Link } from '@inertiajs/vue3';
-import { Blocks, Calendar, Gamepad2, MessageCircle, User } from 'lucide-vue-next';
+import { Blocks, Calendar, Gamepad2, MessageCircle, Trash, User } from 'lucide-vue-next';
 
 const props = defineProps<{
     discussion: DiscussionType;
@@ -68,10 +68,17 @@ const breadcrumbs: BreadcrumbItem[] = [
                         </TextLink>
                     </template>
                 </div>
-                <ReportModal :contentId="discussion.slug" contentType="discussion" :triggerClass="buttonVariants({ variant: 'destructive' })" />
+                <ReportModal
+                    show-icon
+                    :contentId="discussion.slug"
+                    contentType="discussion"
+                    :triggerClass="buttonVariants({ variant: 'destructive' })"
+                />
                 <UpdateDiscussionForm v-if="permissions.update" :old-title="discussion.title" :slug="discussion.slug" />
                 <Button v-if="permissions.destroy" variant="destructive" as-child>
-                    <Link :href="route('discussions.destroy', { discussion: discussion.slug })" method="delete" as="button">Delete discussion</Link>
+                    <Link :href="route('discussions.destroy', { discussion: discussion.slug })" method="delete" as="button">
+                        <Trash class="size-4" /> Delete
+                    </Link>
                 </Button>
             </div>
             <div class="flex flex-col gap-4">

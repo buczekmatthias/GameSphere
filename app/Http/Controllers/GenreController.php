@@ -17,7 +17,7 @@ class GenreController extends Controller
 	{
 		return Inertia::render('app/genre/Index', [
 			'genres' => ListResource::collection(
-				Genre::withCount(['discussions', 'games'])->orderBy('name', 'ASC')->paginate(30)
+				Genre::withCount(['discussions', 'games'])->orderBy('name', 'ASC')->paginate(30),
 			)
 		]);
 	}

@@ -40,6 +40,7 @@ const submitForm = () => {
     if (newDiscussionForm.title.length > 0) {
         newDiscussionForm.post(route('discussions.store'), {
             onSuccess: () => (isOpen.value = false),
+            preserveScroll: true,
         });
     }
 };

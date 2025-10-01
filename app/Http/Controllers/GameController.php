@@ -13,6 +13,7 @@ use App\Http\Resources\Games\ReviewResource;
 use App\Models\Game;
 use App\Models\Genre;
 use App\Services\UserGameListsServices;
+use App\Services\UserPermissions;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
@@ -107,6 +108,10 @@ class GameController extends Controller
 			'userLists' => Inertia::defer(fn () => UserGameListsServices::checkIfGameIsInAnyUserGamesList($game)),
 			'reviews' => Inertia::defer(fn () => ReviewResource::collection($game->reviews()->with(['user'])->orderBy('created_at', 'DESC')->paginate(30, pageName: 'reviews_page'))),
 			'discussions' => Inertia::defer(fn () => DiscussionResource::collection($game->discussions()->with('author')->withCount('comments')->orderBy('created_at', 'DESC')->paginate(30, pageName: 'discussions_page'))),
+			'permissions' => [
+				'update' => UserPermissions::checkPermissions('update', $game),
+				'destroy' => UserPermissions::checkPermissions('delete', $game),
+			]
 		]);
 	}
 

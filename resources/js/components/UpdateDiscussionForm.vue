@@ -16,7 +16,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useForm } from '@inertiajs/vue3';
 import { createReusableTemplate, useMediaQuery } from '@vueuse/core';
-import { LoaderCircle } from 'lucide-vue-next';
+import { LoaderCircle, Pen } from 'lucide-vue-next';
 import { ref } from 'vue';
 
 // Reuse `form` section
@@ -60,7 +60,7 @@ const submitForm = () => {
 
     <Dialog v-if="isDesktop" v-model:open="isOpen">
         <DialogTrigger as-child>
-            <Button variant="outline" class="w-full">Update discussion </Button>
+            <Button variant="outline" class="w-full"> <Pen class="size-4" /> Update</Button>
         </DialogTrigger>
         <DialogContent class="sm:max-w-[425px]">
             <DialogHeader>
@@ -73,7 +73,7 @@ const submitForm = () => {
 
     <Drawer v-else v-model:open="isOpen">
         <DrawerTrigger as-child>
-            <Button variant="outline" class="w-full">Update discussion</Button>
+            <Button variant="outline" class="w-full"> <Pen class="size-4" /> Update</Button>
         </DrawerTrigger>
         <DrawerContent>
             <DrawerHeader class="text-left">

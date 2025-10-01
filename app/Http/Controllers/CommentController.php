@@ -15,7 +15,7 @@ use Inertia\Inertia;
 
 class CommentController extends Controller
 {
-	public function show(Comment $comment, Request $request)
+	public function show(Comment $comment)
 	{
 		$comment->load(['user', 'discussion']);
 

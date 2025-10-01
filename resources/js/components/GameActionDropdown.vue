@@ -14,18 +14,15 @@ import {
     DropdownMenuSubTrigger,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { canInteract, hasSpecialPermissions, isCurrentUserTheAuthor } from '@/composables/useCanInteract';
-import { Game } from '@/types';
+import { Game, Permissions } from '@/types';
 import { Link } from '@inertiajs/vue3';
 import { Check, EllipsisVertical, Pen, Trash } from 'lucide-vue-next';
-import { computed } from 'vue';
 
-const props = defineProps<{
+defineProps<{
     game: Game;
     lists: { [key: string]: boolean };
+    permissions: Permissions;
 }>();
-
-const canManageGame = computed((): boolean => canInteract() && (hasSpecialPermissions() || isCurrentUserTheAuthor(props.game.creator.username)));
 </script>
 
 <template>
@@ -71,30 +68,30 @@ const canManageGame = computed((): boolean => canInteract() && (hasSpecialPermis
                         </DropdownMenuSubContent>
                     </DropdownMenuPortal>
                 </DropdownMenuSub>
-                <template v-if="canManageGame">
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem as-child>
-                        <Link
-                            :href="route('games.edit', { game: game.slug })"
-                            as="button"
-                            class="flex w-full cursor-pointer items-center justify-between gap-2"
-                        >
-                            Edit game
-                            <Pen class="size-4" />
-                        </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem as-child>
-                        <Link
-                            :href="route('games.destroy', { game: game.slug })"
-                            method="delete"
-                            class="flex w-full cursor-pointer items-center justify-between gap-2"
-                            as="button"
-                        >
-                            Delete game
-                            <Trash class="size-4" />
-                        </Link>
-                    </DropdownMenuItem>
-                </template>
+                <DropdownMenuSeparator v-if="Object.values(permissions).some((p) => p === true)" />
+                <DropdownMenuItem as-child>
+                    <Link
+                        :href="route('games.edit', { game: game.slug })"
+                        as="button"
+                        class="flex w-full cursor-pointer items-center justify-between gap-2"
+                        v-if="permissions.update"
+                    >
+                        Edit game
+                        <Pen class="size-4" />
+                    </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem as-child>
+                    <Link
+                        :href="route('games.destroy', { game: game.slug })"
+                        method="delete"
+                        class="flex w-full cursor-pointer items-center justify-between gap-2"
+                        v-if="permissions.destroy"
+                        as="button"
+                    >
+                        Delete game
+                        <Trash class="size-4" />
+                    </Link>
+                </DropdownMenuItem>
             </DropdownMenuContent>
         </DropdownMenu>
     </div>

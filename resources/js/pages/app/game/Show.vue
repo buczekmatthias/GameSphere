@@ -17,7 +17,15 @@ import { canInteract } from '@/composables/useCanInteract';
 import { isLoggedIn } from '@/composables/useIsLoggedIn';
 import { getPaginationData } from '@/composables/usePagination';
 import AppLayout from '@/layouts/AppLayout.vue';
-import type { BreadcrumbItem, Discussion as DiscussionType, Game, Pagination as PaginationType, Review as ReviewType, Ziggy } from '@/types';
+import type {
+    BreadcrumbItem,
+    Discussion as DiscussionType,
+    Game,
+    Pagination as PaginationType,
+    Permissions,
+    Review as ReviewType,
+    Ziggy,
+} from '@/types';
 import { Deferred, Head, usePage, WhenVisible } from '@inertiajs/vue3';
 import { Blocks, Calendar, LucideIcon, Rss, Star, User } from 'lucide-vue-next';
 import { computed } from 'vue';
@@ -28,6 +36,7 @@ const props = withDefaults(
         userLists?: { [key: string]: boolean };
         reviews?: PaginationType & { data: ReviewType[] };
         discussions?: PaginationType & { data: DiscussionType[] };
+        permissions: Permissions;
     }>(),
     {
         userLists: () => ({}),
@@ -79,7 +88,7 @@ const tab = computed(() => {
                             </div>
                         </template>
 
-                        <GameActionDropdown :game :lists="userLists" />
+                        <GameActionDropdown :game :lists="userLists" :permissions />
                     </Deferred>
                 </template>
                 <div class="ml:col-start-2 ml:row-start-1 flex flex-col gap-4">
@@ -112,9 +121,9 @@ const tab = computed(() => {
                                 <p class="cursor-pointer text-sm text-sky-600 dark:text-sky-400">Show {{ game.media.length }} media</p>
                             </template>
                             <template #title>
-                                <p>Game media</p>
+                                <p>"{{ game.title }}" media</p>
                             </template>
-                            <template #description>Media of "{{ game.title }}"</template>
+                            <template #description>{{ game.media.length }} media</template>
                             <div class="flex max-h-[75vh] flex-col gap-6 overflow-y-auto">
                                 <div v-for="media in game.media" :key="media.path" class="flex flex-col gap-2">
                                     <Preview :type="media.type" :media="media.path" />
