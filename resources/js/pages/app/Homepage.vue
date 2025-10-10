@@ -16,14 +16,16 @@ defineProps<{
     <Head title="Home" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
-        <Deferred data="games">
-            <template #fallback>
-                <GameSkeleton />
-            </template>
+        <div class="main-container">
+            <Deferred data="games">
+                <template #fallback>
+                    <GameSkeleton />
+                </template>
 
-            <div class="main-container grid grid-cols-2 gap-4 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
-                <Game v-for="game in games" :key="game.title" :game />
-            </div>
-        </Deferred>
+                <div class="grid grid-cols-2 gap-4 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
+                    <Game v-for="game in games" :key="game.title" :game />
+                </div>
+            </Deferred>
+        </div>
     </AppLayout>
 </template>

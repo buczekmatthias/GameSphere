@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Game } from '@/types';
@@ -25,7 +25,10 @@ const listTypeIcon: any = {
     <Link :href="route('games.show', { game: game.slug })" class="group flex flex-col" as="button">
         <div class="relative">
             <Avatar class="group-hover:border-primary h-80 w-full overflow-hidden rounded-lg border-2 border-solid border-transparent duration-150">
-                <AvatarImage :src="game.thumbnail" :alt="game.title" class="object-cover" />
+                <template #avatar>
+                    <img v-lazy="game.thumbnail" :alt="game.title" class="h-full w-full object-cover" />
+                </template>
+                <!-- <AvatarImage :src="game.thumbnail" :alt="game.title" class="object-cover" /> -->
                 <AvatarFallback class="rounded-lg text-black dark:text-white" />
             </Avatar>
             <TooltipProvider v-if="game.list">

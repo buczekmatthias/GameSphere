@@ -82,8 +82,6 @@ const breadcrumbs: BreadcrumbItem[] = [
                 </Button>
             </div>
             <div class="flex flex-col gap-4">
-                <NewCommentForm v-if="canInteract()" :discussion-slug="discussion.slug" />
-                <LoginRequired v-else />
                 <div
                     class="border-border flex flex-col items-start gap-3 rounded-md border border-solid p-2"
                     v-for="comment in discussion.comments.data"
@@ -125,6 +123,8 @@ const breadcrumbs: BreadcrumbItem[] = [
                     </div>
                 </div>
                 <Pagination :pagination="discussion.comments" />
+                <NewCommentForm v-if="canInteract()" :discussion-slug="discussion.slug" />
+                <LoginRequired v-else />
             </div>
         </div>
     </AppLayout>

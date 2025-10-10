@@ -108,7 +108,9 @@ const tab = computed(() => {
                         </div>
                         <div class="flex items-center gap-2">
                             <Calendar class="mt-0.5 size-4" />
-                            <TextLink :href="route('games.index', { released_at: game.released_at })">{{ game.released_at }}</TextLink>
+                            <TextLink :href="route('games.index', { released_after: game.released_at, released_before: game.released_at })">
+                                {{ game.released_at }}
+                            </TextLink>
                         </div>
                         <div class="flex items-center gap-2 max-lg:col-span-full">
                             <User class="mt-0.5 size-4" />

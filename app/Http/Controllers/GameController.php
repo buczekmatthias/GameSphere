@@ -30,17 +30,27 @@ class GameController extends Controller
 	public function index(Request $request): Response
 	{
 		$games = Game::orderBy('title');
+		$per_page = $request->get('per_page', 30);
 
 		if ($request->get('title')) {
 			$games->whereLike('title', "%{$request->get('title')}%");
 		}
 
-		if ($request->get('released_at')) {
-			$games->whereDate('released_at', $request->get('released_at'));
+		match (true) {
+			$request->has('released_after') && $request->has('released_before') => $games->whereBetween('released_at', [$request->get('released_after'), $request->get('released_before')]),
+			$request->has('released_after') => $games->where('released_at', '>=', $request->get('released_after')),
+			$request->has('released_before') => $games->where('released_at', '<=', $request->get('released_before')),
+			default => null
+		};
+
+		if ($request->get('genre')) {
+			$games->where('genre_id', Genre::select('id')->where('name', $request->get('genre'))->first()->id);
 		}
 
 		return Inertia::render('app/game/Index', [
-			'games' => GamesListResource::collection($games->paginate($request->get('per_page', 30)))
+			'games' => Inertia::defer(fn () => GamesListResource::collection($games->paginate($per_page))),
+			'per_page' => $per_page,
+			'genres' => Inertia::defer(fn () => Genre::select('name')->orderBy('name', 'ASC')->pluck('name'))
 		]);
 	}
 

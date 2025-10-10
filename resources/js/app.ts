@@ -5,6 +5,7 @@ import { createInertiaApp } from '@inertiajs/vue3';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import type { DefineComponent } from 'vue';
 import { createApp, h } from 'vue';
+import VueLazyLoad from 'vue-lazyload';
 import { type Config, ZiggyVue } from 'ziggy-js';
 
 // Extend ImportMeta interface for Vite...
@@ -28,6 +29,7 @@ createInertiaApp({
     setup({ el, App, props, plugin }) {
         createApp({ render: () => h(App, props) })
             .use(plugin)
+            .use(VueLazyLoad)
             .use(ZiggyVue, <Config>props.initialPage.props.ziggy)
             .mount(el);
     },
