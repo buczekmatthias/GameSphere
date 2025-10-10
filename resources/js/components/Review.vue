@@ -12,7 +12,7 @@ import { Link } from '@inertiajs/vue3';
 import { MailCheck, Star } from 'lucide-vue-next';
 import { computed } from 'vue';
 
-withDefaults(
+const props = withDefaults(
     defineProps<{
         review: Review;
         withLink?: boolean;
@@ -22,11 +22,7 @@ withDefaults(
     },
 );
 
-const canDeleteReview = computed(
-    () =>
-        (username: string): boolean =>
-            hasSpecialPermissions() || isCurrentUserTheAuthor(username),
-);
+const canDeleteReview = computed((): boolean => canInteract() || hasSpecialPermissions() || isCurrentUserTheAuthor(props.review.user?.username));
 </script>
 
 <template>
@@ -61,9 +57,7 @@ const canDeleteReview = computed(
         <p class="text-sm text-slate-300">{{ review.created_at }}</p>
         <p>{{ review.content }}</p>
         <div class="text-destructive flex gap-4 text-sm [&>*]:cursor-pointer" v-if="canInteract()">
-            <Link as="button" :href="route('reviews.destroy', { review: review.slug })" method="delete" v-if="canDeleteReview(review.user.username)">
-                Delete review
-            </Link>
+            <Link as="button" :href="route('reviews.destroy', { review: review.slug })" method="delete" v-if="canDeleteReview"> Delete review </Link>
             <ReportModal :contentId="review.slug" contentType="review" />
         </div>
         <Accordion type="single" class="w-full" collapsible>

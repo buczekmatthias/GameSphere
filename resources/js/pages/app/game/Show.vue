@@ -14,7 +14,6 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { canInteract } from '@/composables/useCanInteract';
-import { isLoggedIn } from '@/composables/useIsLoggedIn';
 import { getPaginationData } from '@/composables/usePagination';
 import AppLayout from '@/layouts/AppLayout.vue';
 import type {
@@ -73,13 +72,13 @@ const tab = computed(() => {
         <div class="main-container flex flex-col gap-4">
             <div
                 class="grid gap-4"
-                :class="isLoggedIn() ? 'ml:grid-cols-[auto_1fr_auto] grid-cols-[1fr_auto]' : 'grid-cols-1 md:grid-cols-[auto_1fr]'"
+                :class="canInteract() ? 'ml:grid-cols-[auto_1fr_auto] grid-cols-[1fr_auto]' : 'grid-cols-1 md:grid-cols-[auto_1fr]'"
             >
                 <Avatar class="h-80 w-64 overflow-hidden rounded-lg object-cover">
                     <AvatarImage :src="game.thumbnail" :alt="game.title" />
                     <AvatarFallback class="rounded-lg text-black dark:text-white" />
                 </Avatar>
-                <template v-if="isLoggedIn()">
+                <template v-if="canInteract()">
                     <Deferred data="userLists">
                         <template #fallback>
                             <div class="flex flex-col gap-3">

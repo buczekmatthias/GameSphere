@@ -86,8 +86,8 @@ router.on('finish', () => {
                 </div>
                 <p>Joined {{ user.created_at }}</p>
             </div>
-            <Button variant="outline" as-child>
-                <Link :href="route('settings.profile.edit')" v-if="isCurrentUserProfile" as="button">
+            <Button variant="outline" as-child v-if="isCurrentUserProfile">
+                <Link :href="route('settings.profile.edit')" as="button">
                     <Settings class="mt-0.5 size-4" />
                     Profile settings
                 </Link>

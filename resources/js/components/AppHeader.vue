@@ -15,7 +15,8 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/co
 import UserMenuContent from '@/components/UserMenuContent.vue';
 import { getInitials } from '@/composables/useInitials';
 import { getAdminNavigationElements } from '@/composables/useNavigation';
-import type { BreadcrumbItem, NavItem, SharedData, User } from '@/types';
+import { useCurrentUser } from '@/composables/useUser';
+import type { BreadcrumbItem, NavItem, SharedData } from '@/types';
 import { Link, usePage } from '@inertiajs/vue3';
 import { Menu } from 'lucide-vue-next';
 import { computed } from 'vue';
@@ -29,7 +30,7 @@ withDefaults(defineProps<Props>(), {
 });
 
 const page = usePage<SharedData>();
-const user = computed(() => page.props.auth.user as User);
+const user = useCurrentUser();
 
 const isCurrentRoute = computed(() => (url: string) => page.props.ziggy.location === url);
 

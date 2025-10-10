@@ -45,7 +45,7 @@ const form = useForm({
     description: props.game.description,
     thumbnail: null,
     media: [] as File[],
-    released_at: '' as any,
+    released_at: '',
     genre: props.game.genre.slug,
     media_to_delete: [] as string[],
 });

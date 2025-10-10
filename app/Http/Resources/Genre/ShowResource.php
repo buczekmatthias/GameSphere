@@ -53,7 +53,7 @@ class ShowResource extends JsonResource
 					'total' => $discussions->total(),
 				]
 			],
-			'isUsersFavorite' => $user->genres()->where('genre_id', $this->id)->exists()
+			'isUsersFavorite' => $user ? $user->genres()->where('genre_id', $this->id)->exists() : null
 		];
 	}
 }

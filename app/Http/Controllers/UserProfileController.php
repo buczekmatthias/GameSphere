@@ -21,7 +21,7 @@ class UserProfileController extends Controller
 
 		return Inertia::render('app/UserProfile', [
 			'user' => UserProfileResource::make($user),
-			'isCurrentUserProfile' => $user->username === $request->user()->username,
+			'isCurrentUserProfile' => $request->user() ? $user->username === $request->user()->username : false,
 			'tabs' => $tabs,
 			'activeTab' => $tab
 		]);

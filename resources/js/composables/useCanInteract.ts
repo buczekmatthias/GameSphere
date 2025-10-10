@@ -10,5 +10,7 @@ export function hasSpecialPermissions(): boolean {
 }
 
 export function isCurrentUserTheAuthor(username: string): boolean {
+    if (!username) return false;
+
     return usePage<SharedData>().props.auth.user.username === username;
 }

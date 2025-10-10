@@ -5,10 +5,10 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useInitials } from '@/composables/useInitials';
-import { SharedData, User } from '@/types';
-import { useForm, usePage } from '@inertiajs/vue3';
+import { useCurrentUser } from '@/composables/useUser';
+import { useForm } from '@inertiajs/vue3';
 import { LoaderCircle } from 'lucide-vue-next';
-import { computed, ref } from 'vue';
+import { ref } from 'vue';
 
 const props = defineProps<{
     discussionSlug: string;
@@ -16,7 +16,7 @@ const props = defineProps<{
 
 const { getInitials } = useInitials();
 
-const user = computed(() => usePage<SharedData>().props.auth.user as User);
+const user = useCurrentUser();
 
 const newCommentForm = useForm({
     discussion_slug: props.discussionSlug,
