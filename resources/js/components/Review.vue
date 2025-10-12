@@ -37,7 +37,9 @@ const canDeleteReview = computed((): boolean => canInteract() || hasSpecialPermi
                 Show game
             </TextLink>
             <template v-if="review.user">
-                <UserInfo :show-username="true" :user="review.user" />
+                <Link :href="route('user.profile', { user: review.user.username })" class="mr-auto flex gap-3">
+                    <UserInfo :show-username="true" :user="review.user" />
+                </Link>
                 <UserRole v-if="review.user.role !== 'user'" :role="review.user.role" class="text-xs" />
                 <template v-if="review.user.is_email_verified">
                     <TooltipProvider>

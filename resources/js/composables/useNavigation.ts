@@ -46,6 +46,13 @@ export function getNavigationElements(user: User): { [key: string]: NavItem[] } 
                 icon: Blocks,
             },
         ],
+        users: [
+            {
+                title: 'List of users',
+                href: route('users.index'),
+                icon: UserIcon,
+            },
+        ],
     };
 
     onBeforeMount(() => {

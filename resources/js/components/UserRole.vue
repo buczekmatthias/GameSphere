@@ -1,15 +1,22 @@
 <script setup lang="ts">
 import { capitalize, computed } from 'vue';
 
-defineProps<{
-    role: string;
-}>();
+withDefaults(
+    defineProps<{
+        role: string;
+        showUserRoleTag?: boolean;
+    }>(),
+    {
+        showUserRoleTag: true,
+    },
+);
 
 const formatRole = computed(() => (role: string) => capitalize(role.replaceAll('_', ' ')));
 </script>
 
 <template>
     <p
+        v-if="role !== 'user' || (role === 'user' && showUserRoleTag)"
         class="self-start rounded-md px-3 py-2 text-white"
         :class="{
             'bg-slate-800': role === 'user',

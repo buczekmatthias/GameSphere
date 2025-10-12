@@ -29,8 +29,8 @@ const props = defineProps<{
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Profile',
-        href: '',
+        title: 'Users',
+        href: route('users.index'),
     },
     {
         title: props.user.username,

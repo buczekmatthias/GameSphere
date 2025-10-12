@@ -8,12 +8,12 @@ import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 import { getPaginationData } from '@/composables/usePagination';
 import AppLayout from '@/layouts/AppLayout.vue';
-import { BreadcrumbItem, Game as GameType, Pagination as PaginationType, Ziggy } from '@/types';
+import { BreadcrumbItem, Game as GameType, Pagination as PaginationType, SharedData, Ziggy } from '@/types';
 import { Deferred, Head, router, usePage } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
 
 interface SearchData {
-    per_page: string | number;
+    per_page?: string | number;
     title?: string;
     released_after?: string;
     released_before?: string;
@@ -21,13 +21,7 @@ interface SearchData {
 }
 
 export interface ZiggyWithGamesQuery extends Ziggy {
-    query: {
-        per_page?: string;
-        title?: string;
-        released_after?: string;
-        released_before?: string;
-        genre?: string;
-    };
+    query: SearchData;
 }
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -37,13 +31,13 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-const props = defineProps<{
+defineProps<{
     games?: PaginationType & { data: GameType[] };
     per_page: number | string;
     genres?: string[];
 }>();
 
-const ziggy = computed(() => usePage().props.ziggy as ZiggyWithGamesQuery);
+const ziggy = computed(() => usePage<SharedData>().props.ziggy as ZiggyWithGamesQuery);
 
 const title = ref<string>(ziggy.value.query.title || '');
 const searchConditions = ref<FilterData>({
@@ -52,10 +46,10 @@ const searchConditions = ref<FilterData>({
     genre: ziggy.value.query.genre,
 });
 
-const searchEntires = () => {
-    let data: Partial<SearchData> = {
-        per_page: ziggy.value.query.per_page || props.per_page,
-    };
+const searchEntries = () => {
+    let data: Partial<SearchData> = {};
+
+    if (ziggy.value.query.per_page) data.per_page = ziggy.value.query.per_page;
 
     if (title.value) data.title = title.value;
 
@@ -88,7 +82,7 @@ const queriesCount = computed((): number => Object.keys(ziggy.value.query).filte
             <div class="ml:grid-cols-[1fr_auto_auto] col-span-full grid grid-cols-2 gap-2">
                 <Input type="text" v-model="title" class="max-ml:col-span-full" placeholder="Game title" />
                 <GamesListFilter @update-search-conditions="searchConditions = $event" :ziggy :genres />
-                <Button type="submit" @click="searchEntires"> Search </Button>
+                <Button type="submit" @click="searchEntries"> Search </Button>
             </div>
             <Deferred data="games">
                 <template #fallback>

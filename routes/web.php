@@ -8,6 +8,7 @@ use App\Http\Controllers\HomepageController;
 use App\Http\Controllers\UserReportsController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\StoreReportController;
+use App\Http\Controllers\UserListController;
 use App\Http\Controllers\UserProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -31,6 +32,7 @@ Route::middleware(['auth'])->group(function () {
 	Route::resource('comments', CommentController::class)->only(['store', 'update', 'destroy']);
 });
 
+Route::get('/users', UserListController::class)->name('users.index');
 Route::resource('games', GameController::class)->only(['index', 'show']);
 Route::resource('reviews', ReviewController::class)->only(['show']);
 Route::resource('discussions', DiscussionController::class)->only(['index', 'show']);
