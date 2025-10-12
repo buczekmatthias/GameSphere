@@ -42,7 +42,7 @@ const reloadOnly: string[] = ['games'];
 
     <AdminLayout>
         <div class="main-container flex flex-col gap-4">
-            <Table :reload-only="reloadOnly" :headers="tableHeaders">
+            <Table :reload-only :headers="tableHeaders">
                 <TableRow v-for="game in games.data" :key="game.slug">
                     <TableCell>{{ game.slug }}</TableCell>
                     <TableCell>{{ game.title }}</TableCell>
@@ -101,7 +101,7 @@ const reloadOnly: string[] = ['games'];
                 </TableRow>
             </Table>
 
-            <Pagination :pagination="getPaginationData(games)" :reload-only="reloadOnly" />
+            <Pagination :pagination="getPaginationData(games)" :reload-only />
         </div>
     </AdminLayout>
 </template>

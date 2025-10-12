@@ -2,12 +2,13 @@
 import Pagination from '@/components/Pagination.vue';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Skeleton } from '@/components/ui/skeleton';
 import UserInfo from '@/components/UserInfo.vue';
 import UserRole from '@/components/UserRole.vue';
 import { getPaginationData } from '@/composables/usePagination';
 import AppLayout from '@/layouts/AppLayout.vue';
 import type { BreadcrumbItem, Pagination as PaginationType, SharedData, User, Ziggy } from '@/types';
-import { Head, Link, router, usePage } from '@inertiajs/vue3';
+import { Deferred, Head, Link, router, usePage } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
 
 interface SearchData {
@@ -20,7 +21,7 @@ interface ZiggyWithGamesQuery extends Ziggy {
 }
 
 defineProps<{
-    users: PaginationType & { data: User[] };
+    users?: PaginationType & { data: User[] };
     per_page: string | number;
 }>();
 
@@ -42,8 +43,10 @@ const searchEntries = () => {
 
     if (contains.value) data.contains = contains.value;
 
-    router.get(route(ziggy.value.current), data);
+    router.get(route(ziggy.value.current), data, { only: reloadOnly });
 };
+
+const reloadOnly = ['users', 'ziggy'];
 </script>
 
 <template>
@@ -51,25 +54,36 @@ const searchEntries = () => {
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="main-container flex flex-col gap-4">
-            <div class="grid grid-cols-[1fr_auto] gap-2">
-                <Input type="text" v-model="contains" placeholder="Search by name or username..." />
-                <Button type="submit" @click="searchEntries">Search</Button>
-            </div>
-            <template v-if="users.data.length > 0">
-                <Link
-                    :href="route('user.profile', { user: user.username })"
-                    v-for="user in users.data"
-                    :key="user.username"
-                    class="mx-auto flex w-full max-w-xl items-center justify-between gap-4 rounded-md border px-2.5 py-3.5"
-                >
-                    <UserInfo show-username :user="user" />
-                    <UserRole :role="user.role" class="text-sm" :show-user-role-tag="false" />
-                </Link>
-                <Pagination :customizable-per-page="true" :pagination="getPaginationData(users)" />
-            </template>
-            <template v-else>
-                <p>Nothing to display</p>
-            </template>
+            <Deferred data="users">
+                <template #fallback>
+                    <Skeleton class="h-9 w-full" />
+                    <Skeleton class="mx-auto h-16 w-full max-w-xl" v-for="i in 10" :key="i" />
+                    <div class="flex items-center justify-between gap-4">
+                        <Skeleton class="h-6 w-24" />
+                        <Skeleton class="h-9 w-44" />
+                    </div>
+                </template>
+
+                <div class="grid grid-cols-[1fr_auto] gap-2">
+                    <Input type="text" v-model="contains" placeholder="Search by name or username..." @keyup.enter="searchEntries" />
+                    <Button type="submit" @click="searchEntries">Search</Button>
+                </div>
+                <template v-if="users!.data.length > 0">
+                    <Link
+                        :href="route('user.profile', { user: user.username })"
+                        v-for="user in users!.data"
+                        :key="user.username"
+                        class="mx-auto flex w-full max-w-xl items-center justify-between gap-4 rounded-md border px-2.5 py-3.5"
+                    >
+                        <UserInfo show-username :user="user" />
+                        <UserRole :role="user.role" class="text-sm" :show-user-role-tag="false" />
+                    </Link>
+                    <Pagination :customizable-per-page="true" :pagination="getPaginationData(users!)" :reload-only />
+                </template>
+                <template v-else>
+                    <p>Nothing to display</p>
+                </template>
+            </Deferred>
         </div>
     </AppLayout>
 </template>

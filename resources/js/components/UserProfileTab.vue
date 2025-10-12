@@ -26,7 +26,7 @@ const reloadOnly: string[] = ['user'];
 <template>
     <div class="flex flex-col gap-4">
         <template v-if="content.data.length > 0">
-            <Pagination :pagination="getPaginationData(content)" :reload-only="reloadOnly" />
+            <Pagination :pagination="getPaginationData(content)" :reload-only />
 
             <template v-if="type === 'created_games'">
                 <div class="grid grid-cols-2 gap-4 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">

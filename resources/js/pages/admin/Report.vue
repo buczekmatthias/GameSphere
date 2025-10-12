@@ -39,7 +39,7 @@ const reloadOnly: string[] = ['reports'];
 
     <AdminLayout>
         <div class="main-container flex flex-col gap-4">
-            <Table :reload-only="reloadOnly" :headers="tableHeaders">
+            <Table :reload-only :headers="tableHeaders">
                 <TableRow v-for="report in reports.data" :key="report.slug">
                     <TableCell>{{ report.slug }}</TableCell>
                     <TableCell>{{ report.reason }}</TableCell>
@@ -115,7 +115,7 @@ const reloadOnly: string[] = ['reports'];
                 </TableRow>
             </Table>
 
-            <Pagination :pagination="getPaginationData(reports)" :reload-only="reloadOnly" />
+            <Pagination :pagination="getPaginationData(reports)" :reload-only />
         </div>
     </AdminLayout>
 </template>

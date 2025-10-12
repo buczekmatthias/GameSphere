@@ -2,14 +2,15 @@
 import Discussion from '@/components/Discussion.vue';
 import Pagination from '@/components/Pagination.vue';
 import TextLink from '@/components/TextLink.vue';
+import { Skeleton } from '@/components/ui/skeleton';
 import { getPaginationData } from '@/composables/usePagination';
 import AppLayout from '@/layouts/AppLayout.vue';
 import type { BreadcrumbItem, DiscussableGame, DiscussableGenre, Discussion as DiscussionType, Pagination as PaginationType } from '@/types';
-import { Head } from '@inertiajs/vue3';
+import { Deferred, Head } from '@inertiajs/vue3';
 import { Blocks, Gamepad2 } from 'lucide-vue-next';
 
 defineProps<{
-    discussions: PaginationType & { data: DiscussionType[] };
+    discussions?: PaginationType & { data: DiscussionType[] };
 }>();
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -25,8 +26,12 @@ const breadcrumbs: BreadcrumbItem[] = [
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="main-container flex flex-col gap-4">
-            <template v-for="discussion in discussions.data" :key="discussion.slug">
-                <Discussion :discussion="discussion">
+            <Deferred data="discussions">
+                <template #fallback>
+                    <Skeleton v-for="i in 10" :key="i" class="h-24 w-full" />
+                </template>
+
+                <Discussion :discussion="discussion" v-for="discussion in discussions!.data" :key="discussion.slug">
                     <template #extra-items>
                         <div class="flex items-center gap-1 text-sm">
                             <template v-if="discussion.discussable_type === 'game'">
@@ -42,8 +47,8 @@ const breadcrumbs: BreadcrumbItem[] = [
                         </div>
                     </template>
                 </Discussion>
-            </template>
-            <Pagination :pagination="getPaginationData(discussions)" />
+                <Pagination :pagination="getPaginationData(discussions!)" />
+            </Deferred>
         </div>
     </AppLayout>
 </template>

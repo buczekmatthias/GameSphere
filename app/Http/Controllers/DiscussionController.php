@@ -21,9 +21,9 @@ class DiscussionController extends Controller
 	public function index()
 	{
 		return Inertia::render('app/discussion/Index', [
-			'discussions' => ListDiscussionResource::collection(
+			'discussions' => Inertia::defer(fn () => ListDiscussionResource::collection(
 				Discussion::with(['author', 'discussable'])->withCount('comments')->orderBy('created_at', 'DESC')->paginate(15)
-			)
+			))
 		]);
 	}
 

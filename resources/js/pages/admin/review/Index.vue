@@ -43,7 +43,7 @@ const reloadOnly: string[] = ['reviews'];
 
     <AdminLayout>
         <div class="main-container flex flex-col gap-4">
-            <Table :reload-only="reloadOnly" :headers="tableHeaders">
+            <Table :reload-only :headers="tableHeaders">
                 <TableRow v-for="review in reviews.data" :key="review.slug">
                     <TableCell>{{ review.slug }}</TableCell>
                     <TableCell>{{ review.content }}</TableCell>
@@ -83,7 +83,7 @@ const reloadOnly: string[] = ['reviews'];
                 </TableRow>
             </Table>
 
-            <Pagination :pagination="getPaginationData(reviews)" :reload-only="reloadOnly" />
+            <Pagination :pagination="getPaginationData(reviews)" :reload-only />
         </div>
     </AdminLayout>
 </template>

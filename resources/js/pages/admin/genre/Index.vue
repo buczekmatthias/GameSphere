@@ -82,7 +82,7 @@ const submit = () => {
                 </Dialog>
             </div>
 
-            <Table :reload-only="reloadOnly" :headers="tableHeaders">
+            <Table :reload-only :headers="tableHeaders">
                 <TableRow v-for="genre in genres.data" :key="genre.slug">
                     <TableCell>{{ genre.slug }}</TableCell>
                     <TableCell>{{ genre.name }}</TableCell>
@@ -122,7 +122,7 @@ const submit = () => {
                 </TableRow>
             </Table>
 
-            <Pagination :pagination="getPaginationData(genres)" :reload-only="reloadOnly" />
+            <Pagination :pagination="getPaginationData(genres)" :reload-only />
         </div>
     </AdminLayout>
 </template>

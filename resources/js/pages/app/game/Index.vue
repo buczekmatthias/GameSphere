@@ -60,8 +60,10 @@ const searchEntries = () => {
             .reduce((acc, [key, value]) => ({ ...acc, [key]: value }), {}),
     };
 
-    router.get(route(ziggy.value.current), data);
+    router.get(route(ziggy.value.current), data, { only: reloadOnly });
 };
+
+const reloadOnly = ['games', 'ziggy'];
 
 const isQueried = computed(
     (): boolean =>
@@ -80,7 +82,7 @@ const queriesCount = computed((): number => Object.keys(ziggy.value.query).filte
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="main-container grid grid-cols-2 gap-4 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
             <div class="ml:grid-cols-[1fr_auto_auto] col-span-full grid grid-cols-2 gap-2">
-                <Input type="text" v-model="title" class="max-ml:col-span-full" placeholder="Game title" />
+                <Input type="text" v-model="title" class="max-ml:col-span-full" placeholder="Game title" @keyup.enter="searchEntries" />
                 <GamesListFilter @update-search-conditions="searchConditions = $event" :ziggy :genres />
                 <Button type="submit" @click="searchEntries"> Search </Button>
             </div>
@@ -111,12 +113,13 @@ const queriesCount = computed((): number => Object.keys(ziggy.value.query).filte
                 </template>
                 <template v-if="games!.data.length > 0">
                     <Game v-for="game in games!.data" :key="game.title" :game />
-                    <Pagination :customizable-per-page="true" :pagination="getPaginationData(games!)" />
+                    <Pagination :customizable-per-page="true" :pagination="getPaginationData(games!)" :reload-only />
                 </template>
                 <template v-else>
                     <p class="col-span-full border-t pt-4">Nothing to display</p>
                 </template>
             </Deferred>
         </div>
+        ``
     </AppLayout>
 </template>

@@ -150,7 +150,7 @@ const reloadOnly: string[] = ['reports'];
                     </TableBody>
                 </Table>
 
-                <Pagination :pagination="getPaginationData(reports)" :reload-only="reloadOnly" />
+                <Pagination :pagination="getPaginationData(reports)" :reload-only />
             </template>
             <template v-else>
                 <p>No reports to display</p>

@@ -62,7 +62,7 @@ const getRolesBelow = computed(() => (currentRole: string) => {
 
     <AdminLayout>
         <div class="main-container flex flex-col gap-4">
-            <Table :reload-only="reloadOnly" :headers="tableHeaders">
+            <Table :reload-only :headers="tableHeaders">
                 <TableRow v-for="user in users.data" :key="user.username">
                     <TableCell>{{ user.name }}</TableCell>
                     <TableCell>{{ user.username }}</TableCell>
@@ -145,7 +145,7 @@ const getRolesBelow = computed(() => (currentRole: string) => {
                 </TableRow>
             </Table>
 
-            <Pagination :pagination="getPaginationData(users)" :reload-only="reloadOnly" />
+            <Pagination :pagination="getPaginationData(users)" :reload-only />
         </div>
     </AdminLayout>
 </template>

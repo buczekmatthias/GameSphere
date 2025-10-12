@@ -26,7 +26,7 @@ class UserListController extends Controller
 		$to = ($users->currentPage() - 1) * $users->perPage() + $users->count();
 
 		return Inertia::render('app/Users', [
-			'users' => [
+			'users' => Inertia::defer(fn () => [
 				'data' => $users->getCollection(),
 				'meta' => [
 					'current_page' => $users->currentPage(),
@@ -36,7 +36,7 @@ class UserListController extends Controller
 					'to' => $to,
 					'total' => $users->total(),
 				]
-			],
+			]),
 			'per_page' => $per_page
 		]);
 	}
