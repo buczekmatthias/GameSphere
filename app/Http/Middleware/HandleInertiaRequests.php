@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Http\Resources\CurrentUserResource;
 use App\Services\ReportsServices;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -42,7 +43,7 @@ class HandleInertiaRequests extends Middleware
 			parent::share($request),
 			[
 				'auth' => [
-					'user' => $request->user() ?? ['name' => 'Guest', 'avatar' => null, 'role' => 'guest'],
+					'user' => $request->user() ? CurrentUserResource::make($request->user()) : ['name' => 'Guest', 'avatar' => null, 'role' => 'guest'],
 				],
 				'ziggy' => [
 					...(new Ziggy())->toArray(),

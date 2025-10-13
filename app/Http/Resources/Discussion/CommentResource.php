@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\Discussion;
 
+use App\Services\UserPermissions;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Storage;
@@ -36,8 +37,18 @@ class CommentResource extends JsonResource
 			),
 			'discussion' => $this->whenLoaded(
 				'discussion',
-				fn () => ['title' => $this->discussion->title, 'slug' => $this->discussion->slug]
+				fn () => [
+					'title' => $this->discussion->title,
+					'slug' => $this->discussion->slug,
+					'author' => new AuthorResource($this->discussion->author),
+					'comments_count' => $this->discussion->comments()->count(),
+					'created_at' => $this->discussion->created_at->format('Y-m-d')
+				]
 			),
+			'permissions' => [
+				'update' => UserPermissions::checkPermissions('update', $this->resource),
+				'destroy' => UserPermissions::checkPermissions('delete', $this->resource),
+			],
 			'created_at' => $this->created_at->format('Y-m-d')
 		];
 	}

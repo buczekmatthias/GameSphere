@@ -38,21 +38,23 @@ const breadcrumbs: BreadcrumbItem[] = [
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="main-container flex flex-col gap-4">
-            <div class="grid grid-cols-1 gap-2 md:grid-cols-2 lg:grid-cols-[auto_auto_auto_auto] lg:self-start">
+            <div class="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-[auto_auto_auto_auto] lg:self-start">
                 <p class="col-span-full mb-2 text-2xl">{{ discussion.title }}</p>
-                <div class="flex items-center gap-1">
-                    <Calendar class="h-5" />
-                    <p>{{ discussion.created_at }}</p>
+                <div class="flex gap-3">
+                    <div class="flex items-center gap-1">
+                        <Calendar class="h-5" />
+                        <p>{{ discussion.created_at }}</p>
+                    </div>
+                    <div class="flex items-center gap-1">
+                        <MessageCircle class="h-5" />
+                        <p>{{ discussion.comments_count }}</p>
+                    </div>
                 </div>
                 <div class="flex items-center gap-1">
                     <User class="h-5" />
                     <TextLink :href="route('user.profile', { user: discussion.author.username })" class="truncate">{{
                         discussion.author.name
                     }}</TextLink>
-                </div>
-                <div class="flex items-center gap-1">
-                    <MessageCircle class="h-5" />
-                    <p>{{ discussion.comments_count }}</p>
                 </div>
                 <div class="flex items-center gap-1">
                     <template v-if="discussion.discussable_type === 'game'">
@@ -68,18 +70,21 @@ const breadcrumbs: BreadcrumbItem[] = [
                         </TextLink>
                     </template>
                 </div>
-                <ReportModal
-                    show-icon
-                    :contentId="discussion.slug"
-                    contentType="discussion"
-                    :triggerClass="buttonVariants({ variant: 'destructive' })"
-                />
-                <UpdateDiscussionForm v-if="permissions.update" :old-title="discussion.title" :slug="discussion.slug" />
-                <Button v-if="permissions.destroy" variant="destructive" as-child>
-                    <Link :href="route('discussions.destroy', { discussion: discussion.slug })" method="delete" as="button">
-                        <Trash class="size-4" /> Delete
-                    </Link>
-                </Button>
+                <div class="flex gap-3">
+                    <ReportModal
+                        show-icon
+                        :show-text="false"
+                        :contentId="discussion.slug"
+                        contentType="discussion"
+                        :triggerClass="buttonVariants({ variant: 'destructive' })"
+                    />
+                    <UpdateDiscussionForm v-if="permissions.update" :old-title="discussion.title" :slug="discussion.slug" />
+                    <Button v-if="permissions.destroy" variant="destructive" as-child>
+                        <Link :href="route('discussions.destroy', { discussion: discussion.slug })" method="delete" as="button">
+                            <Trash class="size-4" />
+                        </Link>
+                    </Button>
+                </div>
             </div>
             <div class="flex flex-col gap-4">
                 <div
@@ -107,19 +112,32 @@ const breadcrumbs: BreadcrumbItem[] = [
                             </div>
                         </Modal>
                     </div>
-                    <div class="flex gap-4">
-                        <p class="text-sm text-slate-300">{{ comment.created_at }}</p>
-                        <UpdateCommentForm :old-content="comment.content" :media="comment.media" :slug="comment.slug" />
-                        <Link
-                            as="button"
-                            :href="route('comments.destroy', { comment: comment.slug })"
-                            :preserve-scroll="true"
-                            method="delete"
-                            class="text-destructive cursor-pointer text-sm"
-                        >
-                            Delete
-                        </Link>
-                        <ReportModal :contentId="comment.slug" contentType="comment" triggerClass="text-destructive cursor-pointer text-sm" />
+                    <div class="flex w-full items-center gap-3">
+                        <p class="mr-auto text-sm text-slate-300">{{ comment.created_at }}</p>
+                        <UpdateCommentForm
+                            :old-content="comment.content"
+                            :media="comment.media"
+                            :slug="comment.slug"
+                            v-if="comment.permissions.update"
+                        />
+                        <Button variant="destructive" as-child v-if="comment.permissions.destroy">
+                            <Link
+                                as="button"
+                                :href="route('comments.destroy', { comment: comment.slug })"
+                                :preserve-scroll="true"
+                                method="delete"
+                                class="text-destructive cursor-pointer text-sm"
+                            >
+                                <Trash class="size-4" />
+                            </Link>
+                        </Button>
+                        <ReportModal
+                            :contentId="comment.slug"
+                            contentType="comment"
+                            :show-text="false"
+                            show-icon
+                            :triggerClass="`${buttonVariants({ variant: 'destructive' })} cursor-pointer text-sm`"
+                        />
                     </div>
                 </div>
                 <Pagination :pagination="discussion.comments" />

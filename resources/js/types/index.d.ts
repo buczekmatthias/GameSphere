@@ -140,6 +140,7 @@ export interface DiscussionComment {
     user: User;
     created_at: string;
     discussion: Discussion;
+    permissions: Permissions;
 }
 
 export interface DiscussableGame {

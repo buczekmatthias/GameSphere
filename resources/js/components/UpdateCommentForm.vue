@@ -20,7 +20,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Media } from '@/types';
 import { useForm } from '@inertiajs/vue3';
 import { createReusableTemplate, useMediaQuery } from '@vueuse/core';
-import { LoaderCircle } from 'lucide-vue-next';
+import { LoaderCircle, Pen } from 'lucide-vue-next';
 import { ref } from 'vue';
 
 // Reuse `form` section
@@ -44,6 +44,7 @@ const submitForm = () => {
     if (updateCommentForm.content.length > 0) {
         updateCommentForm.patch(route('comments.update', { comment: props.slug }), {
             preserveState: false,
+            preserveScroll: true,
             onSuccess: () => (isOpen.value = false),
         });
     }
@@ -101,7 +102,9 @@ const toggleItem = (filename: string) => {
 
     <Dialog v-if="isDesktop" v-model:open="isOpen">
         <DialogTrigger as-child>
-            <p class="text-sidebar-ring cursor-pointer text-sm">Edit</p>
+            <Button variant="secondary">
+                <Pen class="size-4" />
+            </Button>
         </DialogTrigger>
         <DialogContent class="sm:max-w-[425px]">
             <DialogHeader>
@@ -114,7 +117,9 @@ const toggleItem = (filename: string) => {
 
     <Drawer v-else v-model:open="isOpen">
         <DrawerTrigger as-child>
-            <p class="text-sidebar-ring cursor-pointer text-sm">Edit</p>
+            <Button variant="secondary">
+                <Pen class="size-4" />
+            </Button>
         </DrawerTrigger>
         <DrawerContent>
             <DrawerHeader class="text-left">

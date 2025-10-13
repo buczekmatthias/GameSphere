@@ -60,7 +60,9 @@ const submitForm = () => {
 
     <Dialog v-if="isDesktop" v-model:open="isOpen">
         <DialogTrigger as-child>
-            <Button variant="outline" class="w-full"> <Pen class="size-4" /> Update</Button>
+            <Button variant="secondary">
+                <Pen class="size-4" />
+            </Button>
         </DialogTrigger>
         <DialogContent class="sm:max-w-[425px]">
             <DialogHeader>
@@ -73,7 +75,9 @@ const submitForm = () => {
 
     <Drawer v-else v-model:open="isOpen">
         <DrawerTrigger as-child>
-            <Button variant="outline" class="w-full"> <Pen class="size-4" /> Update</Button>
+            <Button variant="secondary">
+                <Pen class="size-4" />
+            </Button>
         </DrawerTrigger>
         <DrawerContent>
             <DrawerHeader class="text-left">
