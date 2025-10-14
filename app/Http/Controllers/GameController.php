@@ -14,6 +14,7 @@ use App\Models\Game;
 use App\Models\Genre;
 use App\Services\UserGameListsServices;
 use App\Services\UserPermissions;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
@@ -21,13 +22,14 @@ use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
 use Illuminate\Support\Str;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 
 class GameController extends Controller
 {
 	/**
 	 * Display a listing of the resource.
 	 */
-	public function index(Request $request): Response
+	public function index(Request $request): Response | RedirectResponse
 	{
 		$games = Game::orderBy('title');
 		$per_page = $request->get('per_page', 30);
@@ -36,12 +38,25 @@ class GameController extends Controller
 			$games->whereLike('title', "%{$request->get('title')}%");
 		}
 
-		match (true) {
-			$request->has('released_after') && $request->has('released_before') => $games->whereBetween('released_at', [$request->get('released_after'), $request->get('released_before')]),
-			$request->has('released_after') => $games->where('released_at', '>=', $request->get('released_after')),
-			$request->has('released_before') => $games->where('released_at', '<=', $request->get('released_before')),
-			default => null
-		};
+		if ($request->has('released_after') && $request->has('released_before')) {
+			$released_after = Carbon::createFromFormat('Y-m-d', $request->get('released_after'));
+			$released_before = Carbon::createFromFormat('Y-m-d', $request->get('released_before'));
+
+			if ($released_before->isBefore($released_after)) {
+				return redirect()->to(
+					url()->current() . '?' . http_build_query(array_merge(
+						request()->query(),
+						['released_before' => $request->get('released_after')]
+					))
+				);
+			}
+
+			$games->whereBetween('released_at', [$released_after->startOfDay(), $released_before->endOfDay()]);
+		} elseif ($request->has('released_after')) {
+			$games->whereDate('released_at', '>=', $request->get('released_after'));
+		} elseif ($request->has('released_before')) {
+			$games->whereDate('released_at', '<=', $request->get('released_before'));
+		}
 
 		if ($request->get('genre')) {
 			$games->where('genre_id', Genre::select('id')->where('name', $request->get('genre'))->first()->id);

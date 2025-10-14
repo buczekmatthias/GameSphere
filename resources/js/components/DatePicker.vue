@@ -4,9 +4,11 @@ import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
 import { CalendarIcon } from 'lucide-vue-next';
+import { DateValue } from 'reka-ui';
 
 defineProps<{
     triggerButtonClass?: string;
+    minValue?: DateValue;
 }>();
 
 const model = defineModel<any>();
@@ -24,7 +26,7 @@ const model = defineModel<any>();
             </Button>
         </PopoverTrigger>
         <PopoverContent class="w-auto p-0">
-            <Calendar v-model="model" initial-focus />
+            <Calendar v-model="model" initial-focus :min-value="minValue" />
         </PopoverContent>
     </Popover>
 </template>

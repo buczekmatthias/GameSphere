@@ -120,6 +120,5 @@ const queriesCount = computed((): number => Object.keys(ziggy.value.query).filte
                 </template>
             </Deferred>
         </div>
-        ``
     </AppLayout>
 </template>

@@ -151,7 +151,7 @@ const toggleItem = (filename: string) => {
 
             <div class="form-box">
                 <Label for="released_at">Released at</Label>
-                <DatePicker v-model="form.released_at" />
+                <DatePicker v-model="form.released_at" trigger-button-class="w-full" />
                 <InputInfo :message="game.released_at" />
                 <InputError :message="form.errors.released_at" />
             </div>

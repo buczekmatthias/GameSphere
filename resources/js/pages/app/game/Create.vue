@@ -104,7 +104,7 @@ const submitForm = () => {
 
             <div class="form-box">
                 <Label for="released_at">Released at</Label>
-                <DatePicker v-model="form.released_at" />
+                <DatePicker v-model="form.released_at" trigger-button-class="w-full" />
                 <InputError :message="form.errors.released_at" />
             </div>
 

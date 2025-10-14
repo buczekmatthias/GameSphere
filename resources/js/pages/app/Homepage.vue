@@ -22,7 +22,7 @@ defineProps<{
                     <GameSkeleton />
                 </template>
 
-                <div class="grid grid-cols-2 gap-4 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
+                <div class="ml:grid-cols-3 grid grid-cols-2 gap-4 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
                     <Game v-for="game in games" :key="game.title" :game />
                 </div>
             </Deferred>

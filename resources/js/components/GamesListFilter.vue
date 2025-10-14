@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import DatePicker from '@/components/DatePicker.vue';
+import TextLink from '@/components/TextLink.vue';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -7,10 +8,10 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { transformDate } from '@/composables/useTransformDatePicker';
 import { ZiggyWithGamesQuery } from '@/pages/app/game/Index.vue';
 import { Deferred } from '@inertiajs/vue3';
-import { parseDate } from '@internationalized/date';
+import { DateValue, parseDate } from '@internationalized/date';
 import { useMediaQuery } from '@vueuse/core';
 import { ArrowUpDown } from 'lucide-vue-next';
-import { capitalize, ref } from 'vue';
+import { capitalize, ref, watch } from 'vue';
 
 export interface FilterData {
     released_after?: string | object;
@@ -47,6 +48,27 @@ const handleClose = (isOpen: boolean) => {
         emit('updateSearchConditions', d);
     }
 };
+
+const getMinValue = (date: any): undefined | DateValue => {
+    if (!data.value.released_after) return undefined;
+
+    if (typeof date === 'string') return parseDate(date);
+
+    return date;
+};
+
+watch(
+    () => data.value.released_after,
+    () => {
+        if (data.value.released_before) {
+            const before = new Date(transformDate(data.value.released_before)).getTime();
+            const after = new Date(transformDate(data.value.released_after)).getTime();
+            if (before < after) {
+                data.value.released_before = data.value.released_after;
+            }
+        }
+    },
+);
 </script>
 
 <template>
@@ -64,7 +86,7 @@ const handleClose = (isOpen: boolean) => {
             </div>
             <div class="flex flex-col gap-2">
                 <p>Released before</p>
-                <DatePicker v-model="data.released_before" trigger-button-class="w-full" />
+                <DatePicker v-model="data.released_before" trigger-button-class="w-full" :min-value="getMinValue(data.released_after)" />
             </div>
             <Deferred data="genres">
                 <template #fallback>
@@ -87,6 +109,7 @@ const handleClose = (isOpen: boolean) => {
                     </Select>
                 </div>
             </Deferred>
+            <TextLink class="self-start" :href="route(ziggy.current)" v-if="Object.values(data).some((v) => v !== '')">Reset filters</TextLink>
         </PopoverContent>
     </Popover>
 </template>

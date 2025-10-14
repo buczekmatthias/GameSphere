@@ -13,12 +13,20 @@ class GenreController extends Controller
 	/**
 	 * Display a listing of the resource.
 	 */
-	public function index()
+	public function index(Request $request)
 	{
+		$user = $request->user();
+
+		if ($user) {
+			$user->load(['genres']);
+		}
+
 		return Inertia::render('app/genre/Index', [
-			'genres' => Inertia::defer(fn () => ListResource::collection(
-				Genre::withCount(['discussions', 'games'])->orderBy('name', 'ASC')->paginate(30),
-			))
+			'genres' => Inertia::defer(
+				fn () => ListResource::collection(
+					Genre::withCount(['discussions', 'games'])->orderBy('name', 'ASC')->paginate(30),
+				)
+			)
 		]);
 	}
 
