@@ -6,6 +6,7 @@ use App\Enum\UserRole;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\User\UpdateRoleRequest;
 use App\Http\Resources\Admin\User\UserListResource;
+use App\Models\GameCreatorRequest;
 use App\Models\User;
 use App\Services\UserDeleteServices;
 use Illuminate\Http\Request;
@@ -36,7 +37,8 @@ class UserController extends Controller
 
 		return Inertia::render('admin/User', [
 			'users' => UserListResource::collection($entries->paginate(50)),
-			'roles' => array_reverse(array_column(UserRole::cases(), 'value'))
+			'roles' => array_reverse(array_column(UserRole::cases(), 'value')),
+			'game_creator_requests_count' => GameCreatorRequest::count()
 		]);
 	}
 

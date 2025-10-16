@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import Table from '@/components/Admin/Table.vue';
+import HeadingSmall from '@/components/HeadingSmall.vue';
 import Pagination from '@/components/Pagination.vue';
 import { Button } from '@/components/ui/button';
 import {
@@ -10,6 +11,7 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { Separator } from '@/components/ui/separator';
 import { TableCell, TableRow } from '@/components/ui/table';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import UserRole from '@/components/UserRole.vue';
@@ -23,6 +25,7 @@ import { computed } from 'vue';
 const props = defineProps<{
     users: PaginationType & { data: User[] };
     roles: string[];
+    game_creator_requests_count: number;
 }>();
 
 const tableHeaders = [
@@ -35,7 +38,7 @@ const tableHeaders = [
     { label: 'Created at', is_sortable: true, column: 'created_at' },
 ];
 
-const reloadOnly: string[] = ['users'];
+const reloadOnly: string[] = ['users', 'game_creator_requests_count'];
 
 const getRoleIndex = computed(() => (currentRole: string) => props.roles.indexOf(currentRole));
 
@@ -62,6 +65,17 @@ const getRolesBelow = computed(() => (currentRole: string) => {
 
     <AdminLayout>
         <div class="main-container flex flex-col gap-4">
+            <div class="flex items-start space-y-1 max-md:flex-col md:items-center md:justify-between">
+                <HeadingSmall
+                    title="Game creator join requests"
+                    :description="`There are currently ${game_creator_requests_count} request(s) to become game creator`"
+                />
+
+                <Button as-child class="max-md:mt-4">
+                    <Link :href="route('admin.game.creator.join')">View requests</Link>
+                </Button>
+            </div>
+            <Separator />
             <Table :reload-only :headers="tableHeaders">
                 <TableRow v-for="user in users.data" :key="user.username">
                     <TableCell>{{ user.name }}</TableCell>
