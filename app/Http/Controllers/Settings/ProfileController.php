@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Settings;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Settings\ProfileUpdateRequest;
+use App\Models\GameCreatorRequest;
 use App\Services\UserDeleteServices;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\RedirectResponse;
@@ -24,6 +25,7 @@ class ProfileController extends Controller
 		return Inertia::render('app/settings/Profile', [
 			'mustVerifyEmail' => $request->user() instanceof MustVerifyEmail,
 			'status' => $request->session()->get('status'),
+			'appliedToBecomeGameCreator' => $request->user()->role === 'user' ? GameCreatorRequest::where('user_id', $request->user()->id)->exists() : true
 		]);
 	}
 

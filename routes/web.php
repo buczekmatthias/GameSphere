@@ -3,6 +3,7 @@
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\DiscussionController;
 use App\Http\Controllers\GameController;
+use App\Http\Controllers\GameCreatorRequestController;
 use App\Http\Controllers\GenreController;
 use App\Http\Controllers\HomepageController;
 use App\Http\Controllers\UserReportsController;
@@ -18,6 +19,8 @@ Route::get('/u/{user:username}/{tab?}', UserProfileController::class)->name('use
 
 Route::middleware(['auth'])->group(function () {
 	Route::get('/my-reports', UserReportsController::class)->name('user.reports');
+
+	Route::post('/become-game-creator', GameCreatorRequestController::class)->middleware('non.game.creator')->name('game.creator.join');
 
 	Route::post('/reports', StoreReportController::class)->name('reports.store');
 

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Middleware\AdminMiddleware;
+use App\Http\Middleware\CanBecomeGameCreatorMiddleware;
 use App\Http\Middleware\IsGameCreatorMiddleware;
 use App\Http\Middleware\HandleAppearance;
 use App\Http\Middleware\HandleInertiaRequests;
@@ -30,7 +31,8 @@ return Application::configure(basePath: dirname(__DIR__))
 		$middleware->alias([
 			'admin' => AdminMiddleware::class,
 			'set.intended' => SetIntendedUrl::class,
-			'game.creator' => IsGameCreatorMiddleware::class
+			'game.creator' => IsGameCreatorMiddleware::class,
+			'non.game.creator' => CanBecomeGameCreatorMiddleware::class,
 		]);
 	})
 	->withExceptions(function (Exceptions $exceptions) {
