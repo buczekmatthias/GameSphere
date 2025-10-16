@@ -9,15 +9,17 @@ use App\Http\Resources\Admin\User\UserListResource;
 use App\Models\GameCreatorRequest;
 use App\Models\User;
 use App\Services\UserDeleteServices;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Inertia\Response;
 
 class UserController extends Controller
 {
 	/**
 	 * Handle the incoming request.
 	 */
-	public function index(Request $request)
+	public function index(Request $request): Response
 	{
 		$entries = User::query();
 		$column = strtolower($request->get('column', 'content'));
@@ -42,7 +44,7 @@ class UserController extends Controller
 		]);
 	}
 
-	public function updateRole(User $user, UpdateRoleRequest $request)
+	public function updateRole(User $user, UpdateRoleRequest $request): RedirectResponse
 	{
 		$user->update([
 			'role' => $request->validated()['role']
@@ -51,7 +53,7 @@ class UserController extends Controller
 		return back(303);
 	}
 
-	public function destroy(User $user)
+	public function destroy(User $user): RedirectResponse
 	{
 		UserDeleteServices::deleteUser($user);
 

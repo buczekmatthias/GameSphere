@@ -7,13 +7,14 @@ use App\Http\Resources\Admin\Discussion\ListDiscussionResource;
 use App\Models\Discussion;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Inertia\Response;
 
 class DiscussionController extends Controller
 {
 	/**
 	 * Handle the incoming request.
 	 */
-	public function __invoke(Request $request)
+	public function __invoke(Request $request): Response
 	{
 		$entries = Discussion::with(['author', 'discussable'])->withCount(['comments', 'reports']);
 		$column = strtolower($request->get('column', 'title'));

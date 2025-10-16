@@ -8,14 +8,16 @@ use App\Http\Resources\Discussion\CommentResource;
 use App\Models\Comment;
 use App\Models\Discussion;
 use App\Services\UserPermissions;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
+use Inertia\Response;
 
 class CommentController extends Controller
 {
-	public function show(Comment $comment)
+	public function show(Comment $comment): Response
 	{
 		$comment->load(['user', 'discussion']);
 
@@ -31,7 +33,7 @@ class CommentController extends Controller
 	/**
 	 * Store a newly created resource in storage.
 	 */
-	public function store(StoreRequest $request)
+	public function store(StoreRequest $request): RedirectResponse
 	{
 		$data = $request->validated();
 
@@ -63,7 +65,7 @@ class CommentController extends Controller
 	/**
 	 * Update the specified resource in storage.
 	 */
-	public function update(UpdateRequest $request, Comment $comment)
+	public function update(UpdateRequest $request, Comment $comment): RedirectResponse
 	{
 		$comment->content = $request->post('content');
 
@@ -84,7 +86,7 @@ class CommentController extends Controller
 	/**
 	 * Remove the specified resource from storage.
 	 */
-	public function destroy(Comment $comment, Request $request)
+	public function destroy(Comment $comment, Request $request): RedirectResponse
 	{
 		if ($comment->media) {
 			foreach ($comment->media as $file) {

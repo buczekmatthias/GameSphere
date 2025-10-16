@@ -6,15 +6,17 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Report\UpdateReportStatusRequest;
 use App\Http\Resources\Report\UserReportsTableResource;
 use App\Models\Report;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Inertia\Response;
 
 class ReportController extends Controller
 {
 	/**
 	 * Display a listing of the resource.
 	 */
-	public function index(Request $request)
+	public function index(Request $request): Response
 	{
 		$entries = Report::with(['reportable', 'user']);
 		$column = strtolower($request->get('column', 'content'));
@@ -40,7 +42,7 @@ class ReportController extends Controller
 	/**
 	 * Update the specified resource in storage.
 	 */
-	public function update(UpdateReportStatusRequest $request, Report $report)
+	public function update(UpdateReportStatusRequest $request, Report $report): RedirectResponse
 	{
 		$report->update([
 			'status' => $request->validated()['status']
@@ -52,7 +54,7 @@ class ReportController extends Controller
 	/**
 	 * Remove the specified resource from storage.
 	 */
-	public function destroy(Report $report)
+	public function destroy(Report $report): RedirectResponse
 	{
 		$report->delete();
 

@@ -8,12 +8,14 @@ use App\Models\Game;
 use App\Http\Requests\Review\StoreRequest;
 use App\Http\Resources\Games\ReviewResource;
 use App\Models\Review;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Inertia\Response;
 
 class ReviewController extends Controller
 {
-	public function show(Review $review)
+	public function show(Review $review): Response
 	{
 		$review->load(['user', 'game']);
 
@@ -25,7 +27,7 @@ class ReviewController extends Controller
 	/**
 	 * Store a newly created resource in storage.
 	 */
-	public function store(StoreRequest $request)
+	public function store(StoreRequest $request): RedirectResponse
 	{
 		$review = Game::where('slug', $request->post('game_slug'))->first()->reviews()->make([
 			'slug' => Str::uuid(),
@@ -42,7 +44,7 @@ class ReviewController extends Controller
 	/**
 	 * Remove the specified resource from storage.
 	 */
-	public function destroy(Review $review, Request $request)
+	public function destroy(Review $review, Request $request): RedirectResponse
 	{
 		$review->reports()->delete();
 		$review->delete();

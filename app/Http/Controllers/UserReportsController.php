@@ -6,13 +6,14 @@ use App\Http\Resources\Report\UserReportsTableResource;
 use App\Models\Report;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Inertia\Response;
 
 class UserReportsController extends Controller
 {
 	/**
 	 * Handle the incoming request.
 	 */
-	public function __invoke(Request $request)
+	public function __invoke(Request $request): Response
 	{
 		return Inertia::render('app/Reports', [
 			'reports' => UserReportsTableResource::collection(

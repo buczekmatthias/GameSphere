@@ -10,13 +10,14 @@ use App\Models\Report;
 use App\Models\User;
 use App\Services\ShorterNumbers;
 use Inertia\Inertia;
+use Inertia\Response;
 
 class DashboardController extends Controller
 {
 	/**
 	 * Handle the incoming request.
 	 */
-	public function __invoke()
+	public function __invoke(): Response
 	{
 		return Inertia::render('admin/Dashboard', [
 			'new_entries' => [
@@ -45,7 +46,7 @@ class DashboardController extends Controller
 		]);
 	}
 
-	private function getTrend(int $current, int $last)
+	private function getTrend(int $current, int $last): string | int
 	{
 		if ($last === 0) {
 			if ($current === 0) {

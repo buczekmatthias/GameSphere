@@ -7,14 +7,16 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\Admin\User\GameCreatorRequestResource;
 use App\Models\GameCreatorRequest;
 use App\Models\User;
+use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
+use Inertia\Response;
 
 class GameCreatorJoinRequestController extends Controller
 {
 	/**
 	 * Handle the incoming request.
 	 */
-	public function index()
+	public function index(): Response
 	{
 		return Inertia::render('admin/GameCreatorRequest', [
 			'requests' => GameCreatorRequestResource::collection(
@@ -25,7 +27,7 @@ class GameCreatorJoinRequestController extends Controller
 		]);
 	}
 
-	public function acceptRequest(User $user)
+	public function acceptRequest(User $user): RedirectResponse
 	{
 		$user->role = UserRole::GAME_CREATOR->value;
 		$user->save();
@@ -34,7 +36,7 @@ class GameCreatorJoinRequestController extends Controller
 		return back();
 	}
 
-	public function rejectRequest(User $user)
+	public function rejectRequest(User $user): RedirectResponse
 	{
 		GameCreatorRequest::where('user_id', $user->id)->first()->delete();
 

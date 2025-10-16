@@ -8,6 +8,7 @@ use App\Models\Discussion;
 use App\Models\Game;
 use App\Models\Review;
 use App\Models\User;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Str;
 
 class StoreReportController extends Controller
@@ -15,7 +16,7 @@ class StoreReportController extends Controller
 	/**
 	 * Handle the incoming request.
 	 */
-	public function __invoke(StoreReportRequest $request)
+	public function __invoke(StoreReportRequest $request): RedirectResponse
 	{
 		$data = $request->validated();
 

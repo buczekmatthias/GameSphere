@@ -7,13 +7,14 @@ use App\Http\Resources\Admin\Game\GameListResource;
 use App\Models\Game;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Inertia\Response;
 
 class GameController extends Controller
 {
 	/**
 	 * Handle the incoming request.
 	 */
-	public function __invoke(Request $request)
+	public function __invoke(Request $request): Response
 	{
 		$entries = Game::with(['creator', 'genre']);
 		$column = strtolower($request->get('column', 'title'));

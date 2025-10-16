@@ -9,13 +9,14 @@ use App\Http\Resources\Report\UserReportsTableResource;
 use App\Models\Review;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Inertia\Response;
 
 class ReviewController extends Controller
 {
 	/**
 	 * Handle the incoming request.
 	 */
-	public function index(Request $request)
+	public function index(Request $request): Response
 	{
 		$entries = Review::with(['user', 'game'])->withCount(['reports']);
 		$column = strtolower($request->get('column', 'content'));
@@ -40,7 +41,7 @@ class ReviewController extends Controller
 		]);
 	}
 
-	public function show(Review $review)
+	public function show(Review $review): Response
 	{
 		$review->load(['user', 'game']);
 

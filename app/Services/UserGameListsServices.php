@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Auth;
 
 final class UserGameListsServices
 {
-	public static function checkIfGameIsInAnyUserGamesList(Game $game)
+	public static function checkIfGameIsInAnyUserGamesList(Game $game): ?array
 	{
 		/** @var User */
 		$user = Auth::user();

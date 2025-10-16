@@ -15,6 +15,7 @@ use App\Models\Genre;
 use App\Services\UserGameListsServices;
 use App\Services\UserPermissions;
 use Carbon\Carbon;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
@@ -22,7 +23,6 @@ use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
 use Illuminate\Support\Str;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 
 class GameController extends Controller
 {
@@ -84,7 +84,7 @@ class GameController extends Controller
 	/**
 	 * Store a newly created resource in storage.
 	 */
-	public function store(StoreRequest $request)
+	public function store(StoreRequest $request): RedirectResponse
 	{
 		$data = $request->validated();
 
@@ -156,7 +156,7 @@ class GameController extends Controller
 	/**
 	 * Update the specified resource in storage.
 	 */
-	public function update(Game $game, EditRequest $request)
+	public function update(Game $game, EditRequest $request): RedirectResponse
 	{
 		$data = $request->validated();
 
@@ -215,7 +215,7 @@ class GameController extends Controller
 	/**
 	 * Remove the specified resource from storage.
 	 */
-	public function destroy(Game $game)
+	public function destroy(Game $game): RedirectResponse
 	{
 		Storage::delete("games/{$game->slug}/{$game->thumbnail}");
 

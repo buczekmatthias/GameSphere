@@ -7,17 +7,19 @@ use App\Http\Requests\Admin\Genre\GenreRequest;
 use App\Http\Resources\Admin\Genre\EditGenreResource;
 use App\Http\Resources\Genre\ListResource;
 use App\Models\Genre;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Illuminate\Support\Str;
+use Inertia\Response;
 
 class GenreController extends Controller
 {
 	/**
 	 * Display a listing of the resource.
 	 */
-	public function index(Request $request)
+	public function index(Request $request): Response
 	{
 		$entries = Genre::withCount(['discussions', 'games']);
 		$column = strtolower($request->get('column', 'name'));
@@ -43,7 +45,7 @@ class GenreController extends Controller
 	/**
 	 * Store a newly created resource in storage.
 	 */
-	public function store(GenreRequest $request)
+	public function store(GenreRequest $request): RedirectResponse
 	{
 		Genre::create([
 			'slug' => Str::uuid(),
@@ -56,7 +58,7 @@ class GenreController extends Controller
 	/**
 	 * Show the form for editing the specified resource.
 	 */
-	public function edit(Genre $genre)
+	public function edit(Genre $genre): Response
 	{
 		return Inertia::render('admin/genre/Edit', [
 			'genre' => EditGenreResource::make($genre)
@@ -66,7 +68,7 @@ class GenreController extends Controller
 	/**
 	 * Update the specified resource in storage.
 	 */
-	public function update(GenreRequest $request, Genre $genre)
+	public function update(GenreRequest $request, Genre $genre): RedirectResponse
 	{
 		$genre->update($request->validated());
 
@@ -76,7 +78,7 @@ class GenreController extends Controller
 	/**
 	 * Remove the specified resource from storage.
 	 */
-	public function destroy(Genre $genre)
+	public function destroy(Genre $genre): RedirectResponse
 	{
 		DB::transaction(function () use ($genre) {
 			$genre->games()->update(['genre_id' => null]);

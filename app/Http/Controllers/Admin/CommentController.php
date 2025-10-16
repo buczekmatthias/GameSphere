@@ -7,13 +7,14 @@ use App\Http\Resources\Admin\Comment\CommentListResource;
 use App\Models\Comment;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Inertia\Response;
 
 class CommentController extends Controller
 {
 	/**
 	 * Handle the incoming request.
 	 */
-	public function __invoke(Request $request)
+	public function __invoke(Request $request): Response
 	{
 		$entries = Comment::with(['user', 'discussion'])->withCount(['reports']);
 		$column = strtolower($request->get('column', 'content'));

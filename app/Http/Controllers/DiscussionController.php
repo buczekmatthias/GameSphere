@@ -10,15 +10,17 @@ use App\Models\Discussion;
 use App\Models\Game;
 use App\Models\Genre;
 use App\Services\UserPermissions;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
+use Inertia\Response;
 
 class DiscussionController extends Controller
 {
-	public function index()
+	public function index(): Response
 	{
 		return Inertia::render('app/discussion/Index', [
 			'discussions' => Inertia::defer(fn () => ListDiscussionResource::collection(
@@ -30,7 +32,7 @@ class DiscussionController extends Controller
 	/**
 	 * Store a newly created resource in storage.
 	 */
-	public function store(StoreRequest $request)
+	public function store(StoreRequest $request): RedirectResponse
 	{
 		$discussion = (
 			$request->post('type') === 'game'
@@ -53,7 +55,7 @@ class DiscussionController extends Controller
 	/**
 	 * Display the specified resource.
 	 */
-	public function show(Discussion $discussion, Request $request)
+	public function show(Discussion $discussion, Request $request): Response
 	{
 		$discussion->load(['author', 'discussable']);
 		$discussion->loadCount('comments');
@@ -70,7 +72,7 @@ class DiscussionController extends Controller
 	/**
 	 * Update the specified resource in storage.
 	 */
-	public function update(Discussion $discussion, UpdateRequest $request)
+	public function update(Discussion $discussion, UpdateRequest $request): RedirectResponse
 	{
 		$discussion->update($request->validated());
 
@@ -80,7 +82,7 @@ class DiscussionController extends Controller
 	/**
 	 * Remove the specified resource from storage.
 	 */
-	public function destroy(Discussion $discussion, Request $request)
+	public function destroy(Discussion $discussion, Request $request): RedirectResponse
 	{
 		foreach ($discussion->comments as $comment) {
 			foreach ($comment->media as $file) {

@@ -6,7 +6,7 @@ use Illuminate\Support\Number;
 
 final class ShorterNumbers
 {
-	public static function convertIntToHumanReadable(int $number, int $threshold = 9999)
+	public static function convertIntToHumanReadable(int $number, int $threshold = 9999): string | int
 	{
 		if ($number <= $threshold) {
 			return $number;
