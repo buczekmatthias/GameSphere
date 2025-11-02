@@ -31,16 +31,6 @@ class Report extends Model
 		return $this->morphTo();
 	}
 
-	public function scopeThisMonth(Builder $query)
-	{
-		return $query->where('created_at', '>=', now()->startOfMonth());
-	}
-
-	public function scopeLastMonth(Builder $query)
-	{
-		return $query->whereBetween('created_at', [now()->startOfMonth()->subMonth(), now()->startOfMonth()]);
-	}
-
 	public function scopeActiveReports(Builder $query)
 	{
 		return $query->where('status', ReportStatus::OPEN->value);

@@ -3,6 +3,7 @@ import ActiveReports from '@/components/Admin/ActiveReports.vue';
 import CustomChartTooltip from '@/components/Admin/CustomChartTooltip.vue';
 import PendingGameCreatorRequests from '@/components/Admin/PendingGameCreatorRequests.vue';
 import Trend from '@/components/Admin/Trend.vue';
+import Heading from '@/components/Heading.vue';
 import { AreaChart } from '@/components/ui/chart-area';
 import AdminLayout from '@/layouts/AdminLayout.vue';
 import { GameCreatorRequest } from '@/pages/admin/GameCreatorRequest.vue';
@@ -37,7 +38,7 @@ defineProps<{
 
     <AdminLayout>
         <div class="main-container grid grid-cols-1 gap-4 lg:grid-cols-[2.5fr_1fr]">
-            <p class="col-span-full text-2xl">Overview</p>
+            <Heading title="Overview" description="Data updates every 15 minutes" class="col-span-full !mb-0 text-2xl" />
             <div class="grid grid-cols-1 grid-rows-4 gap-4 lg:col-start-2 lg:row-start-2">
                 <Trend v-for="[label, entry] in Object.entries(new_entries)" :key="label" :label="label" :entry="entry" />
             </div>

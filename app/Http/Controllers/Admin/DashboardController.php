@@ -13,12 +13,16 @@ use App\Models\User;
 use App\Services\ShorterNumbers;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class DashboardController extends Controller
 {
+	// 15 minutes
+	private const TTL = 900;
+
 	/**
 	 * Handle the incoming request.
 	 */
@@ -27,30 +31,50 @@ class DashboardController extends Controller
 		return Inertia::render('admin/Dashboard', [
 			'new_entries' => [
 				'games' => [
-					'this_month' => ShorterNumbers::convertIntToHumanReadable($game_this = Game::thisMonth()->count()),
-					'last_month' => ShorterNumbers::convertIntToHumanReadable($game_last = Game::lastMonth()->count()),
-					'trend' => $this->getTrend($game_this, $game_last)
+					...$games = $this->getStatsDataForClass(Game::class),
+					'trend' => $this->getTrend($games['this_month'], $games['last_month'])
 				],
 				'users' => [
-					'this_month' => ShorterNumbers::convertIntToHumanReadable($user_this = User::thisMonth()->count()),
-					'last_month' => ShorterNumbers::convertIntToHumanReadable($user_last = User::lastMonth()->count()),
-					'trend' => $this->getTrend($user_this, $user_last)
+					...$users = $this->getStatsDataForClass(User::class),
+					'trend' => $this->getTrend($users['this_month'], $users['last_month'])
 				],
 				'reports' => [
-					'this_month' => ShorterNumbers::convertIntToHumanReadable($report_this = Report::thisMonth()->count()),
-					'last_month' => ShorterNumbers::convertIntToHumanReadable($report_last = Report::lastMonth()->count()),
-					'trend' => $this->getTrend($report_this, $report_last)
+					...$reports = $this->getStatsDataForClass(Report::class),
+					'trend' => $this->getTrend($reports['this_month'], $reports['last_month'])
 				],
 				'discussions' => [
-					'this_month' => ShorterNumbers::convertIntToHumanReadable($discussion_this = Discussion::thisMonth()->count()),
-					'last_month' => ShorterNumbers::convertIntToHumanReadable($discussion_last = Discussion::lastMonth()->count()),
-					'trend' => $this->getTrend($discussion_this, $discussion_last)
+					...$discussions = $this->getStatsDataForClass(Discussion::class),
+					'trend' => $this->getTrend($discussions['this_month'], $discussions['last_month'])
 				],
 			],
 			'chart_data' => $this->getChartData(),
 			'active_reports' => UserReportsTableResource::collection(Report::activeReports()->with(['reportable', 'user'])->orderBy('created_at', 'DESC')->paginate(15)),
 			'pending_requests' => GameCreatorRequestResource::collection(GameCreatorRequest::with(['user'])->orderBy('created_at', 'DESC')->paginate(15))
 		]);
+	}
+
+	/**
+	 * @param class-string<Game|User|Report|Discussion> $class
+	 */
+	private function getStatsDataForClass(string $class): array
+	{
+		$results = Cache::remember("{$class}_dashboard_stats", self::TTL, function () use ($class) {
+			$now = now();
+			$startOfMonth = $now->startOfMonth();
+
+			$model = app($class);
+			$results = collect($model->query()
+				->selectRaw(
+					'SUM(CASE WHEN created_at >= ? THEN 1 ELSE 0 END) as this_month, SUM(CASE WHEN created_at >= ? AND created_at < ? THEN 1 ELSE 0 END) as last_month',
+					[$startOfMonth, $now->subMonth()->startOfMonth(), $startOfMonth]
+				)->first());
+
+			$results->map(fn ($r) => ShorterNumbers::convertIntToHumanReadable($r));
+
+			return $results->toArray();
+		});
+
+		return $results;
 	}
 
 	private function getTrend(int $current, int $last): string | int
@@ -71,38 +95,40 @@ class DashboardController extends Controller
 
 	private function getChartData(): array
 	{
-		$now = Carbon::now();
+		return Cache::remember("dashboard_chart_data", self::TTL, function () {
+			$now = now();
 
-		$date = $now->copy()->startOfMonth()->subMonths(5);
+			$date = $now->copy()->startOfMonth()->subMonths(5);
 
-		$games = $this->getTableDataForChart('games', $date);
-		$users = $this->getTableDataForChart('users', $date);
-		$discussions = $this->getTableDataForChart('discussions', $date);
-		$reports = $this->getTableDataForChart('reports', $date);
+			$games = $this->getTableDataForChart('games', $date);
+			$users = $this->getTableDataForChart('users', $date);
+			$discussions = $this->getTableDataForChart('discussions', $date);
+			$reports = $this->getTableDataForChart('reports', $date);
 
-		$months = [];
+			$months = [];
 
-		for ($i = 5; $i >= 0; $i--) {
-			$months[] = $now->copy()->subMonths($i)->format('M');
-		}
+			for ($i = 5; $i >= 0; $i--) {
+				$months[] = $now->copy()->subMonths($i)->format('M');
+			}
 
-		$data = array_map(
-			fn ($month) => [
-				'month' => $month,
-				'games' => 0,
-				'users' => 0,
-				'discussions' => 0,
-				'reports' => 0,
-			],
-			$months
-		);
+			$data = array_map(
+				fn ($month) => [
+					'month' => $month,
+					'games' => 0,
+					'users' => 0,
+					'discussions' => 0,
+					'reports' => 0,
+				],
+				$months
+			);
 
-		$this->updateData($games, 'games', $data);
-		$this->updateData($users, 'users', $data);
-		$this->updateData($discussions, 'discussions', $data);
-		$this->updateData($reports, 'reports', $data);
+			$this->updateData($games, 'games', $data);
+			$this->updateData($users, 'users', $data);
+			$this->updateData($discussions, 'discussions', $data);
+			$this->updateData($reports, 'reports', $data);
 
-		return $data;
+			return $data;
+		});
 	}
 
 	private function getTableDataForChart(string $tableName, Carbon $date): Collection
