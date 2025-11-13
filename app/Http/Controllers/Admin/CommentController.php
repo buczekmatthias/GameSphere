@@ -11,6 +11,8 @@ use Inertia\Response;
 
 class CommentController extends Controller
 {
+	private const SORT_COLUMNS = ['content', 'discussion', 'user', 'reports', 'created_at'];
+
 	/**
 	 * Handle the incoming request.
 	 */
@@ -20,10 +22,10 @@ class CommentController extends Controller
 		$column = strtolower($request->get('column', 'content'));
 		$order = strtolower($request->get('order', 'asc'));
 
-		if (!in_array($order, ['asc', 'desc'])) {
+		if (!in_array($order, self::ORDER)) {
 			$order = 'asc';
 		}
-		if (!in_array($column, ['content', 'discussion', 'user', 'reports', 'created_at'])) {
+		if (!in_array($column, self::SORT_COLUMNS)) {
 			$column = 'content';
 		}
 

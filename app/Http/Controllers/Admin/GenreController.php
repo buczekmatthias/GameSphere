@@ -16,6 +16,8 @@ use Inertia\Response;
 
 class GenreController extends Controller
 {
+	private const SORT_COLUMNS = ['name', 'discussions', 'games'];
+
 	/**
 	 * Display a listing of the resource.
 	 */
@@ -25,10 +27,10 @@ class GenreController extends Controller
 		$column = strtolower($request->get('column', 'name'));
 		$order = strtolower($request->get('order', 'asc'));
 
-		if (!in_array($order, ['asc', 'desc'])) {
+		if (!in_array($order, self::ORDER)) {
 			$order = 'asc';
 		}
-		if (!in_array($column, ['name', 'discussions', 'games'])) {
+		if (!in_array($column, self::SORT_COLUMNS)) {
 			$column = 'name';
 		}
 

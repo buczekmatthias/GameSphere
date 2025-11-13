@@ -38,7 +38,7 @@ defineProps<{
 
     <AdminLayout>
         <div class="main-container grid grid-cols-1 gap-4 lg:grid-cols-[2.5fr_1fr]">
-            <Heading title="Overview" description="Data updates every 15 minutes" class="col-span-full !mb-0 text-2xl" />
+            <Heading title="Overview" description="Stats update every 45 minutes" class="col-span-full !mb-0 text-2xl" />
             <div class="grid grid-cols-1 grid-rows-4 gap-4 lg:col-start-2 lg:row-start-2">
                 <Trend v-for="[label, entry] in Object.entries(new_entries)" :key="label" :label="label" :entry="entry" />
             </div>

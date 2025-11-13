@@ -20,8 +20,9 @@ use Inertia\Response;
 
 class DashboardController extends Controller
 {
-	// 15 minutes
-	private const TTL = 900;
+	private const FRESH = 60 * 30;
+
+	private const STALE = 60 * 45;
 
 	/**
 	 * Handle the incoming request.
@@ -58,7 +59,7 @@ class DashboardController extends Controller
 	 */
 	private function getStatsDataForClass(string $class): array
 	{
-		$results = Cache::remember("{$class}_dashboard_stats", self::TTL, function () use ($class) {
+		$results = Cache::flexible("{$class}_dashboard_stats", [self::FRESH, self::STALE], function () use ($class) {
 			$now = now();
 			$startOfMonth = $now->startOfMonth();
 
@@ -95,7 +96,7 @@ class DashboardController extends Controller
 
 	private function getChartData(): array
 	{
-		return Cache::remember("dashboard_chart_data", self::TTL, function () {
+		return Cache::flexible("dashboard_chart_data", [self::FRESH, self::STALE], function () {
 			$now = now();
 
 			$date = $now->copy()->startOfMonth()->subMonths(5);

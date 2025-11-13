@@ -13,6 +13,8 @@ use Inertia\Response;
 
 class ReportController extends Controller
 {
+	private const SORT_COLUMNS = ['reason', 'user', 'status', 'created_at'];
+
 	/**
 	 * Display a listing of the resource.
 	 */
@@ -22,10 +24,10 @@ class ReportController extends Controller
 		$column = strtolower($request->get('column', 'content'));
 		$order = strtolower($request->get('order', 'desc'));
 
-		if (!in_array($order, ['asc', 'desc'])) {
+		if (!in_array($order, self::ORDER)) {
 			$order = 'desc';
 		}
-		if (!in_array($column, ['reason', 'user', 'status', 'created_at'])) {
+		if (!in_array($column, self::SORT_COLUMNS)) {
 			$column = 'created_at';
 		}
 

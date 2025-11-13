@@ -9,6 +9,7 @@ use App\Http\Resources\Admin\User\UserListResource;
 use App\Models\GameCreatorRequest;
 use App\Models\User;
 use App\Services\UserDeleteServices;
+use App\Services\UserPermissions;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -16,6 +17,8 @@ use Inertia\Response;
 
 class UserController extends Controller
 {
+	private const SORT_COLUMNS = ['name', 'username', 'role', 'email', 'verified', 'avatar', 'created_at'];
+
 	/**
 	 * Handle the incoming request.
 	 */
@@ -25,21 +28,23 @@ class UserController extends Controller
 		$column = strtolower($request->get('column', 'content'));
 		$order = strtolower($request->get('order', 'asc'));
 
-		if (!in_array($order, ['asc', 'desc'])) {
+		if (!in_array($order, self::ORDER)) {
 			$order = 'asc';
 		}
-		if (!in_array($column, ['name', 'username', 'role', 'email', 'verified', 'avatar', 'created_at'])) {
-			$column = 'name';
+		if (!in_array($column, self::SORT_COLUMNS)) {
+			$column = 'role';
 		}
 
 		match ($column) {
 			'verify' => $entries->orderBy('email_verified_at', $order),
+			'role' => $entries->orderByRaw("array_position("."'{" . implode(',', array_reverse(array_column(UserRole::cases(), 'value'))) . "}'"."::text[],role) {$order}"),
 			default => $entries->orderBy($column, $order),
 		};
 
 		return Inertia::render('admin/User', [
 			'users' => UserListResource::collection($entries->paginate(50)),
-			'roles' => array_reverse(array_column(UserRole::cases(), 'value')),
+			'roles' => array_values(array_filter(array_reverse(array_column(UserRole::cases(), 'value')), fn ($i) => $i !== UserRole::DEVELOPER->value)),
+			'roles_user_can_manage' => UserPermissions::getRolesListUserCanManage($request->user()),
 			'game_creator_requests_count' => GameCreatorRequest::count()
 		]);
 	}

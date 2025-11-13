@@ -11,6 +11,8 @@ use Inertia\Response;
 
 class DiscussionController extends Controller
 {
+	private const SORT_COLUMNS = ['title', 'author', 'comments', 'reports', 'created_at'];
+
 	/**
 	 * Handle the incoming request.
 	 */
@@ -20,10 +22,10 @@ class DiscussionController extends Controller
 		$column = strtolower($request->get('column', 'title'));
 		$order = strtolower($request->get('order', 'asc'));
 
-		if (!in_array($order, ['asc', 'desc'])) {
+		if (!in_array($order, self::ORDER)) {
 			$order = 'asc';
 		}
-		if (!in_array($column, ['title', 'author', 'comments', 'reports', 'created_at'])) {
+		if (!in_array($column, self::SORT_COLUMNS)) {
 			$column = 'title';
 		}
 

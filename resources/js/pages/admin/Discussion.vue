@@ -50,7 +50,10 @@ const reloadOnly: string[] = ['discussions'];
                     <TableCell>{{ discussion.slug }}</TableCell>
                     <TableCell>{{ discussion.title }}</TableCell>
                     <TableCell>
-                        <TextLink :href="route('user.profile', { user: discussion.author.username })">{{ discussion.author.name }}</TextLink>
+                        <TextLink :href="route('user.profile', { user: discussion.author.username })" v-if="discussion.author">
+                            {{ discussion.author.name }}
+                        </TextLink>
+                        <p class="italic" v-else>Deleted user</p>
                     </TableCell>
                     <TableCell>
                         <TextLink :href="discussion.discussable">Show {{ discussion.discussable_type }}</TextLink>

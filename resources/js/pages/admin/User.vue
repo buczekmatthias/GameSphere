@@ -16,15 +16,16 @@ import { TableCell, TableRow } from '@/components/ui/table';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import UserRole from '@/components/UserRole.vue';
 import { getPaginationData } from '@/composables/usePagination';
+import { useCurrentUser } from '@/composables/useUser';
 import AdminLayout from '@/layouts/AdminLayout.vue';
 import type { Pagination as PaginationType, User } from '@/types';
 import { Head, Link } from '@inertiajs/vue3';
 import { CheckCircle, ChevronDown, ChevronUp, Ellipsis, Eye, Trash } from 'lucide-vue-next';
-import { computed } from 'vue';
 
 const props = defineProps<{
     users: PaginationType & { data: User[] };
     roles: string[];
+    roles_user_can_manage: string[];
     game_creator_requests_count: number;
 }>();
 
@@ -38,26 +39,31 @@ const tableHeaders = [
     { label: 'Created at', is_sortable: true, column: 'created_at' },
 ];
 
+const currentUser = useCurrentUser();
+
 const reloadOnly: string[] = ['users', 'game_creator_requests_count'];
 
-const getRoleIndex = computed(() => (currentRole: string) => props.roles.indexOf(currentRole));
+// TODO: Fix this to display proper values
+const getRoleIndex = (currentRole: string) => props.roles.indexOf(currentRole);
 
-const getRolesAbove = computed(() => (currentRole: string) => {
-    const ind = getRoleIndex.value(currentRole);
+const getRolesAbove = (currentRole: string) => {
+    const ind = getRoleIndex(currentRole);
 
     const roles = [...props.roles].splice(0, ind);
 
-    return roles;
-});
+    return roles.filter((r) => props.roles_user_can_manage.includes(r));
+};
 
-const getRolesBelow = computed(() => (currentRole: string) => {
-    const ind = getRoleIndex.value(currentRole);
+const getRolesBelow = (currentRole: string) => {
+    const ind = getRoleIndex(currentRole);
 
     const roles = [...props.roles].splice(ind);
     roles.shift();
 
-    return roles;
-});
+    return roles.filter((r) => props.roles_user_can_manage.includes(r));
+};
+
+const canCurrentUserManageUser = (user: User) => props.roles_user_can_manage.includes(user.role);
 </script>
 
 <template>
@@ -127,32 +133,32 @@ const getRolesBelow = computed(() => (currentRole: string) => {
                                         Delete
                                     </Link>
                                 </DropdownMenuItem>
-                                <DropdownMenuSeparator v-if="getRolesAbove(user.role).length > 0" />
-                                <!-- TODO: Conditional rendering basing on current role -->
-                                <DropdownMenuItem as-child v-for="role in getRolesAbove(user.role)" :key="role">
-                                    <Link
-                                        :href="route('admin.users.role', { user: user.username, role: role })"
-                                        as="button"
-                                        method="patch"
-                                        class="w-full cursor-pointer"
-                                    >
-                                        <ChevronUp class="size-4" />
-                                        Promote to {{ role.replaceAll('_', ' ') }}
-                                    </Link>
-                                </DropdownMenuItem>
-                                <DropdownMenuSeparator v-if="getRolesBelow(user.role).length > 0" />
-                                <DropdownMenuItem as-child v-for="role in getRolesBelow(user.role)" :key="role">
-                                    <Link
-                                        :href="route('admin.users.role', { user: user.username, role: role })"
-                                        as="button"
-                                        method="patch"
-                                        class="w-full cursor-pointer"
-                                    >
-                                        <ChevronDown class="size-4" />
-                                        Demote to {{ role.replaceAll('_', ' ') }}
-                                    </Link>
-                                </DropdownMenuItem>
-                                <!-- END TODO -->
+                                <template v-if="user.username !== currentUser.username && canCurrentUserManageUser(user)">
+                                    <DropdownMenuSeparator v-if="getRolesAbove(user.role).length > 0" />
+                                    <DropdownMenuItem as-child v-for="role in getRolesAbove(user.role)" :key="role">
+                                        <Link
+                                            :href="route('admin.users.role', { user: user.username, role: role })"
+                                            as="button"
+                                            method="patch"
+                                            class="w-full cursor-pointer"
+                                        >
+                                            <ChevronUp class="size-4" />
+                                            Promote to {{ role.replaceAll('_', ' ') }}
+                                        </Link>
+                                    </DropdownMenuItem>
+                                    <DropdownMenuSeparator v-if="getRolesBelow(user.role).length > 0" />
+                                    <DropdownMenuItem as-child v-for="role in getRolesBelow(user.role)" :key="role">
+                                        <Link
+                                            :href="route('admin.users.role', { user: user.username, role: role })"
+                                            as="button"
+                                            method="patch"
+                                            class="w-full cursor-pointer"
+                                        >
+                                            <ChevronDown class="size-4" />
+                                            Demote to {{ role.replaceAll('_', ' ') }}
+                                        </Link>
+                                    </DropdownMenuItem>
+                                </template>
                             </DropdownMenuContent>
                         </DropdownMenu>
                     </TableCell>

@@ -52,7 +52,7 @@ const reloadOnly: string[] = ['games'];
                                 <TooltipTrigger as-child>
                                     <p>{{ game.short_description }}</p>
                                 </TooltipTrigger>
-                                <TooltipContent class="max-w-[75vw]">
+                                <TooltipContent class="max-w-[70vw] text-wrap lg:max-w-[40vw]">
                                     <p>{{ game.description }}</p>
                                 </TooltipContent>
                             </Tooltip>
@@ -63,7 +63,10 @@ const reloadOnly: string[] = ['games'];
                         <TextLink :href="route('genres.show', { genre: game.genre.slug })">{{ game.genre.name }}</TextLink>
                     </TableCell>
                     <TableCell>
-                        <TextLink :href="route('user.profile', { user: game.creator.username })">{{ game.creator.name }}</TextLink>
+                        <TextLink :href="route('user.profile', { user: game.creator.username })" v-if="game.creator">
+                            {{ game.creator.name }}
+                        </TextLink>
+                        <p class="italic" v-else>Deleted user</p>
                     </TableCell>
                     <TableCell>{{ game.released_at }}</TableCell>
                     <TableCell>{{ game.created_at }}</TableCell>

@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enum\UserRole;
 use App\Models\Comment;
 use App\Models\Discussion;
 use App\Models\Game;
@@ -23,5 +24,14 @@ final class UserPermissions
 		$user = Auth::user();
 
 		return $user->can($permission, $resource);
+	}
+
+	public static function getRolesListUserCanManage(User $user): array
+	{
+		$roles = array_column(UserRole::cases(), 'value');
+
+		array_splice($roles, array_search($user->role, $roles));
+
+		return array_reverse($roles);
 	}
 }
