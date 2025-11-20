@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Resources\Discussion;
+namespace App\Http\Resources\User;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Storage;
 
-class AuthorResource extends JsonResource
+class SimpleProfileResource extends JsonResource
 {
 	/**
 	 * Transform the resource into an array.
@@ -18,7 +18,8 @@ class AuthorResource extends JsonResource
 		return [
 			'name' => $this->name,
 			'username' => $this->username,
-			'avatar' => $this->avatar ? asset(Storage::url("users/{$this->avatar}")) : null
+			'role' => $this->role,
+			'avatar' => $this->avatar ? asset(Storage::url("users/{$this->avatar}")) : '',
 		];
 	}
 }

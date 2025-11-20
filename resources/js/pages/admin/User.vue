@@ -122,7 +122,7 @@ const canCurrentUserManageUser = (user: User) => props.roles_user_can_manage.inc
                                         View profile
                                     </Link>
                                 </DropdownMenuItem>
-                                <DropdownMenuItem as-child>
+                                <DropdownMenuItem as-child v-if="canCurrentUserManageUser(user)">
                                     <Link
                                         :href="route('admin.users.destroy', { user: user.username })"
                                         as="button"

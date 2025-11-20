@@ -51,7 +51,8 @@ const reloadOnly: string[] = ['reviews'];
                         <TextLink :href="route('games.show', { game: review.game.slug })">{{ review.game.title }}</TextLink>
                     </TableCell>
                     <TableCell>
-                        <TextLink :href="route('user.profile', { user: review.user.username })">{{ review.user.name }}</TextLink>
+                        <TextLink :href="route('user.profile', { user: review.user.username })" v-if="review.user"> {{ review.user.name }} </TextLink>
+                        <p class="text-sm italic" v-else>Deleted user</p>
                     </TableCell>
                     <TableCell>{{ review.reports_count }}</TableCell>
                     <TableCell>{{ review.created_at }}</TableCell>

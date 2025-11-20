@@ -45,10 +45,13 @@ const reloadOnly: string[] = ['reports'];
                 </Link>
             </Button>
             <div class="flex items-center gap-3">
-                <Link class="mr-auto flex gap-3" :href="route('user.profile', { user: review.user.username })">
-                    <UserInfo :show-username="true" :user="review.user" />
-                </Link>
-                <p v-if="review.user.role !== 'user'" class="text-sm">{{ capitalize(review.user.role) }}</p>
+                <template v-if="review.user">
+                    <Link class="mr-auto flex gap-3" :href="route('user.profile', { user: review.user.username })">
+                        <UserInfo :show-username="true" :user="review.user" />
+                    </Link>
+                    <p v-if="review.user.role !== 'user'" class="text-sm">{{ capitalize(review.user.role) }}</p>
+                </template>
+                <p class="text-sm italic" v-else>Deleted user</p>
             </div>
             <p>{{ review.content }}</p>
             <p>Created at: {{ review.created_at }}</p>

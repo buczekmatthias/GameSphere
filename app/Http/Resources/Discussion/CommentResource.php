@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\Discussion;
 
+use App\Http\Resources\User\SimpleProfileResource;
 use App\Services\UserPermissions;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -33,14 +34,14 @@ class CommentResource extends JsonResource
 					: [],
 			'user' => $this->whenLoaded(
 				'user',
-				fn () => new AuthorResource($this->user)
+				fn () => SimpleProfileResource::make($this->user)->toArray($request),
 			),
 			'discussion' => $this->whenLoaded(
 				'discussion',
 				fn () => [
 					'title' => $this->discussion->title,
 					'slug' => $this->discussion->slug,
-					'author' => new AuthorResource($this->discussion->author),
+					'author' => SimpleProfileResource::make($this->discussion->author)->toArray($request),
 					'comments_count' => $this->discussion->comments()->count(),
 					'created_at' => $this->discussion->created_at->format('Y-m-d')
 				]

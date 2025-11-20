@@ -5,7 +5,7 @@ defineProps<{
 </script>
 
 <template>
-    <p class="text-sm text-slate-600 dark:text-slate-500">
+    <p class="text-muted-foreground text-sm">
         {{ message }}
     </p>
 </template>

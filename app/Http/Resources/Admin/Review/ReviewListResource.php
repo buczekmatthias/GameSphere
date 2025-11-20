@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\Admin\Review;
 
+use App\Http\Resources\User\SimpleProfileResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Str;
@@ -20,10 +21,7 @@ class ReviewListResource extends JsonResource
 			'content' => Str::limit($this->content, 20, preserveWords: true),
 			'user' => $this->whenLoaded(
 				'user',
-				fn () => [
-					'name' => $this->user->name,
-					'username' => $this->user->username,
-				]
+				fn () => SimpleProfileResource::make($this->user)->toArray($request)
 			),
 			'game' => $this->whenLoaded(
 				'game',

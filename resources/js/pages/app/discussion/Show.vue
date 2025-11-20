@@ -10,7 +10,6 @@ import { Button, buttonVariants } from '@/components/ui/button';
 import UpdateCommentForm from '@/components/UpdateCommentForm.vue';
 import UpdateDiscussionForm from '@/components/UpdateDiscussionForm.vue';
 import UserInfo from '@/components/UserInfo.vue';
-import { canInteract } from '@/composables/useCanInteract';
 import AppLayout from '@/layouts/AppLayout.vue';
 import type { BreadcrumbItem, DiscussableGame, DiscussableGenre, Discussion as DiscussionType, Permissions } from '@/types';
 import { Head, Link } from '@inertiajs/vue3';
@@ -52,23 +51,27 @@ const breadcrumbs: BreadcrumbItem[] = [
                 </div>
                 <div class="flex items-center gap-1">
                     <User class="h-5" />
-                    <TextLink :href="route('user.profile', { user: discussion.author.username })" class="truncate">{{
-                        discussion.author.name
-                    }}</TextLink>
+                    <TextLink :href="route('user.profile', { user: discussion.author.username })" class="truncate" v-if="discussion.author">
+                        {{ discussion.author.name }}
+                    </TextLink>
+                    <p class="text-sm italic" v-else>Deleted user</p>
                 </div>
                 <div class="flex items-center gap-1">
-                    <template v-if="discussion.discussable_type === 'game'">
-                        <Gamepad2 class="h-5" />
-                        <TextLink :href="route('games.show', { game: discussion.discussable.slug })">
-                            {{ (discussion.discussable as DiscussableGame).title }}
-                        </TextLink>
+                    <template v-if="discussion.discussable">
+                        <template v-if="discussion.discussable_type === 'game'">
+                            <Gamepad2 class="h-5" />
+                            <TextLink :href="route('games.show', { game: discussion.discussable.slug })">
+                                {{ (discussion.discussable as DiscussableGame).title }}
+                            </TextLink>
+                        </template>
+                        <template v-else>
+                            <Blocks class="h-5" />
+                            <TextLink :href="route('genres.show', { genre: discussion.discussable.slug })">
+                                {{ (discussion.discussable as DiscussableGenre).name }}
+                            </TextLink>
+                        </template>
                     </template>
-                    <template v-else>
-                        <Blocks class="h-5" />
-                        <TextLink :href="route('genres.show', { genre: discussion.discussable.slug })">
-                            {{ (discussion.discussable as DiscussableGenre).name }}
-                        </TextLink>
-                    </template>
+                    <p class="text-sm italic" v-else>Deleted {{ discussion.discussable_type }}</p>
                 </div>
                 <div class="flex gap-3">
                     <ReportModal
@@ -92,9 +95,10 @@ const breadcrumbs: BreadcrumbItem[] = [
                     v-for="comment in discussion.comments.data"
                     :key="comment.slug"
                 >
-                    <Link class="mr-auto flex gap-3" :href="route('user.profile', { user: comment.user.username })" as="button">
+                    <Link class="mr-auto flex gap-3" :href="route('user.profile', { user: comment.user.username })" as="button" v-if="comment.user">
                         <UserInfo :show-username="true" :user="comment.user" />
                     </Link>
+                    <p class="text-sm italic" v-else>Deleted user</p>
                     <p>{{ comment.content }}</p>
                     <div v-if="comment.media.length > 0">
                         <Modal>
@@ -141,8 +145,9 @@ const breadcrumbs: BreadcrumbItem[] = [
                     </div>
                 </div>
                 <Pagination :pagination="discussion.comments" />
-                <NewCommentForm v-if="canInteract()" :discussion-slug="discussion.slug" />
-                <LoginRequired v-else />
+                <LoginRequired>
+                    <NewCommentForm :discussion-slug="discussion.slug" />
+                </LoginRequired>
             </div>
         </div>
     </AppLayout>

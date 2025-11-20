@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\Games;
 
+use App\Http\Resources\User\SimpleProfileResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Storage;
@@ -31,7 +32,8 @@ class EditGameResource extends JsonResource
 				)->toArray()
 				: [],
 			'released_at' => $this->released_at->format('Y-m-d'),
-			'genre' => ['name' => $this->genre->name, 'slug' => $this->genre->slug]
+			'genre' => ['name' => $this->genre->name, 'slug' => $this->genre->slug],
+			'creator' => SimpleProfileResource::make($this->creator)->toArray($request)
 		];
 	}
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Resources\Report;
 
 use App\Enum\ReportableType;
+use App\Http\Resources\User\SimpleProfileResource;
 use App\Services\MorphTypeToLowerString;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -40,7 +41,7 @@ class UserReportsTableResource extends JsonResource
 			),
 			'user' => $this->whenLoaded(
 				'user',
-				fn () => ['name' => $this->user->name, 'username' => $this->user->username]
+				fn () => SimpleProfileResource::make($this->user)->toArray($request),
 			),
 			'created_at' => $this->created_at->format('Y-m-d')
 		];

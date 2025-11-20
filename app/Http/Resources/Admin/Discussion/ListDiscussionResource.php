@@ -2,7 +2,7 @@
 
 namespace App\Http\Resources\Admin\Discussion;
 
-use App\Http\Resources\Discussion\AuthorResource;
+use App\Http\Resources\User\SimpleProfileResource;
 use App\Services\MorphTypeToLowerString;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -25,7 +25,7 @@ class ListDiscussionResource extends JsonResource
 			'title' => $this->title,
 			'author' => $this->whenLoaded(
 				'author',
-				fn () => new AuthorResource($this->author)
+				fn () => SimpleProfileResource::make($this->author)->toArray($request)
 			),
 			'discussable' => $this->whenLoaded(
 				'discussable',

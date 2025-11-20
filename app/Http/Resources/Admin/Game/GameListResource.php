@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\Admin\Game;
 
+use App\Http\Resources\User\SimpleProfileResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Str;
@@ -28,7 +29,7 @@ class GameListResource extends JsonResource
 			),
 			'creator' => $this->whenLoaded(
 				'creator',
-				fn () => ['name' => $this->creator->name, 'username' => $this->creator->username]
+				fn () => SimpleProfileResource::make($this->creator)->toArray($request)
 			),
 			'created_at' => $this->created_at->format('Y-m-d'),
 		];

@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\Games;
 
+use App\Http\Resources\User\SimpleProfileResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Str;
@@ -21,7 +22,7 @@ class ShowGameResource extends JsonResource
 		return [
 			...EditGameResource::make($this)->toArray($request),
 			'shortTitle' => Str::limit($this->title, 25, preserveWords: true),
-			'creator' => ['name' => $this->creator->name, 'username' => $this->creator->username],
+			'creator' => SimpleProfileResource::make($this->creator)->toArray($request),
 			'score' => $score,
 			'reviews_count' => $this->whenCounted('reviews')
 		];

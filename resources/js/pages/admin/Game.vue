@@ -60,13 +60,14 @@ const reloadOnly: string[] = ['games'];
                     </TableCell>
                     <TableCell class="text-center">{{ game.media_count }}</TableCell>
                     <TableCell>
-                        <TextLink :href="route('genres.show', { genre: game.genre.slug })">{{ game.genre.name }}</TextLink>
+                        <TextLink :href="route('genres.show', { genre: game.genre.slug })" v-if="game.genre"> {{ game.genre.name }} </TextLink>
+                        <p class="text-sm italic" v-else>Deleted genre</p>
                     </TableCell>
                     <TableCell>
                         <TextLink :href="route('user.profile', { user: game.creator.username })" v-if="game.creator">
                             {{ game.creator.name }}
                         </TextLink>
-                        <p class="italic" v-else>Deleted user</p>
+                        <p class="text-sm italic" v-else>Deleted user</p>
                     </TableCell>
                     <TableCell>{{ game.released_at }}</TableCell>
                     <TableCell>{{ game.created_at }}</TableCell>

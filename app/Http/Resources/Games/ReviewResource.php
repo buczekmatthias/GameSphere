@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\Games;
 
+use App\Http\Resources\User\SimpleProfileResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Str;
@@ -25,10 +26,7 @@ class ReviewResource extends JsonResource
 			'user' => $this->whenLoaded(
 				'user',
 				fn () => [
-					'name' => $this->user->name,
-					'username' => $this->user->username,
-					'avatar' => $this->user->avatar,
-					'role' => $this->user->role,
+					...SimpleProfileResource::make($this->user)->toArray($request),
 					'is_email_verified' => $this->user->email_verified_at !== null
 				]
 			),

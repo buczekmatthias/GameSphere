@@ -7,9 +7,9 @@ use App\Http\Resources\Discussion\ListDiscussionResource;
 use App\Http\Resources\Games\GamesListResource;
 use App\Http\Resources\Games\ReviewResource as ReviewListResource;
 use App\Http\Resources\Genre\ListResource as GenreListResource;
+use App\Http\Resources\User\SimpleProfileResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-use Illuminate\Support\Facades\Storage;
 
 class UserProfileResource extends JsonResource
 {
@@ -21,10 +21,7 @@ class UserProfileResource extends JsonResource
 	public function toArray(Request $request): array
 	{
 		$data = [
-			'name' => $this->name,
-			'username' => $this->username,
-			'role' => $this->role,
-			'avatar' => $this->avatar ? asset(Storage::url("users/{$this->avatar}")) : '',
+			...SimpleProfileResource::make($this)->toArray($request),
 			'created_at' => $this->created_at->format('M jS, Y'),
 		];
 

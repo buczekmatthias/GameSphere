@@ -2,7 +2,7 @@
 
 namespace App\Http\Resources\Admin\Comment;
 
-use App\Http\Resources\Discussion\AuthorResource;
+use App\Http\Resources\User\SimpleProfileResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Str;
@@ -23,7 +23,7 @@ class CommentListResource extends JsonResource
 			'media' => $this->media ? sizeof($this->media) : 0,
 			'user' => $this->whenLoaded(
 				'user',
-				fn () => new AuthorResource($this->user)
+				fn () => SimpleProfileResource::make($this->user)->toArray($request)
 			),
 			'discussion' => $this->whenLoaded(
 				'discussion',

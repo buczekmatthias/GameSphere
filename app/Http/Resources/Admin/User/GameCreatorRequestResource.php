@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\Admin\User;
 
+use App\Http\Resources\User\SimpleProfileResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -16,10 +17,7 @@ class GameCreatorRequestResource extends JsonResource
 	{
 		return [
 			'slug' => $this->slug,
-			'user' => [
-				'name' => $this->user->name,
-				'username' => $this->user->username,
-			],
+			'user' => SimpleProfileResource::make($this->user)->toArray($request),
 			"created_at" => $this->created_at->format('Y-m-d H:i')
 		];
 	}

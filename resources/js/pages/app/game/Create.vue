@@ -47,7 +47,13 @@ const charactersLeftTillRequired = computed(() => {
 });
 
 const isFormValid = () => {
-    return form.title.length > 0 && form.description.length > 0 && form.thumbnail !== null && form.released_at && form.genre.length > 0;
+    return (
+        form.title.length > 0 &&
+        form.description.length >= DESCRIPTION_MIN_LENGTH &&
+        form.thumbnail !== null &&
+        form.released_at &&
+        form.genre.length > 0
+    );
 };
 
 const submitForm = () => {

@@ -63,7 +63,10 @@ const reloadOnly: string[] = ['comments'];
                         </TooltipProvider>
                     </TableCell>
                     <TableCell>
-                        <TextLink :href="route('user.profile', { user: comment.user.username })">{{ comment.user.name }}</TextLink>
+                        <TextLink :href="route('user.profile', { user: comment.user.username })" v-if="comment.user">
+                            {{ comment.user.name }}
+                        </TextLink>
+                        <p class="text-sm italic" v-else>Deleted user</p>
                     </TableCell>
                     <TableCell>
                         <TextLink :href="route('discussions.show', { discussion: comment.discussion.slug })">{{ comment.discussion.title }}</TextLink>

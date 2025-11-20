@@ -53,7 +53,7 @@ const reloadOnly: string[] = ['discussions'];
                         <TextLink :href="route('user.profile', { user: discussion.author.username })" v-if="discussion.author">
                             {{ discussion.author.name }}
                         </TextLink>
-                        <p class="italic" v-else>Deleted user</p>
+                        <p class="text-sm italic" v-else>Deleted user</p>
                     </TableCell>
                     <TableCell>
                         <TextLink :href="discussion.discussable">Show {{ discussion.discussable_type }}</TextLink>

@@ -31,7 +31,7 @@ class Report extends Model
 		return $this->morphTo();
 	}
 
-	public function scopeActiveReports(Builder $query)
+	public function scopeActiveReports(Builder $query): Builder
 	{
 		return $query->where('status', ReportStatus::OPEN->value);
 	}

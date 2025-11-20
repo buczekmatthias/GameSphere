@@ -10,8 +10,10 @@ use App\Http\Resources\Games\EditGameResource;
 use App\Http\Resources\Games\GamesListResource;
 use App\Http\Resources\Games\ShowGameResource;
 use App\Http\Resources\Games\ReviewResource;
+use App\Http\Resources\User\SimpleProfileResource;
 use App\Models\Game;
 use App\Models\Genre;
+use App\Models\User;
 use App\Services\UserGameListsServices;
 use App\Services\UserPermissions;
 use Carbon\Carbon;
@@ -143,13 +145,14 @@ class GameController extends Controller
 	/**
 	 * Show the form for editing the specified resource.
 	 */
-	public function edit(Game $game): Response
+	public function edit(Game $game, Request $request): Response
 	{
-		$game->load(['genre']);
+		$game->load(['genre', 'creator']);
 
 		return Inertia::render('app/game/Edit', [
 			'game' => EditGameResource::make($game),
-			'genres' => Genre::select(['slug', 'name'])->get()
+			'genres' => Genre::select(['slug', 'name'])->orderBy('name', 'ASC')->get(),
+			'users' => $request->user()?->canAddGame() ? SimpleProfileResource::collection(User::permittedToOwnGame()->get()) : null
 		]);
 	}
 
@@ -159,8 +162,6 @@ class GameController extends Controller
 	public function update(Game $game, EditRequest $request): RedirectResponse
 	{
 		$data = $request->validated();
-
-		$genre = Genre::select('id')->where('slug', $data['genre'])->first();
 
 		$path = "games/{$game->slug}";
 
@@ -180,7 +181,8 @@ class GameController extends Controller
 
 		$game->title = $data['title'];
 		$game->description = $data['description'];
-		$game->genre_id = $genre->id;
+		$game->genre_id = Genre::select('id')->where('slug', $data['genre'])->first()->id;
+		$game->user_id = User::select('id')->where('username', $data['creator'])->first()->id;
 
 		if ($data['released_at']) {
 			$game->released_at = $data['released_at'];
