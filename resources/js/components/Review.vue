@@ -16,8 +16,10 @@ const props = withDefaults(
     defineProps<{
         review: Review;
         withLink?: boolean;
+        showUser?: boolean;
     }>(),
     {
+        showUser: true,
         withLink: false,
     },
 );
@@ -36,25 +38,27 @@ const canDeleteReview = computed((): boolean => canInteract() || hasSpecialPermi
             >
                 Show game
             </TextLink>
-            <template v-if="review.user">
-                <Link :href="route('user.profile', { user: review.user.username })" class="mr-auto flex gap-3">
-                    <UserInfo :show-username="true" :user="review.user" />
-                </Link>
-                <UserRole v-if="review.user.role !== 'user'" :role="review.user.role" class="text-xs" />
-                <template v-if="review.user.is_email_verified">
-                    <TooltipProvider>
-                        <Tooltip>
-                            <TooltipTrigger as-child>
-                                <MailCheck />
-                            </TooltipTrigger>
-                            <TooltipContent side="left">
-                                <p>Verified user</p>
-                            </TooltipContent>
-                        </Tooltip>
-                    </TooltipProvider>
+            <template v-if="showUser">
+                <template v-if="review.user">
+                    <Link :href="route('user.profile', { user: review.user.username })" class="mr-auto flex gap-3">
+                        <UserInfo :show-username="true" :user="review.user" />
+                    </Link>
+                    <UserRole v-if="review.user.role !== 'user'" :role="review.user.role" class="text-xs" />
+                    <template v-if="review.user.is_email_verified">
+                        <TooltipProvider>
+                            <Tooltip>
+                                <TooltipTrigger as-child>
+                                    <MailCheck />
+                                </TooltipTrigger>
+                                <TooltipContent side="left">
+                                    <p>Verified user</p>
+                                </TooltipContent>
+                            </Tooltip>
+                        </TooltipProvider>
+                    </template>
                 </template>
+                <p class="text-lg" v-else>Posted by deleted user</p>
             </template>
-            <p class="text-lg" v-else>Posted by deleted user</p>
         </div>
         <p class="text-sm text-slate-300">{{ review.created_at }}</p>
         <p>{{ review.content }}</p>

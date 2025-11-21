@@ -13,6 +13,7 @@ use App\Services\UserPermissions;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
@@ -39,7 +40,9 @@ class DiscussionController extends Controller
 			? Game::where('slug', $request->post('slug'))
 			: Genre::where('slug', $request->post('slug'))
 		)
-			->first()->discussions()->make([
+			->first()
+			->discussions()
+			->make([
 				'slug' => Str::uuid(),
 				'title' => $request->post('title')
 			]);
@@ -92,9 +95,11 @@ class DiscussionController extends Controller
 		}
 		Storage::deleteDirectory("discussions/{$discussion->slug}");
 
-		$discussion->reports()->delete();
+		DB::transaction(function () use ($discussion) {
+			$discussion->reports()->delete();
 
-		$discussion->delete();
+			$discussion->delete();
+		});
 
 		if ($request->get('return_back')) {
 			return back(303);

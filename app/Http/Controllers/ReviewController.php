@@ -10,6 +10,7 @@ use App\Http\Resources\Games\ReviewResource;
 use App\Models\Review;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -46,8 +47,10 @@ class ReviewController extends Controller
 	 */
 	public function destroy(Review $review, Request $request): RedirectResponse
 	{
-		$review->reports()->delete();
-		$review->delete();
+		DB::transaction(function () use ($review) {
+			$review->reports()->delete();
+			$review->delete();
+		});
 
 		if ($request->get('to_route')) {
 			return to_route($request->get('to_route'), 303);

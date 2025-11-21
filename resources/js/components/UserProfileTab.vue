@@ -48,7 +48,7 @@ const reloadOnly: string[] = ['user'];
 
             <template v-else-if="type === 'reviews'">
                 <div class="flex flex-col gap-4">
-                    <Review v-for="review in content.data as ReviewType[]" :key="review.slug" :review with-link />
+                    <Review v-for="review in content.data as ReviewType[]" :key="review.slug" :review with-link :show-user="false" />
                 </div>
             </template>
 

@@ -16,7 +16,6 @@ import { TableCell, TableRow } from '@/components/ui/table';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import UserRole from '@/components/UserRole.vue';
 import { getPaginationData } from '@/composables/usePagination';
-import { useCurrentUser } from '@/composables/useUser';
 import AdminLayout from '@/layouts/AdminLayout.vue';
 import type { Pagination as PaginationType, User } from '@/types';
 import { Head, Link } from '@inertiajs/vue3';
@@ -39,11 +38,8 @@ const tableHeaders = [
     { label: 'Created at', is_sortable: true, column: 'created_at' },
 ];
 
-const currentUser = useCurrentUser();
-
 const reloadOnly: string[] = ['users', 'game_creator_requests_count'];
 
-// TODO: Fix this to display proper values
 const getRoleIndex = (currentRole: string) => props.roles.indexOf(currentRole);
 
 const getRolesAbove = (currentRole: string) => {
@@ -122,18 +118,31 @@ const canCurrentUserManageUser = (user: User) => props.roles_user_can_manage.inc
                                         View profile
                                     </Link>
                                 </DropdownMenuItem>
-                                <DropdownMenuItem as-child v-if="canCurrentUserManageUser(user)">
-                                    <Link
-                                        :href="route('admin.users.destroy', { user: user.username })"
-                                        as="button"
-                                        method="delete"
-                                        class="w-full cursor-pointer"
-                                    >
-                                        <Trash class="size-4" />
-                                        Delete
-                                    </Link>
-                                </DropdownMenuItem>
-                                <template v-if="user.username !== currentUser.username && canCurrentUserManageUser(user)">
+                                <template v-if="canCurrentUserManageUser(user)">
+                                    <DropdownMenuItem as-child>
+                                        <Link
+                                            :href="route('admin.users.destroy', { user: user.username })"
+                                            as="button"
+                                            method="delete"
+                                            class="w-full cursor-pointer"
+                                            preserve-scroll
+                                        >
+                                            <Trash class="size-4" />
+                                            Delete
+                                        </Link>
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem as-child>
+                                        <Link
+                                            :href="route('admin.users.destroy', { user: user.username, with_relations: true })"
+                                            as="button"
+                                            method="delete"
+                                            class="w-full cursor-pointer"
+                                            preserve-scroll
+                                        >
+                                            <Trash class="size-4" />
+                                            Delete with relations
+                                        </Link>
+                                    </DropdownMenuItem>
                                     <DropdownMenuSeparator v-if="getRolesAbove(user.role).length > 0" />
                                     <DropdownMenuItem as-child v-for="role in getRolesAbove(user.role)" :key="role">
                                         <Link
@@ -141,6 +150,7 @@ const canCurrentUserManageUser = (user: User) => props.roles_user_can_manage.inc
                                             as="button"
                                             method="patch"
                                             class="w-full cursor-pointer"
+                                            preserve-scroll
                                         >
                                             <ChevronUp class="size-4" />
                                             Promote to {{ role.replaceAll('_', ' ') }}
@@ -153,6 +163,7 @@ const canCurrentUserManageUser = (user: User) => props.roles_user_can_manage.inc
                                             as="button"
                                             method="patch"
                                             class="w-full cursor-pointer"
+                                            preserve-scroll
                                         >
                                             <ChevronDown class="size-4" />
                                             Demote to {{ role.replaceAll('_', ' ') }}

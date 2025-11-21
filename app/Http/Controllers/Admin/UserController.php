@@ -58,9 +58,9 @@ class UserController extends Controller
 		return back(303);
 	}
 
-	public function destroy(User $user): RedirectResponse
+	public function destroy(User $user, Request $request): RedirectResponse
 	{
-		UserDeleteServices::deleteUser($user);
+		UserDeleteServices::deleteUser($user, $request->get('with_relations', false));
 
 		return back(303);
 	}

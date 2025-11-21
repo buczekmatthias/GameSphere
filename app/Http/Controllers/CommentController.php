@@ -10,6 +10,7 @@ use App\Models\Discussion;
 use App\Services\UserPermissions;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
@@ -95,9 +96,11 @@ class CommentController extends Controller
 		}
 		Storage::deleteDirectory("discussions/{$comment->discussion->slug}/{$comment->slug}");
 
-		$comment->reports()->delete();
+		DB::transaction(function () use ($comment) {
+			$comment->reports()->delete();
 
-		$comment->delete();
+			$comment->delete();
+		});
 
 		if ($request->get('to_homepage')) {
 			return to_route('home', status: 303);

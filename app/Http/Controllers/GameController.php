@@ -229,9 +229,11 @@ class GameController extends Controller
 
 		Storage::deleteDirectory("games/{$game->slug}");
 
-		$game->reports()->delete();
-		$game->discussions()->delete();
-		$game->delete();
+		DB::transaction(function () use ($game) {
+			$game->reports()->delete();
+			$game->discussions()->delete();
+			$game->delete();
+		});
 
 		return to_route('games.index', status: 303);
 	}
