@@ -1,13 +1,13 @@
 <script setup lang="ts">
+import FormButton from '@/components/FormButton.vue';
 import InputError from '@/components/InputError.vue';
 import TextLink from '@/components/TextLink.vue';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import AdminLayout from '@/layouts/AdminLayout.vue';
 import type { Genre } from '@/types';
 import { Head, useForm } from '@inertiajs/vue3';
-import { ChevronLeft, LoaderCircle } from 'lucide-vue-next';
+import { ChevronLeft } from 'lucide-vue-next';
 
 const props = defineProps<{
     genre: Genre;
@@ -36,10 +36,7 @@ const updateForm = useForm({
                     <InputError :message="updateForm.errors.name" />
                 </div>
 
-                <Button type="submit" class="mt-4 w-full" :tabindex="4" :disabled="updateForm.processing">
-                    <LoaderCircle v-if="updateForm.processing" class="h-4 w-4 animate-spin" />
-                    Save changes
-                </Button>
+                <FormButton label="Save changes" :tabindex="4" :is-processing="updateForm.processing" />
             </form>
         </div>
     </AdminLayout>

@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import FormButton from '@/components/FormButton.vue';
 import InputError from '@/components/InputError.vue';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
@@ -18,7 +19,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { ReviewRatings } from '@/types';
 import { useForm } from '@inertiajs/vue3';
 import { createReusableTemplate, useMediaQuery } from '@vueuse/core';
-import { LoaderCircle, Plus, Star } from 'lucide-vue-next';
+import { Plus, Star } from 'lucide-vue-next';
 import { capitalize, ref } from 'vue';
 
 // Reuse `form` section
@@ -98,10 +99,7 @@ const submitForm = () => {
             </DialogHeader>
             <GridForm />
             <DialogFooter class="pt-2">
-                <Button type="submit" class="sticky bottom-0" :disabled="newReviewForm.processing" @click="submitForm()">
-                    <LoaderCircle v-if="newReviewForm.processing" class="h-4 w-4 animate-spin" />
-                    Add review
-                </Button>
+                <FormButton label="Add review" :is-processing="newReviewForm.processing" @click="submitForm()" />
             </DialogFooter>
         </DialogContent>
     </Dialog>
@@ -117,10 +115,7 @@ const submitForm = () => {
             </DrawerHeader>
             <GridForm />
             <DrawerFooter class="pt-2">
-                <Button type="submit" class="sticky bottom-0" :disabled="newReviewForm.processing" @click="submitForm()">
-                    <LoaderCircle v-if="newReviewForm.processing" class="h-4 w-4 animate-spin" />
-                    Add review
-                </Button>
+                <FormButton label="Add review" :is-processing="newReviewForm.processing" @click="submitForm()" />
                 <DrawerClose as-child>
                     <Button variant="outline"> Cancel </Button>
                 </DrawerClose>

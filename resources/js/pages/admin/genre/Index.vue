@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import Table from '@/components/Admin/Table.vue';
+import FormButton from '@/components/FormButton.vue';
 import Pagination from '@/components/Pagination.vue';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
@@ -18,7 +19,7 @@ import { getPaginationData } from '@/composables/usePagination';
 import AdminLayout from '@/layouts/AdminLayout.vue';
 import type { Genre, Pagination as PaginationType } from '@/types';
 import { Head, Link, useForm } from '@inertiajs/vue3';
-import { Ellipsis, Eye, LoaderCircle, Pen, Plus, Trash } from 'lucide-vue-next';
+import { Ellipsis, Eye, Pen, Plus, Trash } from 'lucide-vue-next';
 import { ref } from 'vue';
 
 defineProps<{
@@ -73,10 +74,7 @@ const submit = () => {
                             </div>
                         </div>
                         <DialogFooter>
-                            <Button @click="submit" type="submit" class="mt-4 w-full" :tabindex="4" :disabled="newGenreForm.processing">
-                                <LoaderCircle v-if="newGenreForm.processing" class="h-4 w-4 animate-spin" />
-                                Store genre
-                            </Button>
+                            <FormButton label="Store genre" @click="submit" :tabindex="4" :is-processing="newGenreForm.processing" />
                         </DialogFooter>
                     </DialogContent>
                 </Dialog>

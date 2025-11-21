@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { Button } from '@/components/ui/button';
+import FormButton from '@/components/FormButton.vue';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { canInteract } from '@/composables/useCanInteract';
 import { ReportableType, SharedData } from '@/types';
 import { useForm, usePage } from '@inertiajs/vue3';
-import { AlertTriangle, LoaderCircle } from 'lucide-vue-next';
+import { AlertTriangle } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
 
 const reportReasons = computed((): Record<number, string> => usePage<SharedData>().props.report_reasons);
@@ -66,10 +66,13 @@ const isOpen = ref<boolean>(false);
             </Select>
 
             <DialogFooter>
-                <Button @click="handleSubmit" variant="destructive" :disabled="reportForm.reason.length === 0 || reportForm.processing">
-                    <LoaderCircle v-if="reportForm.processing" class="h-4 w-4 animate-spin" />
-                    Submit report
-                </Button>
+                <FormButton
+                    variant="destructive"
+                    label="Submit report"
+                    @click="handleSubmit"
+                    :is-processing="reportForm.processing"
+                    :disabled="reportForm.reason.length === 0"
+                />
             </DialogFooter>
         </DialogContent>
     </Dialog>

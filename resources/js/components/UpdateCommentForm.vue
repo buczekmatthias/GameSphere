@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import FormButton from '@/components/FormButton.vue';
 import InputError from '@/components/InputError.vue';
 import Modal from '@/components/Modal.vue';
 import Preview from '@/components/Preview.vue';
@@ -20,7 +21,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Media } from '@/types';
 import { useForm } from '@inertiajs/vue3';
 import { createReusableTemplate, useMediaQuery } from '@vueuse/core';
-import { LoaderCircle, Pen } from 'lucide-vue-next';
+import { Pen } from 'lucide-vue-next';
 import { ref } from 'vue';
 
 // Reuse `form` section
@@ -93,10 +94,7 @@ const toggleItem = (filename: string) => {
                     </Modal>
                 </div>
             </template>
-            <Button type="submit" class="sticky bottom-0" :disabled="updateCommentForm.processing">
-                <LoaderCircle v-if="updateCommentForm.processing" class="h-4 w-4 animate-spin" />
-                Update comment
-            </Button>
+            <FormButton label="Update comment" :is-processing="updateCommentForm.processing" />
         </form>
     </UseTemplate>
 

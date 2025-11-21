@@ -1,13 +1,12 @@
 <script setup lang="ts">
+import FormButton from '@/components/FormButton.vue';
 import InputError from '@/components/InputError.vue';
 import TextLink from '@/components/TextLink.vue';
-import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import AuthBase from '@/layouts/AuthLayout.vue';
 import { Head, useForm } from '@inertiajs/vue3';
-import { LoaderCircle } from 'lucide-vue-next';
 
 defineProps<{
     status?: string;
@@ -78,10 +77,7 @@ const submit = () => {
                     </Label>
                 </div>
 
-                <Button type="submit" class="mt-4 w-full" :tabindex="4" :disabled="form.processing">
-                    <LoaderCircle v-if="form.processing" class="h-4 w-4 animate-spin" />
-                    Log in
-                </Button>
+                <FormButton label="Log in" :tabindex="4" class="mt-4 w-full" :is-processing="form.processing" />
             </div>
 
             <div class="text-muted-foreground text-center text-sm">

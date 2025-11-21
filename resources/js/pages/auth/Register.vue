@@ -1,12 +1,11 @@
 <script setup lang="ts">
+import FormButton from '@/components/FormButton.vue';
 import InputError from '@/components/InputError.vue';
 import TextLink from '@/components/TextLink.vue';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import AuthBase from '@/layouts/AuthLayout.vue';
 import { Head, useForm } from '@inertiajs/vue3';
-import { LoaderCircle } from 'lucide-vue-next';
 
 const form = useForm({
     name: '',
@@ -75,10 +74,7 @@ const submit = () => {
                     <InputError :message="form.errors.password_confirmation" />
                 </div>
 
-                <Button type="submit" class="mt-2 w-full" tabindex="5" :disabled="form.processing">
-                    <LoaderCircle v-if="form.processing" class="h-4 w-4 animate-spin" />
-                    Create account
-                </Button>
+                <FormButton label="Create account" :tabindex="5" :is-processing="form.processing" />
             </div>
 
             <div class="text-muted-foreground text-center text-sm">

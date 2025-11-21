@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import FormButton from '@/components/FormButton.vue';
 import InputError from '@/components/InputError.vue';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
@@ -16,7 +17,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useForm } from '@inertiajs/vue3';
 import { createReusableTemplate, useMediaQuery } from '@vueuse/core';
-import { LoaderCircle, Pen } from 'lucide-vue-next';
+import { Pen } from 'lucide-vue-next';
 import { ref } from 'vue';
 
 // Reuse `form` section
@@ -51,10 +52,7 @@ const submitForm = () => {
                 <Input id="title" v-model="updateDiscussionForm.title" :default-value="oldTitle" />
                 <InputError :message="updateDiscussionForm.errors.title" />
             </div>
-            <Button type="submit" class="sticky bottom-0" :disabled="updateDiscussionForm.processing">
-                <LoaderCircle v-if="updateDiscussionForm.processing" class="h-4 w-4 animate-spin" />
-                Update discussion
-            </Button>
+            <FormButton label="Update discussion" :is-processing="updateDiscussionForm.processing" />
         </form>
     </UseTemplate>
 

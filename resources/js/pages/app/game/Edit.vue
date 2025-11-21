@@ -95,7 +95,7 @@ const submitForm = (): void => {
 
             <GameGenre :error="form.errors.genre" v-model="form.genre" :genres :game-genre="game.genre" />
 
-            <FormButton :is-processing="form.processing" :is-dirty="hasFormChanged()" label="Update" />
+            <FormButton :is-processing="form.processing" :disabled="!hasFormChanged()" label="Update" />
         </form>
     </AppLayout>
 </template>

@@ -1,11 +1,10 @@
 <script setup lang="ts">
+import FormButton from '@/components/FormButton.vue';
 import InputError from '@/components/InputError.vue';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import AuthLayout from '@/layouts/AuthLayout.vue';
 import { Head, useForm } from '@inertiajs/vue3';
-import { LoaderCircle } from 'lucide-vue-next';
 
 const form = useForm({
     password: '',
@@ -42,10 +41,7 @@ const submit = () => {
                 </div>
 
                 <div class="flex items-center">
-                    <Button class="w-full" :disabled="form.processing">
-                        <LoaderCircle v-if="form.processing" class="h-4 w-4 animate-spin" />
-                        Confirm Password
-                    </Button>
+                    <FormButton label="Confirm Password" :is-processing="form.processing" />
                 </div>
             </div>
         </form>

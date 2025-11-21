@@ -1,13 +1,12 @@
 <script setup lang="ts">
+import FormButton from '@/components/FormButton.vue';
 import InputError from '@/components/InputError.vue';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useInitials } from '@/composables/useInitials';
 import { useCurrentUser } from '@/composables/useUser';
 import { useForm } from '@inertiajs/vue3';
-import { LoaderCircle } from 'lucide-vue-next';
 import { ref } from 'vue';
 
 const props = defineProps<{
@@ -65,9 +64,6 @@ const submitForm = () => {
             />
             <InputError :message="newCommentForm.errors.media" />
         </div>
-        <Button type="submit" class="w-full" :disabled="newCommentForm.processing || !isFormValid()">
-            <LoaderCircle v-if="newCommentForm.processing" class="h-4 w-4 animate-spin" />
-            Post comment
-        </Button>
+        <FormButton label="Post comment" :is-processing="newCommentForm.processing" :disabled="!isFormValid()" />
     </form>
 </template>
