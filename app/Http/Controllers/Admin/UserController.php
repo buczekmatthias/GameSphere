@@ -28,7 +28,7 @@ class UserController extends Controller
 		$column = strtolower($request->get('column', 'content'));
 		$order = strtolower($request->get('order', 'asc'));
 
-		if (!in_array($order, self::ORDER)) {
+		if (!in_array(strtolower($order), self::ORDER)) {
 			$order = 'asc';
 		}
 		if (!in_array($column, self::SORT_COLUMNS)) {
@@ -37,7 +37,7 @@ class UserController extends Controller
 
 		match ($column) {
 			'verify' => $entries->orderBy('email_verified_at', $order),
-			'role' => $entries->orderByRaw("array_position("."'{" . implode(',', array_reverse(array_column(UserRole::cases(), 'value'))) . "}'"."::text[],role) {$order}"),
+			'role' => $entries->orderInRoleHierarchy($order),
 			default => $entries->orderBy($column, $order),
 		};
 

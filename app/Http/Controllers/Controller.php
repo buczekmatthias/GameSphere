@@ -4,5 +4,5 @@ namespace App\Http\Controllers;
 
 abstract class Controller
 {
-	protected const ORDER = ['ASC', 'DESC'];
+	protected const ORDER = ['asc', 'desc'];
 }

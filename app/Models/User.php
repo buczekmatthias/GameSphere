@@ -188,4 +188,9 @@ class User extends Authenticatable
 	{
 		return $query->select(['name', 'username', 'avatar'])->whereNot('role', UserRole::USER->value)->orderBy('name', 'ASC');
 	}
+
+	public function scopeOrderInRoleHierarchy(Builder $query, string $order = 'asc'): Builder
+	{
+		return $query->orderByRaw("array_position("."'{" . implode(',', array_reverse(array_column(UserRole::cases(), 'value'))) . "}'"."::text[],role) {$order}");
+	}
 }

@@ -27,7 +27,7 @@ class GenreController extends Controller
 		$column = strtolower($request->get('column', 'name'));
 		$order = strtolower($request->get('order', 'asc'));
 
-		if (!in_array($order, self::ORDER)) {
+		if (!in_array(strtolower($order), self::ORDER)) {
 			$order = 'asc';
 		}
 		if (!in_array($column, self::SORT_COLUMNS)) {
