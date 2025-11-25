@@ -238,7 +238,7 @@ class GameController extends Controller
 		return to_route('games.index', status: 303);
 	}
 
-	public function toggleGameOnList(Game $game, Request $request)
+	public function toggleGameOnList(Game $game, Request $request): RedirectResponse
 	{
 		$list = $request->validate([
 			'list' => ['string', 'required', 'in:'.implode(",", array_column(GameCollectionType::cases(), 'value'))]

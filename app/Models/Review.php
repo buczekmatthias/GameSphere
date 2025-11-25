@@ -11,7 +11,7 @@ class Review extends Model
 {
 	use HasFactory;
 
-	public function getRouteKeyName()
+	public function getRouteKeyName(): string
 	{
 		return 'slug';
 	}
@@ -45,7 +45,7 @@ class Review extends Model
 		return $this->morphMany(Report::class, 'reportable');
 	}
 
-	public function getAverageRatingAttribute()
+	public function getAverageRatingAttribute(): float
 	{
 		if (empty($this->ratings)) {
 			return 0;

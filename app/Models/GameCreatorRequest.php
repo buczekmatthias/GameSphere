@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class GameCreatorRequest extends Model
 {
-	public function getRouteKeyName()
+	public function getRouteKeyName(): string
 	{
 		return 'slug';
 	}

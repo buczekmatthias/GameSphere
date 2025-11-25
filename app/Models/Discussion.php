@@ -13,7 +13,7 @@ class Discussion extends Model
 {
 	use HasFactory;
 
-	public function getRouteKeyName()
+	public function getRouteKeyName(): string
 	{
 		return 'slug';
 	}
