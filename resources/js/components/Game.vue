@@ -4,14 +4,14 @@ import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Game } from '@/types';
 import { Link } from '@inertiajs/vue3';
-import { CalendarCheck, CircleCheckBig, Coins, Gamepad2, Heart, ListCheck } from 'lucide-vue-next';
+import { CalendarCheck, CircleCheckBig, Coins, Gamepad2, Heart, ListCheck, LucideIcon } from 'lucide-vue-next';
 import { capitalize } from 'vue';
 
 defineProps<{
     game: Game;
 }>();
 
-const listTypeIcon: any = {
+const listTypeIcon: { [key: string]: LucideIcon } = {
     wishlist: ListCheck,
     owned: Coins,
     playing: Gamepad2,

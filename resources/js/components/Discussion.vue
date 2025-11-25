@@ -3,9 +3,15 @@ import TextLink from '@/components/TextLink.vue';
 import { Discussion } from '@/types';
 import { Calendar, MessageCircle, User } from 'lucide-vue-next';
 
-defineProps<{
-    discussion: Discussion;
-}>();
+withDefaults(
+    defineProps<{
+        discussion: Discussion;
+        showUser: boolean;
+    }>(),
+    {
+        showUser: true,
+    },
+);
 </script>
 
 <template>
@@ -16,7 +22,7 @@ defineProps<{
                 <Calendar class="h-5" />
                 <p class="text-sm">{{ discussion.created_at }}</p>
             </div>
-            <div class="flex gap-0.5">
+            <div class="flex gap-0.5" v-if="showUser">
                 <User class="h-5" />
                 <TextLink class="text-sm" :href="route('user.profile', { user: discussion.author.username })" v-if="discussion.author">
                     {{ discussion.author.name }}

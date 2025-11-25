@@ -54,7 +54,7 @@ const reloadOnly: string[] = ['user'];
 
             <template v-else-if="type === 'discussions'">
                 <div class="flex flex-col gap-4">
-                    <Discussion v-for="discussion in content.data as DiscussionType[]" :key="discussion.slug" :discussion />
+                    <Discussion v-for="discussion in content.data as DiscussionType[]" :key="discussion.slug" :discussion :show-user="false" />
                 </div>
             </template>
 
