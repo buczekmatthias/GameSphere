@@ -32,7 +32,7 @@ const queryWithoutRole = computed(() => (props.ziggy.query.contains ? { contains
             :class="{ 'bg-primary': ziggy.query.role === role }"
             :only="reloadOnly"
         >
-            {{ capitalize(role.replace('_', ' ')) }}
+            {{ capitalize(role.replace('_', ' ')) }}s
         </Link>
     </div>
 </template>

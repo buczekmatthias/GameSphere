@@ -1,40 +1,33 @@
 <script setup lang="ts">
+import CanInteract from '@/components/CanInteract.vue';
+import ClientOnly from '@/components/ClientOnly.vue';
+import ContentWithFallback from '@/components/ContentWithFallback.vue';
 import Discussion from '@/components/Discussion.vue';
 import DiscussionSkeleton from '@/components/fallbacks/DiscussionSkeleton.vue';
 import ReviewSkeleton from '@/components/fallbacks/ReviewSkeleton.vue';
-import GameActionDropdown from '@/components/GameActionDropdown.vue';
-import Modal from '@/components/Modal.vue';
+import GameActions from '@/components/GameActions.vue';
 import NewDiscussionForm from '@/components/NewDiscussionForm.vue';
 import NewReviewForm from '@/components/NewReviewForm.vue';
-import Pagination from '@/components/Pagination.vue';
-import Preview from '@/components/Preview.vue';
+import PaginatedContent from '@/components/PaginatedContent.vue';
+import GameDetails from '@/components/Partials/Game/Show/GameDetails.vue';
 import Review from '@/components/Review.vue';
-import TextLink from '@/components/TextLink.vue';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { canInteract } from '@/composables/useCanInteract';
-import { getPaginationData } from '@/composables/usePagination';
 import AppLayout from '@/layouts/AppLayout.vue';
-import type {
-    BreadcrumbItem,
-    Discussion as DiscussionType,
-    Game,
-    Pagination as PaginationType,
-    Permissions,
-    Review as ReviewType,
-    Ziggy,
-} from '@/types';
+import type { BreadcrumbItem, Discussion as DiscussionType, Game, Pagination, Permissions, Review as ReviewType, Ziggy } from '@/types';
 import { Deferred, Head, usePage, WhenVisible } from '@inertiajs/vue3';
-import { Blocks, Calendar, LucideIcon, Rss, Star, User } from 'lucide-vue-next';
+import { useMediaQuery } from '@vueuse/core';
+import { LucideIcon, Rss, Star } from 'lucide-vue-next';
 import { computed } from 'vue';
 
 const props = withDefaults(
     defineProps<{
         game: Game;
         userLists?: { [key: string]: boolean };
-        reviews?: PaginationType & { data: ReviewType[] };
-        discussions?: PaginationType & { data: DiscussionType[] };
+        reviews?: Pagination & { data: ReviewType[] };
+        discussions?: Pagination & { data: DiscussionType[] };
         permissions: Permissions;
     }>(),
     {
@@ -63,22 +56,25 @@ const tab = computed(() => {
 
     return query?.discussions_page ? 'discussions' : 'reviews';
 });
+
+const shouldTeleport = useMediaQuery('(min-width: 1024px)');
 </script>
 
 <template>
     <Head :title="game.title" />
 
+    <!-- TODO: Break into components -->
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="main-container flex flex-col gap-4">
             <div
-                class="grid gap-4"
+                class="grid gap-4 lg:grid-rows-[auto_auto]"
                 :class="canInteract() ? 'ml:grid-cols-[auto_1fr_auto] grid-cols-[1fr_auto]' : 'grid-cols-1 md:grid-cols-[auto_1fr]'"
             >
-                <Avatar class="h-80 w-64 overflow-hidden rounded-lg object-cover">
+                <Avatar class="h-96 w-80 overflow-hidden rounded-lg object-cover lg:row-span-2">
                     <AvatarImage :src="game.thumbnail" :alt="game.title" />
                     <AvatarFallback class="rounded-lg text-black dark:text-white" />
                 </Avatar>
-                <template v-if="canInteract()">
+                <CanInteract>
                     <Deferred data="userLists">
                         <template #fallback>
                             <div class="flex flex-col gap-3">
@@ -87,100 +83,65 @@ const tab = computed(() => {
                             </div>
                         </template>
 
-                        <GameActionDropdown :game :lists="userLists" :permissions />
+                        <GameActions :game :lists="userLists" :permissions />
                     </Deferred>
-                </template>
-                <div class="ml:col-start-2 ml:row-start-1 flex flex-col gap-4">
-                    <h1 class="text-3xl">{{ game.title }}</h1>
-                    <div class="flex divide-x">
-                        <div class="flex items-center gap-2.5 pr-3">
-                            <Star class="mt-0.5 size-5" />
-                            <p>{{ game.score }}</p>
-                        </div>
-                        <p class="pl-3">{{ game.reviews_count }} review(s)</p>
-                    </div>
-                    <p class="text-sm leading-[165%]">{{ game.description }}</p>
-                    <div class="grid grid-cols-2 gap-4 lg:grid-cols-[repeat(3,auto)] lg:gap-6 lg:self-start">
-                        <div class="flex items-center gap-2">
-                            <Blocks class="mt-0.5 size-4" />
-                            <TextLink :href="route('genres.show', { genre: game.genre.slug })">{{ game.genre.name }}</TextLink>
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <Calendar class="mt-0.5 size-4" />
-                            <TextLink :href="route('games.index', { released_after: game.released_at, released_before: game.released_at })">
-                                {{ game.released_at }}
-                            </TextLink>
-                        </div>
-                        <div class="flex items-center gap-2 max-lg:col-span-full">
-                            <User class="mt-0.5 size-4" />
-                            <TextLink :href="route('user.profile', { user: game.creator.username })">{{ game.creator.name }}</TextLink>
-                        </div>
-                    </div>
-                    <div v-if="game.media.length > 0">
-                        <Modal>
-                            <template #trigger>
-                                <p class="cursor-pointer text-sm text-sky-600 dark:text-sky-400">Show {{ game.media.length }} media</p>
-                            </template>
-                            <template #title>
-                                <p>"{{ game.title }}" media</p>
-                            </template>
-                            <template #description>{{ game.media.length }} media</template>
-                            <div class="flex max-h-[75vh] flex-col gap-6 overflow-y-auto">
-                                <div v-for="media in game.media" :key="media.path" class="flex flex-col gap-2">
-                                    <Preview :type="media.type" :media="media.path" />
-                                </div>
-                            </div>
-                        </Modal>
-                    </div>
-                </div>
+                </CanInteract>
+
+                <GameDetails :game />
+                <div id="tab_switch_teleport" class="self-end lg:col-start-2 lg:col-end-4 lg:row-end-2"></div>
             </div>
             <Tabs :default-value="tab">
-                <TabsList class="h-auto w-full">
-                    <TabsTrigger
-                        v-for="[name, icon] in Object.entries(tabs)"
-                        :value="name"
-                        :key="name"
-                        class="py-2 capitalize"
-                        :class="{ 'cursor-pointer': tab !== name }"
-                    >
-                        <component :is="icon" class="mr-1"></component>
-                        {{ name }}
-                    </TabsTrigger>
-                </TabsList>
+                <ClientOnly>
+                    <Teleport to="#tab_switch_teleport" :disabled="!shouldTeleport">
+                        <TabsList class="h-auto w-full">
+                            <TabsTrigger
+                                v-for="[name, icon] in Object.entries(tabs)"
+                                :value="name"
+                                :key="name"
+                                class="py-2 capitalize"
+                                :class="{ 'cursor-pointer': tab !== name }"
+                            >
+                                <component :is="icon" class="mr-1"></component>
+                                {{ name }}
+                            </TabsTrigger>
+                        </TabsList>
+                    </Teleport>
+                </ClientOnly>
                 <TabsContent value="reviews">
                     <WhenVisible data="reviews">
                         <template #fallback>
                             <ReviewSkeleton />
                         </template>
 
-                        <NewReviewForm :slug="game.slug" v-if="canInteract()" />
-                        <template v-if="reviews!.data.length > 0">
-                            <div class="flex flex-col gap-4">
-                                <Pagination page-name="reviews_page" :pagination="getPaginationData(reviews!)" />
+                        <div class="mb-4 flex w-full items-center justify-between gap-4 border-y py-3">
+                            <p class="text-xl">Reviews</p>
+                            <NewReviewForm :slug="game.slug" />
+                        </div>
+
+                        <ContentWithFallback :has-value="reviews!.data.length > 0">
+                            <PaginatedContent page-name="reviews_page" :pagination="reviews!">
                                 <Review v-for="review in reviews!.data" :key="review.slug" :review />
-                            </div>
-                        </template>
-                        <template v-else>
-                            <p>Nothing to show</p>
-                        </template>
+                            </PaginatedContent>
+                        </ContentWithFallback>
                     </WhenVisible>
                 </TabsContent>
+
                 <TabsContent value="discussions">
                     <WhenVisible data="reviews">
                         <template #fallback>
                             <DiscussionSkeleton />
                         </template>
 
-                        <NewDiscussionForm :slug="game.slug" type="game" v-if="canInteract()" />
-                        <template v-if="discussions!.data.length > 0">
-                            <div class="flex flex-col gap-4">
-                                <Pagination page-name="discussions_page" :pagination="getPaginationData(discussions!)" />
+                        <div class="mb-4 flex w-full items-center justify-between gap-4 border-y py-3">
+                            <p class="text-xl">Discussions</p>
+                            <NewDiscussionForm :slug="game.slug" type="game" />
+                        </div>
+
+                        <ContentWithFallback :has-value="discussions!.data.length > 0">
+                            <PaginatedContent page-name="discussions_page" :pagination="discussions!">
                                 <Discussion v-for="discussion in discussions!.data" :key="discussion.slug" :discussion />
-                            </div>
-                        </template>
-                        <template v-else>
-                            <p>Nothing to show</p>
-                        </template>
+                            </PaginatedContent>
+                        </ContentWithFallback>
                     </WhenVisible>
                 </TabsContent>
             </Tabs>

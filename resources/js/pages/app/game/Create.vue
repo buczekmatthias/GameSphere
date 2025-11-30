@@ -1,17 +1,15 @@
 <script setup lang="ts">
-import DatePicker from '@/components/DatePicker.vue';
 import FormButton from '@/components/FormButton.vue';
-import InputError from '@/components/InputError.vue';
-import InputInfo from '@/components/InputInfo.vue';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import Textarea from '@/components/ui/textarea/Textarea.vue';
+import GameGenre from '@/components/Partials/Game/Create/Form/GameGenre.vue';
+import GameMedia from '@/components/Partials/Game/Create/Form/GameMedia.vue';
+import GameReleasedAt from '@/components/Partials/Game/Create/Form/GameReleasedAt.vue';
+import GameThumbnail from '@/components/Partials/Game/Create/Form/GameThumbnail.vue';
+import GameDescription from '@/components/Partials/Game/Edit/Form/GameDescription.vue';
+import GameTitle from '@/components/Partials/Game/Edit/Form/GameTitle.vue';
 import { transformDate } from '@/composables/useTransformDatePicker';
 import AppLayout from '@/layouts/AppLayout.vue';
 import type { BreadcrumbItem, Genre } from '@/types';
 import { Head, useForm } from '@inertiajs/vue3';
-import { computed } from 'vue';
 
 defineProps<{
     genres: Genre[];
@@ -24,7 +22,7 @@ const form = useForm({
     description: '',
     thumbnail: null,
     media: [],
-    released_at: '' as any,
+    released_at: null,
     genre: '',
 });
 
@@ -38,12 +36,6 @@ const breadcrumbs: BreadcrumbItem[] = [
         href: route('games.create'),
     },
 ];
-
-const charactersLeftTillRequired = computed(() => {
-    const left = DESCRIPTION_MIN_LENGTH - form.description.length;
-
-    return left > 0 ? left : 0;
-});
 
 const isFormValid = () => {
     return (
@@ -68,64 +60,17 @@ const submitForm = () => {
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <form @submit.prevent="submitForm" class="main-container flex flex-col gap-4">
-            <div class="form-box">
-                <Label for="title">Title</Label>
-                <Input id="title" type="text" required autofocus v-model="form.title" placeholder="Example title" />
-                <InputError :message="form.errors.title" />
-            </div>
+            <GameTitle :error="form.errors.title" v-model="form.title" />
 
-            <div class="form-box">
-                <Label for="description">Description</Label>
-                <Textarea id="description" required v-model="form.description" class="h-64 resize-none" placeholder="Example description" />
-                <InputInfo
-                    :message="`At least 50 characters long. ${charactersLeftTillRequired === 0 ? '' : charactersLeftTillRequired + ' characters to go'}`"
-                />
-                <InputError :message="form.errors.description" />
-            </div>
+            <GameDescription :error="form.errors.description" v-model="form.description" />
 
-            <div class="form-box">
-                <Label for="thumbnail">Thumbnail</Label>
-                <Input
-                    id="thumbnail"
-                    type="file"
-                    required
-                    @change="form.thumbnail = $event.target.files[0]"
-                    accept="image/jpeg,image/png,image/webp"
-                />
-                <InputError :message="form.errors.thumbnail" />
-            </div>
+            <GameThumbnail :error="form.errors.thumbnail" v-model="form.thumbnail" />
 
-            <div class="form-box">
-                <Label for="media">Media</Label>
-                <Input
-                    id="media"
-                    type="file"
-                    multiple
-                    @change="form.media = $event.target.files"
-                    accept="image/jpeg,image/png,image/webp,video/mp4"
-                />
-                <InputError :message="form.errors.media" />
-            </div>
+            <GameMedia :error="form.errors.media" v-model="form.media" />
 
-            <div class="form-box">
-                <Label for="released_at">Released at</Label>
-                <DatePicker v-model="form.released_at" trigger-button-class="w-full" />
-                <InputError :message="form.errors.released_at" />
-            </div>
+            <GameReleasedAt :error="form.errors.released_at" v-model="form.released_at" />
 
-            <div class="form-box">
-                <label>Genre</label>
-                <Select v-model="form.genre" required>
-                    <SelectTrigger class="w-full cursor-pointer">
-                        <SelectValue placeholder="Select genre" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectItem :value="genre.slug" v-for="genre in genres" :key="genre.slug" class="cursor-pointer">
-                            {{ genre.name }}
-                        </SelectItem>
-                    </SelectContent>
-                </Select>
-            </div>
+            <GameGenre :error="form.errors.genre" v-model="form.genre" :genres />
 
             <FormButton label="Create game" :is-processing="form.processing" :disabled="!isFormValid()" />
         </form>

@@ -61,7 +61,7 @@ const handleFileChange = (event: any): void => {
         <div class="flex justify-between gap-2">
             <Modal v-if="gameMedia.length > 0">
                 <template #trigger>
-                    <FormActionTap>Show media</FormActionTap>
+                    <FormActionTap class="self-end">Show media</FormActionTap>
                 </template>
                 <template #title>
                     <p>Game media</p>
@@ -76,7 +76,7 @@ const handleFileChange = (event: any): void => {
                     </div>
                 </div>
             </Modal>
-            <FormActionTap v-if="media.length > 0" @click="discardNewFiles">Discard new files</FormActionTap>
+            <FormActionTap v-if="media.length > 0" @click="discardNewFiles" class="self-end">Discard new files</FormActionTap>
         </div>
         <InputInfo :message="`${gameMedia.length} of ${TOTAL_AVAILABLE_MEDIA_SLOT} files used. ${fileSlotsLeft} more files can be uploaded`" />
         <InputInfo v-if="media_to_delete.length > 0" :message="`${media_to_delete.length} selected to delete.`" />

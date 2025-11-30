@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import FormActionTap from '@/components/FormActionTap.vue';
 import FormBox from '@/components/FormBox.vue';
 import { Button } from '@/components/ui/button';
 import {
@@ -14,35 +13,33 @@ import {
     ComboboxTrigger,
 } from '@/components/ui/combobox';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import UserInfo from '@/components/UserInfo.vue';
 import { cn } from '@/lib/utils';
-import { User } from '@/types';
+import { Genre } from '@/types';
 import { Check, ChevronsUpDown, Search } from 'lucide-vue-next';
 import { ref, watch } from 'vue';
 
-const props = defineProps<{
+defineProps<{
     error?: string;
-    gameCreator: User;
-    users: User[];
+    genres: Genre[];
 }>();
 
 const model = defineModel<any>();
 
-const ID = 'creator';
+const selectedGenre = ref<any>(null);
 
-const selectedCreator = ref(props.gameCreator);
+const ID = 'genre';
 
-watch(selectedCreator, () => (model.value = selectedCreator.value.username));
+watch(selectedGenre, () => (model.value = selectedGenre.value?.slug));
 </script>
 
 <template>
     <FormBox :label="ID" :id="ID">
-        <Combobox :id="ID" by="username" v-model="selectedCreator">
+        <Combobox :id="ID" by="name" v-model="selectedGenre">
             <ComboboxAnchor class="w-full">
                 <ComboboxTrigger as-child>
-                    <Button variant="outline" class="h-full w-full justify-between" :class="{ 'py-[14.75px]': !gameCreator.username }">
-                        <UserInfo :user="selectedCreator" show-username v-if="selectedCreator.username" />
-                        <template v-else> No creator selected </template>
+                    <Button variant="outline" class="h-full w-full justify-between">
+                        <template v-if="selectedGenre">{{ selectedGenre.name }}</template>
+                        <template v-else> No genre selected </template>
 
                         <ChevronsUpDown class="ml-2 h-4 w-4 shrink-0 opacity-50" />
                     </Button>
@@ -51,19 +48,19 @@ watch(selectedCreator, () => (model.value = selectedCreator.value.username));
 
             <ComboboxList align="center" class="w-[var(--radix-popper-anchor-width)]">
                 <div class="relative w-full max-w-sm items-center">
-                    <ComboboxInput class="h-10 rounded-none border-0 border-b pl-2 focus-visible:ring-0" placeholder="Select creator..." />
+                    <ComboboxInput class="h-10 rounded-none border-0 border-b pl-2 focus-visible:ring-0" placeholder="Select genres..." />
                     <span class="absolute inset-y-0 start-0 flex items-center justify-center px-3">
                         <Search class="text-muted-foreground size-4" />
                     </span>
                 </div>
 
-                <ComboboxEmpty> No users found. </ComboboxEmpty>
+                <ComboboxEmpty> No genres found. </ComboboxEmpty>
 
                 <ComboboxGroup>
                     <ScrollArea>
                         <div class="max-h-[35vh]">
-                            <ComboboxItem v-for="user in users" :key="user.username" :value="user">
-                                <UserInfo :user show-username />
+                            <ComboboxItem v-for="genre in genres" :key="genre.slug" :value="genre">
+                                {{ genre.name }}
 
                                 <ComboboxItemIndicator>
                                     <Check :class="cn('ml-auto h-4 w-4')" />
@@ -74,13 +71,5 @@ watch(selectedCreator, () => (model.value = selectedCreator.value.username));
                 </ComboboxGroup>
             </ComboboxList>
         </Combobox>
-
-        <FormActionTap
-            class="self-end"
-            v-if="gameCreator.username && gameCreator.username !== selectedCreator.username"
-            @click="selectedCreator = gameCreator"
-        >
-            Reset to original creator
-        </FormActionTap>
     </FormBox>
 </template>

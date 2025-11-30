@@ -29,8 +29,8 @@ const props = defineProps<{
 }>();
 
 const data = ref<FilterData>({
-    released_after: props.ziggy.query.released_after ? parseDate(props.ziggy.query.released_after) : '',
-    released_before: props.ziggy.query.released_before ? parseDate(props.ziggy.query.released_before) : '',
+    released_after: props.ziggy.query.released_after,
+    released_before: props.ziggy.query.released_before,
     genre: props.ziggy.query.genre || '',
 });
 

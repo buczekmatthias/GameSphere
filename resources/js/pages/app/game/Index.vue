@@ -3,16 +3,16 @@ import GameSkeleton from '@/components/fallbacks/GameSkeleton.vue';
 import Game from '@/components/Game.vue';
 import GamesListFilter, { FilterData } from '@/components/GamesListFilter.vue';
 import Pagination from '@/components/Pagination.vue';
+import SearchHeaderText from '@/components/Partials/Game/Index/SearchHeaderText.vue';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Separator } from '@/components/ui/separator';
 import { getPaginationData } from '@/composables/usePagination';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { BreadcrumbItem, Game as GameType, Pagination as PaginationType, SharedData, Ziggy } from '@/types';
 import { Deferred, Head, router, usePage } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
 
-interface SearchData {
+export interface SearchData {
     per_page?: string | number;
     title?: string;
     released_after?: string;
@@ -72,8 +72,6 @@ const isQueried = computed(
         ziggy.value.query.released_before !== undefined ||
         ziggy.value.query.genre !== undefined,
 );
-
-const queriesCount = computed((): number => Object.keys(ziggy.value.query).filter((key) => key !== 'per_page').length);
 </script>
 
 <template>
@@ -91,26 +89,7 @@ const queriesCount = computed((): number => Object.keys(ziggy.value.query).filte
                     <GameSkeleton class="col-span-full" :has-queries="isQueried" />
                 </template>
 
-                <template v-if="isQueried">
-                    <div class="col-span-full flex flex-col gap-2">
-                        <p class="text-2xl">{{ games?.meta.total }} {{ games?.meta.total === 1 ? 'result' : 'results' }}</p>
-                        <div class="text-muted-foreground flex flex-wrap items-center gap-3">
-                            <p v-if="ziggy.query.title">Contains "{{ ziggy.query.title }}"</p>
-                            <Separator class="max-h-7" orientation="vertical" v-if="ziggy.query.title && queriesCount > 1" />
-                            <p v-if="ziggy.query.genre">Genre: "{{ ziggy.query.genre }}"</p>
-                            <Separator
-                                class="max-h-7"
-                                orientation="vertical"
-                                v-if="(ziggy.query.released_after || ziggy.query.released_before) && ziggy.query.genre"
-                            />
-                            <template v-if="ziggy.query.released_after || ziggy.query.released_before">
-                                <p v-if="ziggy.query.released_after && !ziggy.query.released_before">After {{ ziggy.query.released_after }}</p>
-                                <p v-else-if="!ziggy.query.released_after && ziggy.query.released_before">Before {{ ziggy.query.released_before }}</p>
-                                <p v-else>Between {{ ziggy.query.released_after }} and {{ ziggy.query.released_before }}</p>
-                            </template>
-                        </div>
-                    </div>
-                </template>
+                <SearchHeaderText :total="games!.meta.total" :query="ziggy.query" v-if="isQueried" />
                 <template v-if="games!.data.length > 0">
                     <Game v-for="game in games!.data" :key="game.title" :game />
                     <Pagination :customizable-per-page="true" :pagination="getPaginationData(games!)" :reload-only />

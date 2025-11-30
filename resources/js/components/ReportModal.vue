@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import FormButton from '@/components/FormButton.vue';
+import { buttonVariants } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { canInteract } from '@/composables/useCanInteract';
@@ -21,6 +22,7 @@ const props = withDefaults(
     {
         showIcon: false,
         showText: true,
+        triggerClass: () => buttonVariants({ variant: 'destructive' }),
     },
 );
 

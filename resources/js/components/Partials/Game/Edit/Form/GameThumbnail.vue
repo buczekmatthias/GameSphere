@@ -31,14 +31,14 @@ const ID = 'thumbnail';
         <div class="flex justify-between gap-2">
             <Modal>
                 <template #trigger>
-                    <FormActionTap>Show thumbnail</FormActionTap>
+                    <FormActionTap class="self-end">Show thumbnail</FormActionTap>
                 </template>
                 <template #title>
                     <p>Thumbnail</p>
                 </template>
                 <Preview type="image" :media="thumbnail" />
             </Modal>
-            <FormActionTap v-if="model !== null" @click="discardNewThumbnail">Discard new thumbnail</FormActionTap>
+            <FormActionTap class="self-end" v-if="model !== null" @click="discardNewThumbnail">Discard new thumbnail</FormActionTap>
         </div>
         <InputError :message="error" />
     </FormBox>

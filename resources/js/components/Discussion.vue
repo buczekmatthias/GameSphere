@@ -6,7 +6,7 @@ import { Calendar, MessageCircle, User } from 'lucide-vue-next';
 withDefaults(
     defineProps<{
         discussion: Discussion;
-        showUser: boolean;
+        showUser?: boolean;
     }>(),
     {
         showUser: true,

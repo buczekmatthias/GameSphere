@@ -74,6 +74,8 @@ watch(selectedGenre, () => (model.value = selectedGenre.value.slug));
             </ComboboxList>
         </Combobox>
 
-        <FormActionTap v-if="gameGenre.slug && gameGenre.slug !== model" @click="selectedGenre = gameGenre"> Reset to original genre </FormActionTap>
+        <FormActionTap v-if="gameGenre.slug && gameGenre.slug !== model" @click="selectedGenre = gameGenre" class="self-end">
+            Reset to original genre
+        </FormActionTap>
     </FormBox>
 </template>

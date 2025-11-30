@@ -19,7 +19,7 @@ withDefaults(
         </div>
         <div class="flex flex-col gap-2" v-for="i in new Array(20)" :key="i">
             <Skeleton class="h-80 w-full" />
-            <Skeleton class="h-4 w-3/4" />
+            <Skeleton class="h-4 w-4/5" />
         </div>
     </div>
 </template>

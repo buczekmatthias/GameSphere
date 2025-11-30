@@ -4,6 +4,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import AppLayout from '@/layouts/AppLayout.vue';
 import type { BreadcrumbItem, Report } from '@/types';
 import { Head } from '@inertiajs/vue3';
+import { capitalize } from 'vue';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -28,19 +29,19 @@ defineProps<{
                         <TableHead class="w-24">#</TableHead>
                         <TableHead class="w-80">Id</TableHead>
                         <TableHead>Reason</TableHead>
-                        <TableHead class="w-32">Item</TableHead>
-                        <TableHead class="w-24">Status</TableHead>
-                        <TableHead class="w-32">Created at</TableHead>
+                        <TableHead class="w-36">Entry type</TableHead>
+                        <TableHead class="w-36">Status</TableHead>
+                        <TableHead class="w-36">Created at</TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
                     <TableRow v-for="(report, i) in reports" :key="report.slug">
                         <TableCell>{{ i + 1 }}</TableCell>
-                        <TableCell>{{ report.slug }}</TableCell>
-                        <TableCell>{{ report.reason }}</TableCell>
                         <TableCell>
-                            <TextLink :href="report.reportable">Show {{ report.reportable_type }}</TextLink>
+                            <TextLink :href="report.reportable">{{ report.slug }}</TextLink>
                         </TableCell>
+                        <TableCell>{{ report.reason }}</TableCell>
+                        <TableCell>{{ capitalize(report.reportable_type) }}</TableCell>
                         <TableCell class="capitalize">{{ report.status }}</TableCell>
                         <TableCell>{{ report.created_at }}</TableCell>
                     </TableRow>
