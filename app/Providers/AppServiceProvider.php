@@ -6,6 +6,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
+use Inertia\Inertia;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -27,5 +28,9 @@ class AppServiceProvider extends ServiceProvider
 		Validator::extend('string_or_uuid', function ($attribute, $value, $parameters, $validator) {
 			return Str::isUuid($value) || is_string($value);
 		});
+
+		Inertia::share([
+			'globals' => config('globals')
+		]);
 	}
 }

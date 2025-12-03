@@ -25,7 +25,10 @@ class StoreRequest extends FormRequest
 		return [
 			'title' => ['string', 'required'],
 			'slug' => ['uuid', 'required', $this->post('type') === 'game' ? 'exists:games,slug' : 'exists:genres,slug'],
-			'type' => ['string', 'in:game,genre']
+			'type' => ['string', 'in:game,genre'],
+			'content' => ['string', 'required'],
+			'media' => ['array', 'max:'.config('globals.form.files.media.max_files')],
+			'media.*' => ['file', 'mimetypes:'.config('globals.form.files.media.accept_type')]
 		];
 	}
 }

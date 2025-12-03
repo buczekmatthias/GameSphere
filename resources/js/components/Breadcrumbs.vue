@@ -51,11 +51,9 @@ const isAboveLg = useMediaQuery('(min-width: 1024px)');
                 </BreadcrumbItem>
                 <BreadcrumbSeparator />
                 <BreadcrumbItem>
-                    <BreadcrumbLink as-child>
-                        <Link :href="breadcrumbs[breadcrumbs.length - 1].href ?? '#'" as="button">
-                            {{ breadcrumbs[breadcrumbs.length - 1].title }}
-                        </Link>
-                    </BreadcrumbLink>
+                    <BreadcrumbPage>
+                        {{ breadcrumbs[breadcrumbs.length - 1].title }}
+                    </BreadcrumbPage>
                 </BreadcrumbItem>
             </template>
             <template v-else>

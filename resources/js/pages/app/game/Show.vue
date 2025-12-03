@@ -5,9 +5,8 @@ import ContentWithFallback from '@/components/ContentWithFallback.vue';
 import Discussion from '@/components/Discussion.vue';
 import DiscussionSkeleton from '@/components/fallbacks/DiscussionSkeleton.vue';
 import ReviewSkeleton from '@/components/fallbacks/ReviewSkeleton.vue';
+import FormActionTap from '@/components/FormActionTap.vue';
 import GameActions from '@/components/GameActions.vue';
-import NewDiscussionForm from '@/components/NewDiscussionForm.vue';
-import NewReviewForm from '@/components/NewReviewForm.vue';
 import PaginatedContent from '@/components/PaginatedContent.vue';
 import GameDetails from '@/components/Partials/Game/Show/GameDetails.vue';
 import Review from '@/components/Review.vue';
@@ -17,9 +16,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { canInteract } from '@/composables/useCanInteract';
 import AppLayout from '@/layouts/AppLayout.vue';
 import type { BreadcrumbItem, Discussion as DiscussionType, Game, Pagination, Permissions, Review as ReviewType, Ziggy } from '@/types';
-import { Deferred, Head, usePage, WhenVisible } from '@inertiajs/vue3';
+import { Deferred, Head, Link, usePage, WhenVisible } from '@inertiajs/vue3';
 import { useMediaQuery } from '@vueuse/core';
-import { LucideIcon, Rss, Star } from 'lucide-vue-next';
+import { LucideIcon, Plus, Rss, Star } from 'lucide-vue-next';
 import { computed } from 'vue';
 
 const props = withDefaults(
@@ -63,7 +62,6 @@ const shouldTeleport = useMediaQuery('(min-width: 1024px)');
 <template>
     <Head :title="game.title" />
 
-    <!-- TODO: Break into components -->
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="main-container flex flex-col gap-4">
             <div
@@ -115,7 +113,11 @@ const shouldTeleport = useMediaQuery('(min-width: 1024px)');
 
                         <div class="mb-4 flex w-full items-center justify-between gap-4 border-y py-3">
                             <p class="text-xl">Reviews</p>
-                            <NewReviewForm :slug="game.slug" />
+                            <CanInteract>
+                                <Link :href="route('reviews.create', { game: game.slug })">
+                                    <FormActionTap> <Plus class="size-4" /> Create review </FormActionTap>
+                                </Link>
+                            </CanInteract>
                         </div>
 
                         <ContentWithFallback :has-value="reviews!.data.length > 0">
@@ -134,7 +136,11 @@ const shouldTeleport = useMediaQuery('(min-width: 1024px)');
 
                         <div class="mb-4 flex w-full items-center justify-between gap-4 border-y py-3">
                             <p class="text-xl">Discussions</p>
-                            <NewDiscussionForm :slug="game.slug" type="game" />
+                            <CanInteract>
+                                <Link :href="route('discussions.create', { type: 'game', slug: game.slug })">
+                                    <FormActionTap> <Plus class="size-4" /> Create discussion </FormActionTap>
+                                </Link>
+                            </CanInteract>
                         </div>
 
                         <ContentWithFallback :has-value="discussions!.data.length > 0">

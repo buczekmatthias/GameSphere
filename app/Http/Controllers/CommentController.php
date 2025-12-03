@@ -7,6 +7,7 @@ use App\Http\Requests\Comment\UpdateRequest;
 use App\Http\Resources\Discussion\CommentResource;
 use App\Models\Comment;
 use App\Models\Discussion;
+use App\Services\StoreCommentMedia;
 use App\Services\UserPermissions;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -43,20 +44,7 @@ class CommentController extends Controller
 		$comment = $discussion->comments()->make([...$data, 'slug' => Str::uuid()]);
 		$comment->user()->associate($request->user());
 
-		$path = "discussions/{$data['discussion_slug']}/{$comment->slug}";
-		Storage::makeDirectory($path);
-
-		$tempMedia = [];
-
-		if (array_key_exists('media', $data)) {
-			foreach ($data['media'] as $i => $file) {
-				$fileName = "{$comment->slug}-media-{$i}.{$file->extension()}";
-				Storage::putFileAs($path, $file, $fileName);
-				$tempMedia[] = $fileName;
-			}
-
-			$comment->media = $tempMedia;
-		}
+		$comment->media = StoreCommentMedia::storeFiles($discussion->slug, $comment->slug, $data['media']);
 
 		$comment->save();
 

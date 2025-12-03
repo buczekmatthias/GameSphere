@@ -6,9 +6,12 @@ use App\Http\Requests\Discussion\StoreRequest;
 use App\Http\Requests\Discussion\UpdateRequest;
 use App\Http\Resources\Discussion\ListDiscussionResource;
 use App\Http\Resources\Discussion\ShowDiscussionResource;
+use App\Http\Resources\Games\GamesListResource;
+use App\Http\Resources\Genre\ListResource;
 use App\Models\Discussion;
 use App\Models\Game;
 use App\Models\Genre;
+use App\Services\StoreCommentMedia;
 use App\Services\UserPermissions;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -30,29 +33,59 @@ class DiscussionController extends Controller
 		]);
 	}
 
+	public function create(string $type, string $slug): Response
+	{
+		$item = null;
+
+		if ($type === 'game') {
+			$item = GamesListResource::make(Game::where('slug', $slug)->first());
+		} else {
+			$item = ListResource::make(Genre::where('slug', $slug)->first());
+		}
+
+		return Inertia::render('app/discussion/Create', [
+			'type' => $type,
+			'item' => $item
+		]);
+	}
+
 	/**
 	 * Store a newly created resource in storage.
 	 */
 	public function store(StoreRequest $request): RedirectResponse
 	{
+		$userId = Auth::user()->id;
+		$data = $request->validated();
+
 		$discussion = (
 			$request->post('type') === 'game'
-			? Game::where('slug', $request->post('slug'))
-			: Genre::where('slug', $request->post('slug'))
+			? Game::where('slug', $data['slug'])
+			: Genre::where('slug', $data['slug'])
 		)
 			->first()
 			->discussions()
 			->make([
 				'slug' => Str::uuid(),
-				'title' => $request->post('title')
+				'title' => $data['title']
 			]);
 
-		$discussion->user_id = Auth::user()->id;
+		$discussion->user_id = $userId;
 		$discussion->save();
 
 		Storage::makeDirectory("discussions/{$discussion->slug}");
 
-		return back();
+		$comment = $discussion->comments()->make([
+			'slug' => Str::uuid(),
+			'content' => $data['content']
+		]);
+
+		$comment->media = StoreCommentMedia::storeFiles($discussion->slug, $comment->slug, $data['media']);
+
+		$comment->user_id = $userId;
+
+		$comment->save();
+
+		return to_route('discussions.show', ['discussion' => $discussion->slug]);
 	}
 
 	/**

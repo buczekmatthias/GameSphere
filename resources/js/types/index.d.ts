@@ -1,3 +1,4 @@
+import { Constants } from '@/constants';
 import type { PageProps } from '@inertiajs/core';
 import type { LucideIcon } from 'lucide-vue-next';
 import type { Config } from 'ziggy-js';
@@ -33,6 +34,7 @@ export interface SharedData extends PageProps {
     can_interact: boolean;
     has_special_permissions: boolean;
     report_reasons: Record<number, string>;
+    constants: Constants;
 }
 
 export interface User {
