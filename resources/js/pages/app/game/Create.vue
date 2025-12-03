@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import FormButton from '@/components/FormButton.vue';
+import MainContainer from '@/components/MainContainer.vue';
 import GameGenre from '@/components/Partials/Game/Create/Form/GameGenre.vue';
 import GameMedia from '@/components/Partials/Game/Create/Form/GameMedia.vue';
 import GameReleasedAt from '@/components/Partials/Game/Create/Form/GameReleasedAt.vue';
@@ -7,6 +8,7 @@ import GameThumbnail from '@/components/Partials/Game/Create/Form/GameThumbnail.
 import GameDescription from '@/components/Partials/Game/Edit/Form/GameDescription.vue';
 import GameTitle from '@/components/Partials/Game/Edit/Form/GameTitle.vue';
 import { transformDate } from '@/composables/useTransformDatePicker';
+import { constants } from '@/constants';
 import AppLayout from '@/layouts/AppLayout.vue';
 import type { BreadcrumbItem, Genre } from '@/types';
 import { Head, useForm } from '@inertiajs/vue3';
@@ -14,8 +16,6 @@ import { Head, useForm } from '@inertiajs/vue3';
 defineProps<{
     genres: Genre[];
 }>();
-
-const DESCRIPTION_MIN_LENGTH = 50;
 
 const form = useForm({
     title: '',
@@ -40,7 +40,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 const isFormValid = () => {
     return (
         form.title.length > 0 &&
-        form.description.length >= DESCRIPTION_MIN_LENGTH &&
+        form.description.length >= constants.value.form.description.min_length &&
         form.thumbnail !== null &&
         form.released_at &&
         form.genre.length > 0
@@ -59,20 +59,24 @@ const submitForm = () => {
     <Head title="Add new game" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
-        <form @submit.prevent="submitForm" class="main-container flex flex-col gap-4">
+        <MainContainer class="mx-auto flex max-w-6xl flex-col gap-6">
             <GameTitle :error="form.errors.title" v-model="form.title" />
 
             <GameDescription :error="form.errors.description" v-model="form.description" />
 
-            <GameThumbnail :error="form.errors.thumbnail" v-model="form.thumbnail" />
+            <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
+                <GameThumbnail :error="form.errors.thumbnail" v-model="form.thumbnail" />
 
-            <GameMedia :error="form.errors.media" v-model="form.media" />
+                <GameMedia :error="form.errors.media" v-model="form.media" />
+            </div>
 
-            <GameReleasedAt :error="form.errors.released_at" v-model="form.released_at" />
+            <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
+                <GameReleasedAt :error="form.errors.released_at" v-model="form.released_at" />
 
-            <GameGenre :error="form.errors.genre" v-model="form.genre" :genres />
+                <GameGenre :error="form.errors.genre" v-model="form.genre" :genres />
+            </div>
 
-            <FormButton label="Create game" :is-processing="form.processing" :disabled="!isFormValid()" />
-        </form>
+            <FormButton label="Create game" :is-processing="form.processing" :disabled="!isFormValid()" @click="submitForm" />
+        </MainContainer>
     </AppLayout>
 </template>

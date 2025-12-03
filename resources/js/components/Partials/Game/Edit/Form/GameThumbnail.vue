@@ -5,7 +5,7 @@ import InputError from '@/components/InputError.vue';
 import Modal from '@/components/Modal.vue';
 import Preview from '@/components/Preview.vue';
 import { Input } from '@/components/ui/input';
-import { THUMBNAIL_ACCEPT_TYPE } from '@/constants';
+import { constants } from '@/constants';
 import { ref } from 'vue';
 
 defineProps<{
@@ -27,7 +27,7 @@ const ID = 'thumbnail';
 
 <template>
     <FormBox :label="ID" :id="ID">
-        <Input :id="ID" type="file" @change="model = $event.target.files[0]" :accept="THUMBNAIL_ACCEPT_TYPE" :key="inputKey" />
+        <Input :id="ID" type="file" @change="model = $event.target.files[0]" :accept="constants.form.files.thumbnail.accept_type" :key="inputKey" />
         <div class="flex justify-between gap-2">
             <Modal>
                 <template #trigger>

@@ -1,7 +1,5 @@
 <?php
 
-// TODO: Convert from constants.ts to sharing this config
-
 return [
 	'form' => [
 		'description' => [

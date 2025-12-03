@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import Table from '@/components/Admin/Table.vue';
 import HeadingSmall from '@/components/HeadingSmall.vue';
+import MainContainer from '@/components/MainContainer.vue';
 import Pagination from '@/components/Pagination.vue';
 import { Button } from '@/components/ui/button';
 import {
@@ -66,7 +67,7 @@ const canCurrentUserManageUser = (user: User) => props.roles_user_can_manage.inc
     <Head title="Users" />
 
     <AdminLayout>
-        <div class="main-container flex flex-col gap-4">
+        <MainContainer class="flex flex-col gap-4">
             <div class="flex items-start space-y-1 max-md:flex-col md:items-center md:justify-between">
                 <HeadingSmall
                     title="Game creator join requests"
@@ -177,6 +178,6 @@ const canCurrentUserManageUser = (user: User) => props.roles_user_can_manage.inc
             </Table>
 
             <Pagination :pagination="getPaginationData(users)" :reload-only />
-        </div>
+        </MainContainer>
     </AdminLayout>
 </template>

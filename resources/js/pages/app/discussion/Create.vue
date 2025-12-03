@@ -4,6 +4,7 @@ import FormButton from '@/components/FormButton.vue';
 import GoBackLink from '@/components/GoBackLink.vue';
 import HeadingSmall from '@/components/HeadingSmall.vue';
 import InputError from '@/components/InputError.vue';
+import MainContainer from '@/components/MainContainer.vue';
 import CommentMedia from '@/components/Partials/Game/Create/Form/GameMedia.vue';
 import CommentTitle from '@/components/Partials/Game/Edit/Form/GameTitle.vue';
 import Textarea from '@/components/ui/textarea/Textarea.vue';
@@ -19,7 +20,9 @@ const props = defineProps<{
 
 const isGameType = computed(() => props.type === 'game');
 const computedItem = computed(() =>
-    isGameType.value ? { display: (props.item as Game).title, route: '' } : { display: (props.item as Genre).name, route: '' },
+    isGameType.value
+        ? { display: (props.item as Game).title, route: route('games.show', { game: props.item.slug }) }
+        : { display: (props.item as Genre).name, route: route('genres.show', { genre: props.item.slug }) },
 );
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -58,7 +61,7 @@ const submitForm = () => {
     <Head title="Create review" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
-        <div class="main-container flex flex-col gap-5">
+        <MainContainer class="flex flex-col gap-5">
             <GoBackLink :href="computedItem.route" />
             <HeadingSmall title="Create new discussion" :description="`${capitalize(type)}: ${computedItem.display} (${item.slug})`" />
 
@@ -69,6 +72,6 @@ const submitForm = () => {
             </FormBox>
             <CommentMedia :error="newDiscussionForm.errors.media" v-model="newDiscussionForm.media" />
             <FormButton label="Start discussion" :is-processing="newDiscussionForm.processing" :disabled="!isFormValid" @click="submitForm" />
-        </div>
+        </MainContainer>
     </AppLayout>
 </template>

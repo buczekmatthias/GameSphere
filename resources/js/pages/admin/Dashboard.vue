@@ -4,6 +4,7 @@ import CustomChartTooltip from '@/components/Admin/CustomChartTooltip.vue';
 import PendingGameCreatorRequests from '@/components/Admin/PendingGameCreatorRequests.vue';
 import Trend from '@/components/Admin/Trend.vue';
 import Heading from '@/components/Heading.vue';
+import MainContainer from '@/components/MainContainer.vue';
 import { AreaChart } from '@/components/ui/chart-area';
 import AdminLayout from '@/layouts/AdminLayout.vue';
 import { GameCreatorRequest } from '@/pages/admin/GameCreatorRequest.vue';
@@ -37,7 +38,7 @@ defineProps<{
     <Head title="Dashboard" />
 
     <AdminLayout>
-        <div class="main-container grid grid-cols-1 gap-4 lg:grid-cols-[2.5fr_1fr]">
+        <MainContainer class="grid grid-cols-1 gap-4 lg:grid-cols-[2.5fr_1fr]">
             <Heading title="Overview" description="Stats update every 45 minutes" class="col-span-full !mb-0 text-2xl" />
             <div class="grid grid-cols-1 grid-rows-4 gap-4 lg:col-start-2 lg:row-start-2">
                 <Trend v-for="[label, entry] in Object.entries(new_entries)" :key="label" :label="label" :entry="entry" />
@@ -53,6 +54,6 @@ defineProps<{
             </div>
             <ActiveReports :active_reports />
             <PendingGameCreatorRequests :pending_requests />
-        </div>
+        </MainContainer>
     </AdminLayout>
 </template>

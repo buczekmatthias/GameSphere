@@ -4,7 +4,7 @@ import FormBox from '@/components/FormBox.vue';
 import InputError from '@/components/InputError.vue';
 import InputInfo from '@/components/InputInfo.vue';
 import { Input } from '@/components/ui/input';
-import { MEDIA_ACCEPT_TYPE, TOTAL_AVAILABLE_MEDIA_SLOT } from '@/constants';
+import { constants } from '@/constants';
 import { ref } from 'vue';
 
 defineProps<{
@@ -25,8 +25,8 @@ const discardNewFiles = (): void => {
 const handleFileChange = (event: any): void => {
     const files = Array.from(event.target.files);
 
-    if (files.length > TOTAL_AVAILABLE_MEDIA_SLOT) {
-        alert(`You can use up to ${TOTAL_AVAILABLE_MEDIA_SLOT} files.`);
+    if (files.length > constants.value.form.files.media.max_files) {
+        alert(`You can use up to ${constants.value.form.files.media.max_files} files.`);
         event.target.value = '';
 
         return;
@@ -38,9 +38,9 @@ const handleFileChange = (event: any): void => {
 
 <template>
     <FormBox :label="ID" :id="ID">
-        <Input id="media" type="file" multiple @change="handleFileChange" :accept="MEDIA_ACCEPT_TYPE" :key="inputKey" />
+        <Input id="media" type="file" multiple @change="handleFileChange" :accept="constants.form.files.media.accept_type" :key="inputKey" />
         <div class="flex items-center justify-between gap-2">
-            <InputInfo :message="`Up to ${TOTAL_AVAILABLE_MEDIA_SLOT} files can be uploaded`" />
+            <InputInfo :message="`Up to ${constants.form.files.media.max_files} files can be uploaded`" />
             <FormActionTap v-if="model.length > 0" @click="discardNewFiles" class="self-end">Discard files</FormActionTap>
         </div>
         <InputError :message="error" />

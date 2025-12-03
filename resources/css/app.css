@@ -205,16 +205,3 @@
         @apply cursor-pointer;
     }
 }
-
-@layer components {
-    .form-box {
-        @apply flex flex-col gap-1.5;
-    }
-    .form-box label {
-        @apply text-sm;
-    }
-
-    .main-container {
-        @apply w-full p-6 md:p-4;
-    }
-}

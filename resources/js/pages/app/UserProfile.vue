@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import MainContainer from '@/components/MainContainer.vue';
 import ReportModal from '@/components/ReportModal.vue';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button, buttonVariants } from '@/components/ui/button';
@@ -69,7 +70,7 @@ router.on('finish', () => {
     <Head :title="`${user.name}\'s profile | ${capitalize(activeTab)}`" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
-        <div class="main-container flex flex-col gap-4">
+        <MainContainer class="flex flex-col gap-4">
             <div class="flex flex-col gap-3">
                 <Avatar class="h-72 w-72 overflow-hidden rounded-lg">
                     <AvatarImage v-if="showAvatar" :src="user.avatar!" :alt="user.name" class="bg-gray-900 object-contain" />
@@ -106,6 +107,6 @@ router.on('finish', () => {
                 </Link>
             </div>
             <UserProfileTab :type="activeTab" :content="user[activeTab]" />
-        </div>
+        </MainContainer>
     </AppLayout>
 </template>

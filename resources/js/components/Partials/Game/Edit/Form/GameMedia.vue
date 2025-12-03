@@ -7,7 +7,7 @@ import Modal from '@/components/Modal.vue';
 import Preview from '@/components/Preview.vue';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
-import { MEDIA_ACCEPT_TYPE, TOTAL_AVAILABLE_MEDIA_SLOT } from '@/constants';
+import { constants } from '@/constants';
 import { Media } from '@/types';
 import { computed, ref } from 'vue';
 
@@ -23,8 +23,8 @@ const inputKey = ref<number>(0);
 
 const ID = 'media';
 
-const fileSlotsLeft = computed(() => TOTAL_AVAILABLE_MEDIA_SLOT - props.gameMedia.length);
-const isDisabled = computed(() => props.gameMedia.length > TOTAL_AVAILABLE_MEDIA_SLOT);
+const fileSlotsLeft = computed(() => constants.value.form.files.media.max_files - props.gameMedia.length);
+const isDisabled = computed(() => props.gameMedia.length > constants.value.form.files.media.max_files);
 
 const toggleItem = (filename: string) => {
     if (media_to_delete.value.includes(filename)) {
@@ -42,9 +42,9 @@ const discardNewFiles = (): void => {
 const handleFileChange = (event: any): void => {
     const files = Array.from(event.target.files);
 
-    if (files.length + props.gameMedia.length > TOTAL_AVAILABLE_MEDIA_SLOT) {
+    if (files.length + props.gameMedia.length > constants.value.form.files.media.max_files) {
         alert(
-            `You can use up to ${TOTAL_AVAILABLE_MEDIA_SLOT} files. Only ${fileSlotsLeft.value} files can be uploaded until you remove any of existing ones.`,
+            `You can use up to ${constants.value.form.files.media.max_files} files. Only ${fileSlotsLeft.value} files can be uploaded until you remove any of existing ones.`,
         );
         event.target.value = '';
 
@@ -57,7 +57,15 @@ const handleFileChange = (event: any): void => {
 
 <template>
     <FormBox :label="ID" :id="ID">
-        <Input id="media" type="file" multiple @change="handleFileChange" :accept="MEDIA_ACCEPT_TYPE" :disabled="isDisabled" :key="inputKey" />
+        <Input
+            id="media"
+            type="file"
+            multiple
+            @change="handleFileChange"
+            :accept="constants.form.files.media.accept_type"
+            :disabled="isDisabled"
+            :key="inputKey"
+        />
         <div class="flex justify-between gap-2">
             <Modal v-if="gameMedia.length > 0">
                 <template #trigger>
@@ -78,7 +86,9 @@ const handleFileChange = (event: any): void => {
             </Modal>
             <FormActionTap v-if="media.length > 0" @click="discardNewFiles" class="self-end">Discard new files</FormActionTap>
         </div>
-        <InputInfo :message="`${gameMedia.length} of ${TOTAL_AVAILABLE_MEDIA_SLOT} files used. ${fileSlotsLeft} more files can be uploaded`" />
+        <InputInfo
+            :message="`${gameMedia.length} of ${constants.form.files.media.max_files} files used. ${fileSlotsLeft} more files can be uploaded`"
+        />
         <InputInfo v-if="media_to_delete.length > 0" :message="`${media_to_delete.length} selected to delete.`" />
         <InputError :message="error" />
     </FormBox>

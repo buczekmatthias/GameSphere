@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import Table from '@/components/Admin/Table.vue';
 import FormButton from '@/components/FormButton.vue';
+import MainContainer from '@/components/MainContainer.vue';
 import Pagination from '@/components/Pagination.vue';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
@@ -52,7 +53,7 @@ const submit = () => {
     <Head title="Genres" />
 
     <AdminLayout>
-        <div class="main-container flex flex-col gap-4">
+        <MainContainer class="flex flex-col gap-4">
             <div class="flex items-center justify-between gap-4">
                 <p class="text-3xl">Genres</p>
                 <Dialog v-model:open="openDialog">
@@ -121,6 +122,6 @@ const submit = () => {
             </Table>
 
             <Pagination :pagination="getPaginationData(genres)" :reload-only />
-        </div>
+        </MainContainer>
     </AdminLayout>
 </template>

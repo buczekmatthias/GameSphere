@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import MainContainer from '@/components/MainContainer.vue';
 import Pagination from '@/components/Pagination.vue';
 import TextLink from '@/components/TextLink.vue';
 import { Button } from '@/components/ui/button';
@@ -32,7 +33,7 @@ const reloadOnly: string[] = ['reports'];
     <Head :title="`Review - ${review.slug}`" />
 
     <AdminLayout>
-        <div class="main-container flex flex-col gap-4">
+        <MainContainer class="flex flex-col gap-4">
             <TextLink :href="route('admin.reviews.index')" class="flex items-center gap-1">
                 <ChevronLeft class="mt-0.5 size-4" />
                 <p>Back to all reviews</p>
@@ -158,6 +159,6 @@ const reloadOnly: string[] = ['reports'];
             <template v-else>
                 <p>No reports to display</p>
             </template>
-        </div>
+        </MainContainer>
     </AdminLayout>
 </template>

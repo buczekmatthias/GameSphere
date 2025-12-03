@@ -1,15 +1,17 @@
 <script setup lang="ts">
 import { Label } from '@/components/ui/label';
-import { capitalize } from 'vue';
+import { cn } from '@/lib/utils';
+import { capitalize, HTMLAttributes } from 'vue';
 
-defineProps<{
+const props = defineProps<{
     label: string;
     id?: string;
+    class?: HTMLAttributes['class'];
 }>();
 </script>
 
 <template>
-    <div class="form-box">
+    <div :class="cn('flex flex-col gap-1.5', props.class)">
         <Label :for="id">{{ capitalize(label) }}</Label>
         <slot />
     </div>

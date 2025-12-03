@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import Discussion from '@/components/Discussion.vue';
+import MainContainer from '@/components/MainContainer.vue';
 import Pagination from '@/components/Pagination.vue';
 import TextLink from '@/components/TextLink.vue';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -25,7 +26,7 @@ const breadcrumbs: BreadcrumbItem[] = [
     <Head title="Discussions" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
-        <div class="main-container flex flex-col gap-4">
+        <MainContainer class="mx-auto flex max-w-4xl flex-col gap-4">
             <Deferred data="discussions">
                 <template #fallback>
                     <Skeleton v-for="i in 10" :key="i" class="h-24 w-full" />
@@ -51,6 +52,6 @@ const breadcrumbs: BreadcrumbItem[] = [
                 </Discussion>
                 <Pagination :pagination="getPaginationData(discussions!)" />
             </Deferred>
-        </div>
+        </MainContainer>
     </AppLayout>
 </template>

@@ -109,7 +109,7 @@ watch(
                     </Select>
                 </div>
             </Deferred>
-            <TextLink class="self-start" :href="route(ziggy.current)" v-if="Object.values(data).some((v) => v !== '')">Reset filters</TextLink>
+            <TextLink class="self-start" :href="route(ziggy.current)" v-if="Object.keys(ziggy.query).length > 0">Reset filters</TextLink>
         </PopoverContent>
     </Popover>
 </template>

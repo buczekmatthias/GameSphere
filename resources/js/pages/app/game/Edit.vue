@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import FormButton from '@/components/FormButton.vue';
+import GoBackLink from '@/components/GoBackLink.vue';
+import MainContainer from '@/components/MainContainer.vue';
 import GameCreator from '@/components/Partials/Game/Edit/Form/GameCreator.vue';
 import GameDescription from '@/components/Partials/Game/Edit/Form/GameDescription.vue';
 import GameGenre from '@/components/Partials/Game/Edit/Form/GameGenre.vue';
@@ -8,7 +10,7 @@ import GameReleasedAt from '@/components/Partials/Game/Edit/Form/GameReleasedAt.
 import GameThumbnail from '@/components/Partials/Game/Edit/Form/GameThumbnail.vue';
 import GameTitle from '@/components/Partials/Game/Edit/Form/GameTitle.vue';
 import { transformDate } from '@/composables/useTransformDatePicker';
-import { DESCRIPTION_MIN_LENGTH } from '@/constants';
+import { constants } from '@/constants';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { BreadcrumbItem, Game, Genre, User } from '@/types';
 import { Head, useForm } from '@inertiajs/vue3';
@@ -60,7 +62,7 @@ const hasFormChanged = (): boolean => {
 
 // TODO: Add validation
 const submitForm = (): void => {
-    if (form.title.length > 0 && form.description.length >= DESCRIPTION_MIN_LENGTH) {
+    if (form.title.length > 0 && form.description.length >= constants.value.form.description.min_length) {
         form.transform((data) => ({
             ...data,
             released_at: transformDate(data.released_at),
@@ -73,19 +75,23 @@ const submitForm = (): void => {
     <Head :title="game.title" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
-        <form @submit.prevent="submitForm" class="main-container flex flex-col gap-4">
+        <MainContainer class="mx-auto flex max-w-6xl flex-col gap-4">
+            <GoBackLink :href="route('games.show', { game: props.game.slug })" />
+
             <GameTitle :error="form.errors.title" v-model="form.title" />
 
             <GameDescription :error="form.errors.description" v-model="form.description" />
 
-            <GameThumbnail :error="form.errors.thumbnail" v-model="form.thumbnail" :thumbnail="game.thumbnail" />
+            <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
+                <GameThumbnail :error="form.errors.thumbnail" v-model="form.thumbnail" :thumbnail="game.thumbnail" />
 
-            <GameMedia
-                :error="form.errors.media"
-                v-model:media="form.media"
-                v-model:media_to_delete="form.media_to_delete"
-                :game-media="game.media"
-            />
+                <GameMedia
+                    :error="form.errors.media"
+                    v-model:media="form.media"
+                    v-model:media_to_delete="form.media_to_delete"
+                    :game-media="game.media"
+                />
+            </div>
 
             <div class="grid grid-cols-1 gap-4 lg:grid-cols-[1fr_2fr]">
                 <GameReleasedAt :error="form.errors.released_at" v-model="form.released_at" :released-at="game.released_at" />
@@ -95,7 +101,7 @@ const submitForm = (): void => {
 
             <GameGenre :error="form.errors.genre" v-model="form.genre" :genres :game-genre="game.genre" />
 
-            <FormButton :is-processing="form.processing" :disabled="!hasFormChanged()" label="Update" />
-        </form>
+            <FormButton :is-processing="form.processing" :disabled="!hasFormChanged()" label="Update" @click="submitForm" />
+        </MainContainer>
     </AppLayout>
 </template>

@@ -7,6 +7,7 @@ import DiscussionSkeleton from '@/components/fallbacks/DiscussionSkeleton.vue';
 import ReviewSkeleton from '@/components/fallbacks/ReviewSkeleton.vue';
 import FormActionTap from '@/components/FormActionTap.vue';
 import GameActions from '@/components/GameActions.vue';
+import MainContainer from '@/components/MainContainer.vue';
 import PaginatedContent from '@/components/PaginatedContent.vue';
 import GameDetails from '@/components/Partials/Game/Show/GameDetails.vue';
 import Review from '@/components/Review.vue';
@@ -63,7 +64,7 @@ const shouldTeleport = useMediaQuery('(min-width: 1024px)');
     <Head :title="game.title" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
-        <div class="main-container flex flex-col gap-4">
+        <MainContainer class="mx-auto flex max-w-5xl flex-col gap-4">
             <div
                 class="grid gap-4 lg:grid-rows-[auto_auto]"
                 :class="canInteract() ? 'ml:grid-cols-[auto_1fr_auto] grid-cols-[1fr_auto]' : 'grid-cols-1 md:grid-cols-[auto_1fr]'"
@@ -151,6 +152,6 @@ const shouldTeleport = useMediaQuery('(min-width: 1024px)');
                     </WhenVisible>
                 </TabsContent>
             </Tabs>
-        </div>
+        </MainContainer>
     </AppLayout>
 </template>

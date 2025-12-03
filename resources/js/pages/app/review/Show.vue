@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import MainContainer from '@/components/MainContainer.vue';
 import ReportModal from '@/components/ReportModal.vue';
 import TextLink from '@/components/TextLink.vue';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
@@ -33,7 +34,7 @@ const avgRating = computed(() =>
     <Head :title="`Review: #${review.slug}`" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
-        <div class="main-container flex flex-col gap-4">
+        <MainContainer class="flex flex-col gap-4">
             <div class="flex items-center gap-3">
                 <Link class="mr-auto flex gap-3" :href="route('user.profile', { user: review.user.username })">
                     <UserInfo :show-username="true" :user="review.user" />
@@ -74,6 +75,6 @@ const avgRating = computed(() =>
                 <Link as="button" :href="route('reviews.destroy', { review: review.slug, to_route: 'home' })" method="delete">Delete review</Link>
                 <ReportModal :contentId="review.slug" contentType="review" />
             </div>
-        </div>
+        </MainContainer>
     </AppLayout>
 </template>

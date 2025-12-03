@@ -2,6 +2,7 @@
 import GameSkeleton from '@/components/fallbacks/GameSkeleton.vue';
 import Game from '@/components/Game.vue';
 import GamesListFilter, { FilterData } from '@/components/GamesListFilter.vue';
+import MainContainer from '@/components/MainContainer.vue';
 import Pagination from '@/components/Pagination.vue';
 import SearchHeaderText from '@/components/Partials/Game/Index/SearchHeaderText.vue';
 import { Button } from '@/components/ui/button';
@@ -78,7 +79,7 @@ const isQueried = computed(
     <Head title="Games" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
-        <div class="main-container grid grid-cols-2 gap-4 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
+        <MainContainer class="ml:grid-cols-3 mx-auto grid max-w-5xl grid-cols-2 gap-4 lg:grid-cols-4 xl:grid-cols-5">
             <div class="ml:grid-cols-[1fr_auto_auto] col-span-full grid grid-cols-2 gap-2">
                 <Input type="text" v-model="title" class="max-ml:col-span-full" placeholder="Game title" @keyup.enter="searchEntries" />
                 <GamesListFilter @update-search-conditions="searchConditions = $event" :ziggy :genres />
@@ -98,6 +99,6 @@ const isQueried = computed(
                     <p class="col-span-full border-t pt-4">Nothing to display</p>
                 </template>
             </Deferred>
-        </div>
+        </MainContainer>
     </AppLayout>
 </template>

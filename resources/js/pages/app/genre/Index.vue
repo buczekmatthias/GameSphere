@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import Genre from '@/components/Genre.vue';
+import MainContainer from '@/components/MainContainer.vue';
 import Pagination from '@/components/Pagination.vue';
 import { Skeleton } from '@/components/ui/skeleton';
 import { getPaginationData } from '@/composables/usePagination';
@@ -23,7 +24,7 @@ const breadcrumbs: BreadcrumbItem[] = [
     <Head title="Genres" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
-        <div class="main-container flex flex-col gap-4">
+        <MainContainer class="flex flex-col gap-4">
             <Deferred data="genres">
                 <template #fallback>
                     <Skeleton v-for="i in 15" :key="i" class="h-24 w-full" />
@@ -32,6 +33,6 @@ const breadcrumbs: BreadcrumbItem[] = [
                 <Genre v-for="genre in genres!.data" :key="genre.name" :genre="genre" />
                 <Pagination :pagination="getPaginationData(genres!)" />
             </Deferred>
-        </div>
+        </MainContainer>
     </AppLayout>
 </template>

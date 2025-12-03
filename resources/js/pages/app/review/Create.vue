@@ -3,6 +3,7 @@ import FormButton from '@/components/FormButton.vue';
 import GoBackLink from '@/components/GoBackLink.vue';
 import HeadingSmall from '@/components/HeadingSmall.vue';
 import InputError from '@/components/InputError.vue';
+import MainContainer from '@/components/MainContainer.vue';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import AppLayout from '@/layouts/AppLayout.vue';
@@ -56,7 +57,7 @@ const submitForm = () => {
     <Head title="Create review" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
-        <div class="main-container flex flex-col gap-6">
+        <MainContainer class="flex flex-col gap-6">
             <GoBackLink :href="route('games.show', { game: game.slug })" />
             <HeadingSmall title="Create new review" :description="`Game: ${game.title} (${game.slug})`" />
             <div class="grid gap-2">
@@ -84,6 +85,6 @@ const submitForm = () => {
             </div>
 
             <FormButton label="Add review" :is-processing="newReviewForm.processing" :disabled="!isFormValid" @click="submitForm" />
-        </div>
+        </MainContainer>
     </AppLayout>
 </template>

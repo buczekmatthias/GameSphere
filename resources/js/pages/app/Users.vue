@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import UsersIndexSkeleton from '@/components/fallbacks/UsersIndexSkeleton.vue';
+import MainContainer from '@/components/MainContainer.vue';
 import Pagination from '@/components/Pagination.vue';
 import RoleTabs from '@/components/Partials/User/RoleTabs.vue';
 import { Button } from '@/components/ui/button';
@@ -60,7 +61,7 @@ const reloadOnly = ['users', 'ziggy'];
     <Head title="Users" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
-        <div class="main-container mx-auto flex max-w-3xl flex-col gap-4">
+        <MainContainer class="mx-auto flex max-w-3xl flex-col gap-4">
             <Deferred data="users">
                 <template #fallback>
                     <UsersIndexSkeleton />
@@ -87,6 +88,6 @@ const reloadOnly = ['users', 'ziggy'];
                     <p class="text-lg">No users to display</p>
                 </template>
             </Deferred>
-        </div>
+        </MainContainer>
     </AppLayout>
 </template>

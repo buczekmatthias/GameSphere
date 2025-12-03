@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import Table from '@/components/Admin/Table.vue';
+import MainContainer from '@/components/MainContainer.vue';
 import Pagination from '@/components/Pagination.vue';
 import TextLink from '@/components/TextLink.vue';
 import { Button } from '@/components/ui/button';
@@ -42,7 +43,7 @@ const reloadOnly: string[] = ['reviews'];
     <Head title="Reviews" />
 
     <AdminLayout>
-        <div class="main-container flex flex-col gap-4">
+        <MainContainer class="flex flex-col gap-4">
             <Table :reload-only :headers="tableHeaders">
                 <TableRow v-for="review in reviews.data" :key="review.slug">
                     <TableCell>{{ review.slug }}</TableCell>
@@ -85,6 +86,6 @@ const reloadOnly: string[] = ['reviews'];
             </Table>
 
             <Pagination :pagination="getPaginationData(reviews)" :reload-only />
-        </div>
+        </MainContainer>
     </AdminLayout>
 </template>

@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import Heading from '@/components/Heading.vue';
+import MainContainer from '@/components/MainContainer.vue';
 import TextLink from '@/components/TextLink.vue';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import AppLayout from '@/layouts/AppLayout.vue';
@@ -22,7 +24,8 @@ defineProps<{
     <Head title="My reports" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
-        <div class="main-container">
+        <MainContainer>
+            <Heading title="My reports" />
             <Table>
                 <TableHeader>
                     <TableRow>
@@ -47,6 +50,6 @@ defineProps<{
                     </TableRow>
                 </TableBody>
             </Table>
-        </div>
+        </MainContainer>
     </AppLayout>
 </template>

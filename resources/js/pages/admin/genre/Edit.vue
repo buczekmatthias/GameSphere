@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import FormButton from '@/components/FormButton.vue';
 import InputError from '@/components/InputError.vue';
+import MainContainer from '@/components/MainContainer.vue';
 import TextLink from '@/components/TextLink.vue';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -22,7 +23,7 @@ const updateForm = useForm({
     <Head title="Genres" />
 
     <AdminLayout>
-        <div class="main-container flex flex-col gap-4">
+        <MainContainer class="flex flex-col gap-4">
             <TextLink :href="route('admin.genres.index')" class="flex items-center gap-1">
                 <ChevronLeft class="mt-0.5 size-4" />
                 <p>Back to all genres</p>
@@ -38,6 +39,6 @@ const updateForm = useForm({
 
                 <FormButton label="Save changes" :tabindex="4" :is-processing="updateForm.processing" />
             </form>
-        </div>
+        </MainContainer>
     </AdminLayout>
 </template>

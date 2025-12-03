@@ -37,7 +37,7 @@ watch(selectedGenre, () => (model.value = selectedGenre.value?.slug));
         <Combobox :id="ID" by="name" v-model="selectedGenre">
             <ComboboxAnchor class="w-full">
                 <ComboboxTrigger as-child>
-                    <Button variant="outline" class="h-full w-full justify-between">
+                    <Button variant="outline" class="h-full w-full justify-between lg:py-[14.75px]">
                         <template v-if="selectedGenre">{{ selectedGenre.name }}</template>
                         <template v-else> No genre selected </template>
 

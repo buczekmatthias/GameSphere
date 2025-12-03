@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import Discussion from '@/components/Discussion.vue';
 import Game from '@/components/Game.vue';
+import MainContainer from '@/components/MainContainer.vue';
 import Pagination from '@/components/Pagination.vue';
 import { Button } from '@/components/ui/button';
 import { canInteract } from '@/composables/useCanInteract';
@@ -37,7 +38,7 @@ const breadcrumbs: BreadcrumbItem[] = [
     <Head :title="genre.name" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
-        <div class="main-container flex flex-col gap-10">
+        <MainContainer class="flex flex-col gap-10">
             <Button as-child :variant="genre.is_user_favorite ? 'destructive' : 'outline'" v-if="canInteract()">
                 <Link :href="route('genres.favorite', { genre: genre.slug })" method="post" :only="['genre']">
                     <template v-if="genre.is_user_favorite">
@@ -72,6 +73,6 @@ const breadcrumbs: BreadcrumbItem[] = [
                 </div>
                 <Pagination :pagination="getPaginationData(genre.discussions)" page-name="discussions" />
             </div>
-        </div>
+        </MainContainer>
     </AppLayout>
 </template>

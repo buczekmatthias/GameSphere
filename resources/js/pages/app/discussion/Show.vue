@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import LoginRequired from '@/components/LoginRequired.vue';
+import MainContainer from '@/components/MainContainer.vue';
 import Modal from '@/components/Modal.vue';
 import NewCommentForm from '@/components/NewCommentForm.vue';
 import Pagination from '@/components/Pagination.vue';
@@ -36,7 +37,7 @@ const breadcrumbs: BreadcrumbItem[] = [
     <Head :title="discussion.title" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
-        <div class="main-container flex flex-col gap-4">
+        <MainContainer class="flex flex-col gap-4">
             <div class="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-[auto_auto_auto_auto] lg:self-start">
                 <p class="col-span-full mb-2 text-2xl">{{ discussion.title }}</p>
                 <div class="flex gap-3">
@@ -149,6 +150,6 @@ const breadcrumbs: BreadcrumbItem[] = [
                     <NewCommentForm :discussion-slug="discussion.slug" />
                 </LoginRequired>
             </div>
-        </div>
+        </MainContainer>
     </AppLayout>
 </template>

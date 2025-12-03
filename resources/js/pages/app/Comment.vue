@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import MainContainer from '@/components/MainContainer.vue';
 import Modal from '@/components/Modal.vue';
 import Preview from '@/components/Preview.vue';
 import ReportModal from '@/components/ReportModal.vue';
@@ -32,7 +33,7 @@ const breadcrumbs: BreadcrumbItem[] = [
     <Head :title="`Comment: #${comment.slug}`" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
-        <div class="main-container flex flex-col gap-3">
+        <MainContainer class="flex flex-col gap-3">
             <div class="flex items-center gap-4">
                 <Link class="mr-auto flex gap-3" :href="route('user.profile', { user: comment.user.username })" as="button">
                     <UserInfo :show-username="true" :user="comment.user" />
@@ -97,6 +98,6 @@ const breadcrumbs: BreadcrumbItem[] = [
                     </div>
                 </div>
             </div>
-        </div>
+        </MainContainer>
     </AppLayout>
 </template>

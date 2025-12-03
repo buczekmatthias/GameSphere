@@ -6,8 +6,6 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class EditRequest extends FormRequest
 {
-	const TOTAL_AVAILABLE_MEDIA_SLOTS = 6;
-
 	/**
 	 * Determine if the user is authorized to make this request.
 	 */
@@ -27,7 +25,7 @@ class EditRequest extends FormRequest
 		$sizeOfExistingMedia = sizeof($game->media ?? []);
 		$sizeOfMediaToDelete = sizeof($this->post('media_to_delete', []));
 
-		$availableMediaSlots = self::TOTAL_AVAILABLE_MEDIA_SLOTS - $sizeOfExistingMedia + $sizeOfMediaToDelete;
+		$availableMediaSlots = config('globals.form.files.media.max_files') - $sizeOfExistingMedia + $sizeOfMediaToDelete;
 
 		return [
 			'title' => ['string', 'required'],
