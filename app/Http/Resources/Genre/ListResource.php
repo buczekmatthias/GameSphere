@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\Genre;
 
+use App\Services\ShorterNumbers;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -14,14 +15,10 @@ class ListResource extends JsonResource
 	 */
 	public function toArray(Request $request): array
 	{
-		$userFavoriteGenres = $request->user() ? $request->user()->genres->pluck('slug')->toArray() : [];
-
 		return [
-			'slug' => $this->slug,
-			'name' => $this->name,
-			'discussions_count' => $this->whenCounted('discussions'),
-			'games_count' => $this->whenCounted('games'),
-			'is_user_favorite' => in_array($this->slug, $userFavoriteGenres)
+			...BaseGenre::make($this)->toArray($request),
+			'discussions_count' => $this->whenCounted('discussions', ShorterNumbers::convertIntToHumanReadable($this->discussions_count)),
+			'games_count' => $this->whenCounted('games', ShorterNumbers::convertIntToHumanReadable($this->games_count)),
 		];
 	}
 }

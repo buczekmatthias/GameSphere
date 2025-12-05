@@ -29,7 +29,7 @@ class ShowResource extends JsonResource
 		$to = ($discussions->currentPage() - 1) * $discussions->perPage() + $discussions->count();
 
 		return [
-			...ListResource::make($this)->toArray($request),
+			...BaseGenre::make($this)->toArray($request),
 			'shortName' => Str::limit($this->name, 25, preserveWords: true),
 			'games' => [
 				'data' => GamesListResource::collection($games),

@@ -11,10 +11,7 @@ defineProps<{
 
 <template>
     <Card class="flex flex-col gap-4">
-        <div class="flex items-center gap-2">
-            <p class="truncate text-2xl">{{ genre.name }}</p>
-            <Star class="mt-0.5 ml-auto size-6 text-amber-300" v-if="genre.is_user_favorite" />
-        </div>
+        <p class="truncate text-2xl">{{ genre.name }}</p>
         <div class="flex gap-4">
             <div class="flex items-center gap-2 text-sm">
                 <Gamepad2 class="size-5" />
@@ -23,6 +20,10 @@ defineProps<{
             <div class="flex items-center gap-2 text-sm">
                 <MessageCircle class="size-5" />
                 <p>{{ genre.discussions_count }} discussion(s)</p>
+            </div>
+            <div class="flex items-center gap-2 text-sm text-amber-300" v-if="genre.is_user_favorite">
+                <Star class="size-5" />
+                <p>Favorite</p>
             </div>
         </div>
         <TextLink :href="route('genres.show', { genre: genre.slug })" class="self-start">View genre</TextLink>

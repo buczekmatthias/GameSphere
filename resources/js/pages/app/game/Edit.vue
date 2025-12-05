@@ -75,7 +75,7 @@ const submitForm = (): void => {
     <Head :title="game.title" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
-        <MainContainer class="mx-auto flex max-w-6xl flex-col gap-4">
+        <MainContainer class="mx-auto flex max-w-5xl flex-col gap-4">
             <GoBackLink :href="route('games.show', { game: props.game.slug })" />
 
             <GameTitle :error="form.errors.title" v-model="form.title" />

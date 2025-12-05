@@ -29,13 +29,13 @@ const reloadOnly: string[] = ['user'];
             <Pagination :pagination="getPaginationData(content)" :reload-only />
 
             <template v-if="type === 'created_games'">
-                <div class="grid grid-cols-2 gap-4 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
+                <div class="games-grid">
                     <Game v-for="game in content.data as GameType[]" :key="game.title" :game />
                 </div>
             </template>
 
             <template v-if="type === 'games'">
-                <div class="grid grid-cols-2 gap-4 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
+                <div class="games-grid">
                     <Game v-for="game in content.data as GameType[]" :key="game.title" :game />
                 </div>
             </template>

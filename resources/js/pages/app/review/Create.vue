@@ -57,7 +57,7 @@ const submitForm = () => {
     <Head title="Create review" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
-        <MainContainer class="flex flex-col gap-6">
+        <MainContainer class="mx-auto flex max-w-3xl flex-col gap-6">
             <GoBackLink :href="route('games.show', { game: game.slug })" />
             <HeadingSmall title="Create new review" :description="`Game: ${game.title} (${game.slug})`" />
             <div class="grid gap-2">

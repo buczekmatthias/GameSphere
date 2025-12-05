@@ -80,7 +80,7 @@ const isQueried = computed(
     <Head title="Games" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
-        <MainContainer class="ml:grid-cols-3 mx-auto grid max-w-5xl grid-cols-2 gap-4 lg:grid-cols-4 xl:grid-cols-5">
+        <MainContainer class="games-grid mx-auto max-w-5xl">
             <div class="ml:grid-cols-[1fr_auto_auto] col-span-full grid grid-cols-2 gap-2">
                 <Input type="text" v-model="title" class="max-ml:col-span-full" placeholder="Game title" @keyup.enter="searchEntries" />
                 <GamesListFilter @update-search-conditions="searchConditions = $event" :ziggy :genres />
