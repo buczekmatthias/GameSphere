@@ -91,7 +91,7 @@ class DiscussionController extends Controller
 	/**
 	 * Display the specified resource.
 	 */
-	public function show(Discussion $discussion, Request $request): Response
+	public function show(Discussion $discussion): Response
 	{
 		$discussion->load(['author', 'discussable']);
 		$discussion->loadCount('comments');

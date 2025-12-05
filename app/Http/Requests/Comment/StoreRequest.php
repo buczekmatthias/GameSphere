@@ -25,8 +25,8 @@ class StoreRequest extends FormRequest
 		return [
 			'discussion_slug' => ['uuid', 'exists:discussions,slug'],
 			'content' => ['string', 'required'],
-			'media' => ['array', 'max:4'],
-			'media.*' => ['file', 'required', 'mimes:jpg,png,webp,mp4', 'max:20000'],
+			'media' => ['array', 'max:'.config('globals.form.files.media.max_files')],
+			'media.*' => ['file', 'mimetypes:'.config('globals.form.files.media.accept_type'), 'max:'.(config('globals.form.files.media.max_size') / 1024)]
 		];
 	}
 }

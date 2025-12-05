@@ -8,7 +8,7 @@ defineProps<{
 </script>
 
 <template>
-    <Link :href class="self-start">
+    <Link :href class="self-start" as="button">
         <ArrowLeft class="size-5" />
     </Link>
 </template>

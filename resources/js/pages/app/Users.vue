@@ -8,10 +8,11 @@ import { Input } from '@/components/ui/input';
 import UserInfo from '@/components/UserInfo.vue';
 import UserRole from '@/components/UserRole.vue';
 import { getPaginationData } from '@/composables/usePagination';
+import { useZiggy } from '@/composables/useZiggy';
 import AppLayout from '@/layouts/AppLayout.vue';
-import type { BreadcrumbItem, Pagination as PaginationType, SharedData, User, Ziggy } from '@/types';
-import { Deferred, Head, Link, router, usePage } from '@inertiajs/vue3';
-import { computed, ref } from 'vue';
+import type { BreadcrumbItem, Pagination as PaginationType, User, Ziggy } from '@/types';
+import { Deferred, Head, Link, router } from '@inertiajs/vue3';
+import { ref } from 'vue';
 
 interface SearchData {
     per_page?: string | number;
@@ -30,28 +31,28 @@ defineProps<{
     per_page: string | number;
 }>();
 
-const ziggy = computed(() => usePage<SharedData>().props.ziggy as ZiggyWithGamesQuery);
+const ziggy: ZiggyWithGamesQuery = useZiggy().value;
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: 'Users',
-        href: route(ziggy.value.current),
+        href: route(ziggy.current),
     },
 ];
 
-const contains = ref<string>(ziggy.value.query.contains || '');
-const role = ref<string>(ziggy.value.query.role || '');
+const contains = ref<string>(ziggy.query.contains || '');
+const role = ref<string>(ziggy.query.role || '');
 
 const searchEntries = () => {
     const data: Partial<SearchData> = {};
 
-    if (ziggy.value.query.per_page) data.per_page = ziggy.value.query.per_page;
+    if (ziggy.query.per_page) data.per_page = ziggy.query.per_page;
 
     if (contains.value) data.contains = contains.value;
 
     if (role.value) data.role = role.value;
 
-    router.get(route(ziggy.value.current), data, { only: reloadOnly });
+    router.get(route(ziggy.current), data, { only: reloadOnly });
 };
 
 const reloadOnly = ['users', 'ziggy'];

@@ -25,7 +25,7 @@ withDefaults(
 </script>
 
 <template>
-    <div class="flex gap-4" :class="paginationPosition === 'top' ? 'flex-col' : 'flex-col-reverse'">
+    <div class="flex flex-col gap-4">
         <Pagination
             :customizable-per-page="customizablePerPage"
             :pref-per-page="prefPerPage"
@@ -33,6 +33,7 @@ withDefaults(
             :pagination="getPaginationData(pagination!)"
             :reload-only="reloadOnly"
             :show-counter="showCounter"
+            :class="paginationPosition === 'top' ? 'order-first' : 'order-last'"
         />
         <slot />
     </div>

@@ -30,7 +30,7 @@ const isAboveLg = useMediaQuery('(min-width: 1024px)');
             <template v-if="breadcrumbs.length > 3 && !isAboveLg">
                 <BreadcrumbItem>
                     <BreadcrumbLink as-child>
-                        <Link :href="breadcrumbs[0].href ?? '#'" as="button">{{ breadcrumbs[0].title }}</Link>
+                        <Link :href="breadcrumbs[0].href ?? '#'" as="button" class="truncate">{{ breadcrumbs[0].title }}</Link>
                     </BreadcrumbLink>
                 </BreadcrumbItem>
                 <BreadcrumbSeparator />
@@ -43,7 +43,7 @@ const isAboveLg = useMediaQuery('(min-width: 1024px)');
                         <DropdownMenuContent align="start">
                             <template v-for="(item, index) in breadcrumbs" :key="index">
                                 <DropdownMenuItem v-if="index !== 0 && index !== breadcrumbs.length - 1" as-child>
-                                    <Link :href="item.href ?? '#'" as="button" class="w-full cursor-pointer">{{ item.title }}</Link>
+                                    <Link :href="item.href ?? '#'" as="button" class="w-full cursor-pointer truncate">{{ item.title }}</Link>
                                 </DropdownMenuItem>
                             </template>
                         </DropdownMenuContent>
@@ -64,7 +64,7 @@ const isAboveLg = useMediaQuery('(min-width: 1024px)');
                         </template>
                         <template v-else>
                             <BreadcrumbLink as-child>
-                                <Link :href="item.href ?? '#'" as="button">{{ item.title }}</Link>
+                                <Link :href="item.href ?? '#'" as="button" class="truncate">{{ item.title }}</Link>
                             </BreadcrumbLink>
                         </template>
                     </BreadcrumbItem>

@@ -1,14 +1,15 @@
 <script setup lang="ts">
+import FormBox from '@/components/FormBox.vue';
+import FormButton from '@/components/FormButton.vue';
 import InputError from '@/components/InputError.vue';
+import CommentMedia from '@/components/Partials/Game/Create/Form/GameMedia.vue';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useInitials } from '@/composables/useInitials';
+import { constants } from '@/constants';
 import { SharedData, User } from '@/types';
 import { useForm, usePage } from '@inertiajs/vue3';
-import { LoaderCircle } from 'lucide-vue-next';
-import { computed, ref } from 'vue';
+import { computed } from 'vue';
 
 const props = defineProps<{
     discussionSlug: string;
@@ -24,18 +25,17 @@ const newCommentForm = useForm({
     media: [],
 });
 
-const fileInput = ref<null | HTMLInputElement>(null);
-
 const isFormValid = () => {
-    return newCommentForm.content.length > 0 && newCommentForm.media.length < 5;
+    return newCommentForm.content.length > 0 && newCommentForm.media.length <= constants.value.form.files.media.max_files;
 };
 
 const submitForm = () => {
-    newCommentForm.post(route('comments.store'), {
-        preserveScroll: true,
-        preserveState: false,
-        onSuccess: () => newCommentForm.reset(),
-    });
+    newCommentForm
+        .transform((data) => ({ ...data }))
+        .post(route('comments.store'), {
+            preserveScroll: true,
+            onSuccess: () => newCommentForm.reset(),
+        });
 };
 </script>
 
@@ -50,24 +50,11 @@ const submitForm = () => {
             </Avatar>
             <span class="truncate font-medium">{{ user.name }}</span>
         </div>
-        <div class="form-box">
+        <FormBox>
             <Textarea id="description" required v-model="newCommentForm.content" class="h-48 resize-none" placeholder="Example content" />
             <InputError :message="newCommentForm.errors.content" />
-        </div>
-        <div class="form-box">
-            <Input
-                id="media"
-                type="file"
-                multiple
-                @change="newCommentForm.media = $event.target.files"
-                accept="image/jpeg,image/png,image/webp,video/mp4"
-                ref="fileInput"
-            />
-            <InputError :message="newCommentForm.errors.media" />
-        </div>
-        <Button type="submit" class="w-full" :disabled="newCommentForm.processing || !isFormValid()">
-            <LoaderCircle v-if="newCommentForm.processing" class="h-4 w-4 animate-spin" />
-            Post comment
-        </Button>
+        </FormBox>
+        <CommentMedia :error="newCommentForm.errors.media" v-model="newCommentForm.media" />
+        <FormButton label="Post comment" :is-processing="newCommentForm.processing" :disabled="!isFormValid()" />
     </form>
 </template>

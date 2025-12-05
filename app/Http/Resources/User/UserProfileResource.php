@@ -1,13 +1,12 @@
 <?php
 
-namespace App\Http\Resources;
+namespace App\Http\Resources\User;
 
 use App\Http\Resources\Admin\Comment\CommentListResource;
 use App\Http\Resources\Discussion\ListDiscussionResource;
 use App\Http\Resources\Games\GamesListResource;
 use App\Http\Resources\Games\ReviewResource as ReviewListResource;
 use App\Http\Resources\Genre\ListResource as GenreListResource;
-use App\Http\Resources\User\SimpleProfileResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 

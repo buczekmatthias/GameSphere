@@ -4,7 +4,7 @@ import { cn } from '@/lib/utils';
 import { capitalize, HTMLAttributes } from 'vue';
 
 const props = defineProps<{
-    label: string;
+    label?: string;
     id?: string;
     class?: HTMLAttributes['class'];
 }>();
@@ -12,7 +12,7 @@ const props = defineProps<{
 
 <template>
     <div :class="cn('flex flex-col gap-1.5', props.class)">
-        <Label :for="id">{{ capitalize(label) }}</Label>
+        <Label :for="id" v-if="label">{{ capitalize(label) }}</Label>
         <slot />
     </div>
 </template>

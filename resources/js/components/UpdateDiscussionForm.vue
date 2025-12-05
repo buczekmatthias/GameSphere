@@ -17,8 +17,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useForm } from '@inertiajs/vue3';
 import { createReusableTemplate, useMediaQuery } from '@vueuse/core';
-import { Pen } from 'lucide-vue-next';
 import { ref } from 'vue';
+import FormActionTap from './FormActionTap.vue';
 
 // Reuse `form` section
 const [UseTemplate, GridForm] = createReusableTemplate();
@@ -58,9 +58,7 @@ const submitForm = () => {
 
     <Dialog v-if="isDesktop" v-model:open="isOpen">
         <DialogTrigger as-child>
-            <Button variant="secondary">
-                <Pen class="size-4" />
-            </Button>
+            <FormActionTap>Edit</FormActionTap>
         </DialogTrigger>
         <DialogContent class="sm:max-w-[425px]">
             <DialogHeader>
@@ -73,9 +71,7 @@ const submitForm = () => {
 
     <Drawer v-else v-model:open="isOpen">
         <DrawerTrigger as-child>
-            <Button variant="secondary">
-                <Pen class="size-4" />
-            </Button>
+            <FormActionTap>Edit</FormActionTap>
         </DrawerTrigger>
         <DrawerContent>
             <DrawerHeader class="text-left">

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Resources\Discussion;
+namespace App\Http\Resources\Comment;
 
 use App\Http\Resources\User\SimpleProfileResource;
 use App\Services\UserPermissions;
@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Storage;
 
-class CommentResource extends JsonResource
+class ShowCommentResource extends JsonResource
 {
 	/**
 	 * Transform the resource into an array.
@@ -37,6 +37,16 @@ class CommentResource extends JsonResource
 			'user' => $this->whenLoaded(
 				'user',
 				fn () => SimpleProfileResource::make($this->user)->toArray($request),
+			),
+			'discussion' => $this->whenLoaded(
+				'discussion',
+				fn () => [
+					'title' => $this->discussion->title,
+					'slug' => $this->discussion->slug,
+					'author' => SimpleProfileResource::make($this->discussion->author)->toArray($request),
+					'comments_count' => $this->discussion->comments()->count(),
+					'created_at' => $this->discussion->created_at->format('Y-m-d')
+				]
 			),
 			'permissions' => [
 				'update' => UserPermissions::checkPermissions('update', $this->resource),

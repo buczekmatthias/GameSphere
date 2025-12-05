@@ -2,7 +2,7 @@
 
 namespace App\Http\Middleware;
 
-use App\Http\Resources\CurrentUserResource;
+use App\Http\Resources\User\CurrentUserResource;
 use App\Services\ReportsServices;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;

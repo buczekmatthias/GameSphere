@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\Comment\StoreRequest;
 use App\Http\Requests\Comment\UpdateRequest;
-use App\Http\Resources\Discussion\CommentResource;
+use App\Http\Resources\Comment\ShowCommentResource;
 use App\Models\Comment;
 use App\Models\Discussion;
 use App\Services\StoreCommentMedia;
@@ -23,8 +23,8 @@ class CommentController extends Controller
 	{
 		$comment->load(['user', 'discussion']);
 
-		return Inertia::render('app/Comment', [
-			'comment' => CommentResource::make($comment),
+		return Inertia::render('app/comment/Show', [
+			'comment' => ShowCommentResource::make($comment),
 			'permissions' => [
 				'update' => UserPermissions::checkPermissions('update', $comment),
 				'destroy' => UserPermissions::checkPermissions('delete', $comment),
@@ -39,7 +39,7 @@ class CommentController extends Controller
 	{
 		$data = $request->validated();
 
-		$discussion = Discussion::select('id')->where('slug', $data['discussion_slug'])->first();
+		$discussion = Discussion::select(['id', 'slug'])->where('slug', $data['discussion_slug'])->first();
 
 		$comment = $discussion->comments()->make([...$data, 'slug' => Str::uuid()]);
 		$comment->user()->associate($request->user());
@@ -49,6 +49,13 @@ class CommentController extends Controller
 		$comment->save();
 
 		return to_route('discussions.show', ['discussion' => $data['discussion_slug']]);
+	}
+
+	public function edit(Comment $comment): Response
+	{
+		return Inertia::render('app/comment/Edit', [
+			'comment' => ShowCommentResource::make($comment)
+		]);
 	}
 
 	/**
@@ -69,7 +76,9 @@ class CommentController extends Controller
 
 		$comment->save();
 
-		return back(303);
+		return $request->has('back_to_discussion')
+		? to_route('discussions.show', ['discussion' => $comment->discussion->slug])
+		: to_route('comments.show', ['comment' => $comment->slug]);
 	}
 
 	/**

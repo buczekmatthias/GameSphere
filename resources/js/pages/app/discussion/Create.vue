@@ -61,11 +61,12 @@ const submitForm = () => {
     <Head title="Create review" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
-        <MainContainer class="flex flex-col gap-5">
+        <MainContainer class="mx-auto flex max-w-3xl flex-col gap-5">
             <GoBackLink :href="computedItem.route" />
             <HeadingSmall title="Create new discussion" :description="`${capitalize(type)}: ${computedItem.display} (${item.slug})`" />
 
             <CommentTitle :error="newDiscussionForm.errors.title" v-model="newDiscussionForm.title" />
+
             <FormBox id="description" label="Content">
                 <Textarea id="description" required v-model="newDiscussionForm.content" class="h-48 resize-none" placeholder="Example content" />
                 <InputError :message="newDiscussionForm.errors.content" />

@@ -34,7 +34,7 @@ Route::middleware(['auth'])->group(function () {
 	Route::resource('reviews', ReviewController::class)->only(['store', 'destroy']);
 	Route::get("/{type}/{slug}/discussions/create", [DiscussionController::class, 'create'])->name('discussions.create')->whereIn('type', ['game', 'genre']);
 	Route::resource('discussions', DiscussionController::class)->only(['store', 'update', 'destroy']);
-	Route::resource('comments', CommentController::class)->only(['store', 'update', 'destroy']);
+	Route::resource('comments', CommentController::class)->only(['store', 'edit', 'update', 'destroy']);
 });
 
 Route::get('/users', UserListController::class)->name('users.index');

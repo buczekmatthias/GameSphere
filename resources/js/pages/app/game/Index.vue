@@ -8,9 +8,10 @@ import SearchHeaderText from '@/components/Partials/Game/Index/SearchHeaderText.
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { getPaginationData } from '@/composables/usePagination';
+import { useZiggy } from '@/composables/useZiggy';
 import AppLayout from '@/layouts/AppLayout.vue';
-import { BreadcrumbItem, Game as GameType, Pagination as PaginationType, SharedData, Ziggy } from '@/types';
-import { Deferred, Head, router, usePage } from '@inertiajs/vue3';
+import { BreadcrumbItem, Game as GameType, Pagination as PaginationType, Ziggy } from '@/types';
+import { Deferred, Head, router } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
 
 export interface SearchData {
@@ -38,19 +39,19 @@ defineProps<{
     genres?: string[];
 }>();
 
-const ziggy = computed(() => usePage<SharedData>().props.ziggy as ZiggyWithGamesQuery);
+const ziggy: ZiggyWithGamesQuery = useZiggy().value;
 
-const title = ref<string>(ziggy.value.query.title || '');
+const title = ref<string>(ziggy.query.title || '');
 const searchConditions = ref<FilterData>({
-    released_after: ziggy.value.query.released_after,
-    released_before: ziggy.value.query.released_before,
-    genre: ziggy.value.query.genre,
+    released_after: ziggy.query.released_after,
+    released_before: ziggy.query.released_before,
+    genre: ziggy.query.genre,
 });
 
 const searchEntries = () => {
     let data: Partial<SearchData> = {};
 
-    if (ziggy.value.query.per_page) data.per_page = ziggy.value.query.per_page;
+    if (ziggy.query.per_page) data.per_page = ziggy.query.per_page;
 
     if (title.value) data.title = title.value;
 
@@ -61,17 +62,17 @@ const searchEntries = () => {
             .reduce((acc, [key, value]) => ({ ...acc, [key]: value }), {}),
     };
 
-    router.get(route(ziggy.value.current), data, { only: reloadOnly });
+    router.get(route(ziggy.current), data, { only: reloadOnly });
 };
 
 const reloadOnly = ['games', 'ziggy'];
 
 const isQueried = computed(
     (): boolean =>
-        ziggy.value.query.title !== undefined ||
-        ziggy.value.query.released_after !== undefined ||
-        ziggy.value.query.released_before !== undefined ||
-        ziggy.value.query.genre !== undefined,
+        ziggy.query.title !== undefined ||
+        ziggy.query.released_after !== undefined ||
+        ziggy.query.released_before !== undefined ||
+        ziggy.query.genre !== undefined,
 );
 </script>
 
