@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import TextLink from '@/components/TextLink.vue';
-import { Discussion } from '@/types';
-import { Calendar, MessageCircle, User } from 'lucide-vue-next';
+import { DiscussableGame, DiscussableGenre, Discussion } from '@/types';
+import { Blocks, Calendar, Gamepad2, MessageCircle, User } from 'lucide-vue-next';
 
 withDefaults(
     defineProps<{
@@ -33,7 +33,20 @@ withDefaults(
                 <MessageCircle class="h-5" />
                 <p class="text-sm">{{ discussion.comments_count }}</p>
             </div>
-            <slot name="extra-items"></slot>
+            <div class="flex items-center gap-1 text-sm" v-if="discussion.discussable_type">
+                <template v-if="discussion.discussable_type === 'game'">
+                    <Gamepad2 class="h-5" />
+                    <TextLink :href="route('games.show', { game: discussion.discussable.slug })">
+                        {{ (discussion.discussable as DiscussableGame).title }}
+                    </TextLink>
+                </template>
+                <template v-else>
+                    <Blocks class="h-5" />
+                    <TextLink :href="route('genres.show', { genre: discussion.discussable.slug })">
+                        {{ (discussion.discussable as DiscussableGenre).name }}
+                    </TextLink>
+                </template>
+            </div>
         </div>
         <TextLink :href="route('discussions.show', { discussion: discussion.slug })" class="self-start">Read discussion</TextLink>
     </div>

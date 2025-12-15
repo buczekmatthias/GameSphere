@@ -86,7 +86,7 @@ onMounted(() => {
                 class="grid gap-4"
                 :class="userCanInteract() ? 'ml:grid-cols-[auto_1fr_auto] grid-cols-[1fr_auto]' : 'grid-cols-1 md:grid-cols-[auto_1fr]'"
             >
-                <Avatar class="h-96 w-80 overflow-hidden rounded-lg object-cover lg:row-span-2">
+                <Avatar class="h-56 w-44 overflow-hidden rounded-lg object-cover lg:row-span-2">
                     <AvatarImage v-if="showAvatar" :src="user.avatar!" :alt="user.name" class="object-cover" />
                     <AvatarFallback class="rounded-lg text-black dark:text-white">
                         {{ getInitials(user.name) }}

@@ -12,6 +12,7 @@ withDefaults(
         reloadOnly?: string[];
         showCounter?: boolean;
         paginationPosition?: 'top' | 'bottom';
+        containerClass?: string;
     }>(),
     {
         customizablePerPage: false,
@@ -20,12 +21,13 @@ withDefaults(
         reloadOnly: () => [],
         showCounter: true,
         paginationPosition: () => 'top',
+        containerClass: () => 'flex flex-col gap-4',
     },
 );
 </script>
 
 <template>
-    <div class="flex flex-col gap-4">
+    <div :class="containerClass">
         <Pagination
             :customizable-per-page="customizablePerPage"
             :pref-per-page="prefPerPage"

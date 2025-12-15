@@ -80,20 +80,26 @@ const isQueried = computed(
     <Head title="Games" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
-        <MainContainer class="games-grid mx-auto max-w-5xl">
-            <div class="ml:grid-cols-[1fr_auto_auto] col-span-full grid grid-cols-2 gap-2">
+        <MainContainer class="mx-auto flex max-w-5xl flex-col gap-4">
+            <div class="ml:grid-cols-[1fr_auto_auto] grid grid-cols-2 gap-2">
                 <Input type="text" v-model="title" class="max-ml:col-span-full" placeholder="Game title" @keyup.enter="searchEntries" />
                 <GamesListFilter @update-search-conditions="searchConditions = $event" :ziggy :genres />
                 <Button type="submit" @click="searchEntries"> Search </Button>
             </div>
             <Deferred data="games">
                 <template #fallback>
-                    <GameSkeleton class="col-span-full" :has-queries="isQueried" />
+                    <GameSkeleton :has-queries="isQueried" />
                 </template>
 
                 <SearchHeaderText :total="games!.meta.total" :query="ziggy.query" v-if="isQueried" />
                 <template v-if="games!.data.length > 0">
-                    <PaginatedContent :customizable-per-page="true" :pagination="getPaginationData(games!)" :reload-only pagination-position="bottom">
+                    <PaginatedContent
+                        container-class="games-grid"
+                        :customizable-per-page="true"
+                        :pagination="getPaginationData(games!)"
+                        :reload-only
+                        pagination-position="bottom"
+                    >
                         <Game v-for="game in games!.data" :key="game.title" :game />
                     </PaginatedContent>
                 </template>
