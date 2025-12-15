@@ -10,9 +10,9 @@ import { userCanInteract } from '@/composables/useCanInteract';
 import { useInitials } from '@/composables/useInitials';
 import AppLayout from '@/layouts/AppLayout.vue';
 import type { BreadcrumbItem, Discussion, DiscussionComment, Game, Genre, Pagination, Review, User } from '@/types';
-import { Head, Link, router } from '@inertiajs/vue3';
+import { Head, Link } from '@inertiajs/vue3';
 import { CheckCircle, Settings } from 'lucide-vue-next';
-import { capitalize, computed } from 'vue';
+import { capitalize, computed, nextTick, onMounted, ref } from 'vue';
 
 interface UserProfile extends User {
     created_games: Pagination & { data: Game[] };
@@ -49,22 +49,31 @@ const { getInitials } = useInitials();
 
 const showAvatar = computed(() => props.user.avatar !== '');
 
-router.on('before', () => {
-    const div = document.getElementById('tabs');
-    if (div) {
-        localStorage.setItem('scrollPosition', `${div.scrollLeft}`);
-    }
-});
+const scrollContainer = ref<HTMLDivElement | null>(null);
 
-router.on('finish', () => {
-    const div = document.getElementById('tabs');
-    if (div) {
-        const scrollPosition = localStorage.getItem('scrollPosition');
-        if (scrollPosition) {
-            div.scrollLeft = parseInt(scrollPosition);
-            localStorage.removeItem('scrollPosition');
+const scrollToActiveLink = () => {
+    nextTick(() => {
+        if (!scrollContainer.value) return;
+
+        const container = scrollContainer.value;
+        const activeLink = container.querySelector(`.active`) as HTMLElement;
+
+        if (activeLink) {
+            const containerWidth = container.clientWidth;
+            const linkLeft = activeLink.offsetLeft;
+
+            const scrollPosition = linkLeft - containerWidth / 5;
+
+            container.scrollTo({
+                left: scrollPosition,
+                behavior: 'smooth',
+            });
         }
-    }
+    });
+};
+
+onMounted(() => {
+    scrollToActiveLink();
 });
 </script>
 
@@ -114,7 +123,7 @@ router.on('finish', () => {
                     <p>Joined {{ user.created_at }}</p>
                 </div>
             </div>
-            <div class="flex gap-6 overflow-x-auto" id="tabs">
+            <div class="flex gap-6 overflow-x-auto" ref="scrollContainer">
                 <Link
                     as="button"
                     v-for="tab in tabs"
@@ -124,7 +133,7 @@ router.on('finish', () => {
                     class="border-b-4 py-2 whitespace-nowrap capitalize"
                     :class="
                         activeTab === tab
-                            ? 'border-b-primary pointer-events-none text-slate-50'
+                            ? 'border-b-primary active pointer-events-none text-slate-50'
                             : 'text-muted-foreground border-transparent duration-150 hover:border-b-slate-200 hover:text-slate-100'
                     "
                 >
