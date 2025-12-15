@@ -134,6 +134,7 @@ class User extends Authenticatable
 	//
 	// Roles functions
 	//
+	//TODO: remove useless role functions
 	public function isUser(): bool
 	{
 		return $this->role === UserRole::USER->value;
@@ -173,15 +174,7 @@ class User extends Authenticatable
 
 	public function canAddGame(): bool
 	{
-		return in_array(
-			$this->role,
-			[
-				UserRole::GAME_CREATOR->value,
-				UserRole::MODERATOR->value,
-				UserRole::ADMIN->value,
-				UserRole::DEVELOPER->value
-			]
-		);
+		return $this->role !== UserRole::USER->value;
 	}
 
 	public function scopePermittedToOwnGame(Builder $query): Builder

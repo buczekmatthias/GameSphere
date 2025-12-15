@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import TextLink from '@/components/TextLink.vue';
-import { canInteract } from '@/composables/useCanInteract';
+import { userCanInteract } from '@/composables/useCanInteract';
 
 withDefaults(
     defineProps<{
@@ -15,7 +15,7 @@ withDefaults(
 </script>
 
 <template>
-    <template v-if="canInteract()">
+    <template v-if="userCanInteract()">
         <slot />
     </template>
     <div class="border-primary/40 bg-primary/5 flex flex-col items-start gap-4 rounded-md border-4 border-solid p-4" v-else>

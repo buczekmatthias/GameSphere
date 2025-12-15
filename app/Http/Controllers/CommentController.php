@@ -8,7 +8,6 @@ use App\Http\Resources\Comment\ShowCommentResource;
 use App\Models\Comment;
 use App\Models\Discussion;
 use App\Services\StoreCommentMedia;
-use App\Services\UserPermissions;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -25,10 +24,6 @@ class CommentController extends Controller
 
 		return Inertia::render('app/comment/Show', [
 			'comment' => ShowCommentResource::make($comment),
-			'permissions' => [
-				'update' => UserPermissions::checkPermissions('update', $comment),
-				'destroy' => UserPermissions::checkPermissions('delete', $comment),
-			]
 		]);
 	}
 
@@ -53,6 +48,8 @@ class CommentController extends Controller
 
 	public function edit(Comment $comment): Response
 	{
+		$comment->load(['discussion']);
+
 		return Inertia::render('app/comment/Edit', [
 			'comment' => ShowCommentResource::make($comment)
 		]);

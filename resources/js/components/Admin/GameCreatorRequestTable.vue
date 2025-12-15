@@ -83,8 +83,6 @@ const reloadOnly: string[] = ['requests'];
                 </TableCell>
             </TableRow>
         </Table>
-
-        <slot />
     </template>
     <p v-else>Nothing to display</p>
 </template>

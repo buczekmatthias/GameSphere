@@ -3,6 +3,7 @@
 namespace App\Http\Resources\Admin\Comment;
 
 use App\Http\Resources\User\SimpleProfileResource;
+use App\Services\UserPermissions;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Str;
@@ -30,7 +31,11 @@ class CommentListResource extends JsonResource
 				fn () => ['title' => $this->discussion->title, 'slug' => $this->discussion->slug]
 			),
 			'reports_count' => $this->whenCounted('reports'),
-			'created_at' => $this->created_at->format('Y-m-d')
+			'created_at' => $this->created_at->format('Y-m-d'),
+			'permissions' => [
+				'update' => UserPermissions::checkPermissions('update', $this->resource),
+				'destroy' => UserPermissions::checkPermissions('delete', $this->resource),
+			],
 		];
 	}
 }

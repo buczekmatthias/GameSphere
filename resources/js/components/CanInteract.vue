@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { canInteract } from '@/composables/useCanInteract';
+import { userCanInteract } from '@/composables/useCanInteract';
 </script>
 
 <template>
-    <template v-if="canInteract()">
+    <template v-if="userCanInteract()">
         <slot />
     </template>
 </template>

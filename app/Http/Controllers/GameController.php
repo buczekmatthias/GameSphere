@@ -15,7 +15,6 @@ use App\Models\Game;
 use App\Models\Genre;
 use App\Models\User;
 use App\Services\UserGameListsServices;
-use App\Services\UserPermissions;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -135,10 +134,6 @@ class GameController extends Controller
 			'userLists' => Inertia::defer(fn () => UserGameListsServices::checkIfGameIsInAnyUserGamesList($game)),
 			'reviews' => Inertia::defer(fn () => ReviewResource::collection($game->reviews()->with(['user'])->orderBy('created_at', 'DESC')->paginate(30, pageName: 'reviews_page'))),
 			'discussions' => Inertia::defer(fn () => DiscussionResource::collection($game->discussions()->with('author')->withCount('comments')->orderBy('created_at', 'DESC')->paginate(30, pageName: 'discussions_page'))),
-			'permissions' => [
-				'update' => UserPermissions::checkPermissions('update', $game),
-				'destroy' => UserPermissions::checkPermissions('delete', $game),
-			]
 		]);
 	}
 
@@ -152,7 +147,7 @@ class GameController extends Controller
 		return Inertia::render('app/game/Edit', [
 			'game' => EditGameResource::make($game),
 			'genres' => Genre::select(['slug', 'name'])->orderBy('name', 'ASC')->get(),
-			'users' => $request->user()?->canAddGame() ? SimpleProfileResource::collection(User::permittedToOwnGame()->get()) : null
+			'users' => $request->user()?->isStaff() ? SimpleProfileResource::collection(User::permittedToOwnGame()->get()) : null
 		]);
 	}
 

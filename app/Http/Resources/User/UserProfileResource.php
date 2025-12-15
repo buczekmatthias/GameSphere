@@ -22,6 +22,7 @@ class UserProfileResource extends JsonResource
 		$data = [
 			...SimpleProfileResource::make($this)->toArray($request),
 			'created_at' => $this->created_at->format('M jS, Y'),
+			'email_verified_at' => $this->email_verified_at
 		];
 
 		$tab = $request->route('tab', 'created_games');

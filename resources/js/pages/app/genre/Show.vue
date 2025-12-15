@@ -4,19 +4,19 @@ import Discussion from '@/components/Discussion.vue';
 import Game from '@/components/Game.vue';
 import Heading from '@/components/Heading.vue';
 import MainContainer from '@/components/MainContainer.vue';
-import Pagination from '@/components/Pagination.vue';
+import PaginatedContent from '@/components/PaginatedContent.vue';
 import { getPaginationData } from '@/composables/usePagination';
 import AppLayout from '@/layouts/AppLayout.vue';
-import type { BreadcrumbItem, Discussion as DiscussionType, Game as GameType, Genre, Pagination as PaginationType } from '@/types';
+import type { BreadcrumbItem, Discussion as DiscussionType, Game as GameType, Genre, Pagination } from '@/types';
 import { Head, Link } from '@inertiajs/vue3';
 import { Gamepad2, MessageCircle, Star } from 'lucide-vue-next';
 
 const props = defineProps<{
     genre: Genre & {
-        games: PaginationType & {
+        games: Pagination & {
             data: GameType[];
         };
-        discussions: PaginationType & {
+        discussions: Pagination & {
             data: DiscussionType[];
         };
     };
@@ -53,10 +53,11 @@ const breadcrumbs: BreadcrumbItem[] = [
                     <Gamepad2 class="mt-1 size-7" />
                     <p class="text-2xl font-semibold">Games</p>
                 </div>
-                <div class="games-grid">
-                    <Game class="w-full shrink-0" v-for="game in genre.games.data" :key="game.title" :game="game" />
-                </div>
-                <Pagination :pagination="getPaginationData(genre.games)" page-name="games" />
+                <PaginatedContent :pagination="getPaginationData(genre.games)" page-name="games" pagination-position="bottom">
+                    <div class="games-grid">
+                        <Game class="w-full shrink-0" v-for="game in genre.games.data" :key="game.title" :game="game" />
+                    </div>
+                </PaginatedContent>
             </div>
 
             <div class="flex flex-col gap-4">
@@ -64,10 +65,11 @@ const breadcrumbs: BreadcrumbItem[] = [
                     <MessageCircle class="mt-1 size-7" />
                     <p class="text-2xl font-semibold">Discussions</p>
                 </div>
-                <div class="flex flex-col gap-2">
-                    <Discussion v-for="discussion in genre.discussions.data" :key="discussion.title" :discussion="discussion" />
-                </div>
-                <Pagination :pagination="getPaginationData(genre.discussions)" page-name="discussions" />
+                <PaginatedContent :pagination="getPaginationData(genre.discussions)" page-name="discussions" pagination-position="bottom">
+                    <div class="flex flex-col gap-2">
+                        <Discussion v-for="discussion in genre.discussions.data" :key="discussion.title" :discussion="discussion" />
+                    </div>
+                </PaginatedContent>
             </div>
         </MainContainer>
     </AppLayout>

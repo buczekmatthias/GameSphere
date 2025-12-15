@@ -14,7 +14,7 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import type { BreadcrumbItem, DiscussionComment, Ziggy } from '@/types';
 import { Head, useForm } from '@inertiajs/vue3';
 import { ImageOff, PlayCircle } from 'lucide-vue-next';
-import { computed } from 'vue';
+import { computed, ComputedRef } from 'vue';
 
 interface ZiggyWithBackLink extends Ziggy {
     query: {
@@ -45,7 +45,7 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-const ziggy: ZiggyWithBackLink = useZiggy().value;
+const ziggy: ComputedRef<ZiggyWithBackLink> = useZiggy();
 
 const updateCommentForm = useForm({
     content: props.comment.content,
@@ -57,7 +57,7 @@ const isFormValid = computed(() => updateCommentForm.content.length > 0);
 
 const submitForm = () => {
     if (isFormValid.value) {
-        updateCommentForm.patch(route('comments.update', { comment: props.comment.slug, ...ziggy.query }), {
+        updateCommentForm.patch(route('comments.update', { comment: props.comment.slug, ...ziggy.value.query }), {
             preserveState: false,
             preserveScroll: true,
         });
@@ -73,7 +73,7 @@ const toggleItem = (filename: string) => {
 };
 
 const getBackLinkHref = (): string =>
-    Object.keys(ziggy.query).includes('back_to_discussion')
+    Object.keys(ziggy.value.query).includes('back_to_discussion')
         ? route('discussions.show', { discussion: props.comment.discussion.slug })
         : route('comments.show', { comment: props.comment.slug });
 </script>
@@ -86,7 +86,7 @@ const getBackLinkHref = (): string =>
             <GoBackLink :href="getBackLinkHref()" />
             <div class="grid gap-2">
                 <Label html-for="content">Content</Label>
-                <Textarea id="content" v-model="updateCommentForm.content" :default-value="comment.content" class="h-36 resize-none" />
+                <Textarea id="content" v-model="updateCommentForm.content" :default-value="comment.content" class="h-64 resize-none" />
                 <InputError :message="updateCommentForm.errors.content" />
             </div>
             <template v-if="comment.media.length > 0">

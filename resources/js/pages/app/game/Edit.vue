@@ -97,9 +97,9 @@ const submitForm = (): void => {
                 <GameReleasedAt :error="form.errors.released_at" v-model="form.released_at" :released-at="game.released_at" />
 
                 <GameCreator v-if="users" :error="form.errors.creator" v-model="form.creator" :game-creator="game.creator" :users />
-            </div>
 
-            <GameGenre :error="form.errors.genre" v-model="form.genre" :genres :game-genre="game.genre" />
+                <GameGenre :class="{ 'col-span-full': users }" :error="form.errors.genre" v-model="form.genre" :genres :game-genre="game.genre" />
+            </div>
 
             <FormButton :is-processing="form.processing" :disabled="!hasFormChanged()" label="Update" @click="submitForm" />
         </MainContainer>

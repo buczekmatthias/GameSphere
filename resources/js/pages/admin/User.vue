@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import Table from '@/components/Admin/Table.vue';
+import FormActionTap from '@/components/FormActionTap.vue';
 import HeadingSmall from '@/components/HeadingSmall.vue';
 import MainContainer from '@/components/MainContainer.vue';
-import Pagination from '@/components/Pagination.vue';
+import PaginatedContent from '@/components/PaginatedContent.vue';
+import Preview from '@/components/Preview.vue';
 import { Button } from '@/components/ui/button';
 import {
     DropdownMenu,
@@ -14,16 +16,15 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Separator } from '@/components/ui/separator';
 import { TableCell, TableRow } from '@/components/ui/table';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import UserRole from '@/components/UserRole.vue';
 import { getPaginationData } from '@/composables/usePagination';
 import AdminLayout from '@/layouts/AdminLayout.vue';
-import type { Pagination as PaginationType, User } from '@/types';
+import type { Pagination, User } from '@/types';
 import { Head, Link } from '@inertiajs/vue3';
-import { CheckCircle, ChevronDown, ChevronUp, Ellipsis, Eye, Trash } from 'lucide-vue-next';
+import { ChevronDown, ChevronUp, Ellipsis, Eye, Trash } from 'lucide-vue-next';
 
 const props = defineProps<{
-    users: PaginationType & { data: User[] };
+    users: Pagination & { data: User[] };
     roles: string[];
     roles_user_can_manage: string[];
     game_creator_requests_count: number;
@@ -79,105 +80,100 @@ const canCurrentUserManageUser = (user: User) => props.roles_user_can_manage.inc
                 </Button>
             </div>
             <Separator />
-            <Table :reload-only :headers="tableHeaders">
-                <TableRow v-for="user in users.data" :key="user.username">
-                    <TableCell>{{ user.name }}</TableCell>
-                    <TableCell>{{ user.username }}</TableCell>
-                    <TableCell>
-                        <UserRole :role="user.role" class="text-center" />
-                    </TableCell>
-                    <TableCell>{{ user.email }}</TableCell>
-                    <TableCell class="[&>*]:mx-auto">
-                        <TooltipProvider v-if="user.email_verified_at">
-                            <Tooltip>
-                                <TooltipTrigger as-child>
-                                    <CheckCircle class="size-4" />
-                                </TooltipTrigger>
-                                <TooltipContent class="max-w-[75vw]">
-                                    <p>{{ user.email_verified_at }}</p>
-                                </TooltipContent>
-                            </Tooltip>
-                        </TooltipProvider>
-                    </TableCell>
-                    <TableCell class="[&>*]:mx-auto">
-                        <CheckCircle class="size-4" v-if="user.avatar" />
-                    </TableCell>
-                    <TableCell>{{ user.created_at }}</TableCell>
-                    <TableCell>
-                        <DropdownMenu>
-                            <DropdownMenuTrigger as-child>
-                                <Button variant="outline">
-                                    <Ellipsis class="size-4" />
-                                </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent class="w-56">
-                                <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem as-child>
-                                    <Link :href="route('user.profile', { user: user.username })" as="button" class="w-full cursor-pointer">
-                                        <Eye class="size-4" />
-                                        View profile
-                                    </Link>
-                                </DropdownMenuItem>
-                                <template v-if="canCurrentUserManageUser(user)">
+            <PaginatedContent pagination-position="bottom" :pagination="getPaginationData(users)" :reload-only>
+                <Table :reload-only :headers="tableHeaders">
+                    <TableRow v-for="user in users.data" :key="user.username">
+                        <TableCell>{{ user.name }}</TableCell>
+                        <TableCell>{{ user.username }}</TableCell>
+                        <TableCell>
+                            <UserRole :role="user.role" class="text-center" />
+                        </TableCell>
+                        <TableCell>{{ user.email }}</TableCell>
+                        <TableCell>
+                            <template v-if="user.email_verified_at">
+                                {{ user.email_verified_at }}
+                            </template>
+                        </TableCell>
+                        <TableCell class="text-center">
+                            <Preview :item="{ filename: `${user.username}'s avatar`, path: user.avatar, type: 'image' }" v-if="user.avatar">
+                                <FormActionTap>View</FormActionTap>
+                            </Preview>
+                        </TableCell>
+                        <TableCell>{{ user.created_at }}</TableCell>
+                        <TableCell>
+                            <DropdownMenu>
+                                <DropdownMenuTrigger as-child>
+                                    <Button variant="outline">
+                                        <Ellipsis class="size-4" />
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent class="w-56">
+                                    <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                                    <DropdownMenuSeparator />
                                     <DropdownMenuItem as-child>
-                                        <Link
-                                            :href="route('admin.users.destroy', { user: user.username })"
-                                            as="button"
-                                            method="delete"
-                                            class="w-full cursor-pointer"
-                                            preserve-scroll
-                                        >
-                                            <Trash class="size-4" />
-                                            Delete
+                                        <Link :href="route('user.profile', { user: user.username })" as="button" class="w-full cursor-pointer">
+                                            <Eye class="size-4" />
+                                            View profile
                                         </Link>
                                     </DropdownMenuItem>
-                                    <DropdownMenuItem as-child>
-                                        <Link
-                                            :href="route('admin.users.destroy', { user: user.username, with_relations: true })"
-                                            as="button"
-                                            method="delete"
-                                            class="w-full cursor-pointer"
-                                            preserve-scroll
-                                        >
-                                            <Trash class="size-4" />
-                                            Delete with relations
-                                        </Link>
-                                    </DropdownMenuItem>
-                                    <DropdownMenuSeparator v-if="getRolesAbove(user.role).length > 0" />
-                                    <DropdownMenuItem as-child v-for="role in getRolesAbove(user.role)" :key="role">
-                                        <Link
-                                            :href="route('admin.users.role', { user: user.username, role: role })"
-                                            as="button"
-                                            method="patch"
-                                            class="w-full cursor-pointer"
-                                            preserve-scroll
-                                        >
-                                            <ChevronUp class="size-4" />
-                                            Promote to {{ role.replaceAll('_', ' ') }}
-                                        </Link>
-                                    </DropdownMenuItem>
-                                    <DropdownMenuSeparator v-if="getRolesBelow(user.role).length > 0" />
-                                    <DropdownMenuItem as-child v-for="role in getRolesBelow(user.role)" :key="role">
-                                        <Link
-                                            :href="route('admin.users.role', { user: user.username, role: role })"
-                                            as="button"
-                                            method="patch"
-                                            class="w-full cursor-pointer"
-                                            preserve-scroll
-                                        >
-                                            <ChevronDown class="size-4" />
-                                            Demote to {{ role.replaceAll('_', ' ') }}
-                                        </Link>
-                                    </DropdownMenuItem>
-                                </template>
-                            </DropdownMenuContent>
-                        </DropdownMenu>
-                    </TableCell>
-                </TableRow>
-            </Table>
-
-            <Pagination :pagination="getPaginationData(users)" :reload-only />
+                                    <template v-if="canCurrentUserManageUser(user)">
+                                        <DropdownMenuItem as-child>
+                                            <Link
+                                                :href="route('admin.users.destroy', { user: user.username })"
+                                                as="button"
+                                                method="delete"
+                                                class="w-full cursor-pointer"
+                                                preserve-scroll
+                                            >
+                                                <Trash class="size-4" />
+                                                Delete
+                                            </Link>
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem as-child>
+                                            <Link
+                                                :href="route('admin.users.destroy', { user: user.username, with_relations: true })"
+                                                as="button"
+                                                method="delete"
+                                                class="w-full cursor-pointer"
+                                                preserve-scroll
+                                            >
+                                                <Trash class="size-4" />
+                                                Delete with relations
+                                            </Link>
+                                        </DropdownMenuItem>
+                                        <DropdownMenuSeparator v-if="getRolesAbove(user.role).length > 0" />
+                                        <DropdownMenuItem as-child v-for="role in getRolesAbove(user.role)" :key="role">
+                                            <Link
+                                                :href="route('admin.users.role', { user: user.username, role: role })"
+                                                as="button"
+                                                method="patch"
+                                                class="w-full cursor-pointer"
+                                                preserve-scroll
+                                            >
+                                                <ChevronUp class="size-4" />
+                                                Promote to {{ role.replaceAll('_', ' ') }}
+                                            </Link>
+                                        </DropdownMenuItem>
+                                        <DropdownMenuSeparator v-if="getRolesBelow(user.role).length > 0" />
+                                        <DropdownMenuItem as-child v-for="role in getRolesBelow(user.role)" :key="role">
+                                            <Link
+                                                :href="route('admin.users.role', { user: user.username, role: role })"
+                                                as="button"
+                                                method="patch"
+                                                class="w-full cursor-pointer"
+                                                preserve-scroll
+                                            >
+                                                <ChevronDown class="size-4" />
+                                                Demote to {{ role.replaceAll('_', ' ') }}
+                                            </Link>
+                                        </DropdownMenuItem>
+                                    </template>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                        </TableCell>
+                    </TableRow>
+                </Table>
+            </PaginatedContent>
         </MainContainer>
     </AdminLayout>
 </template>

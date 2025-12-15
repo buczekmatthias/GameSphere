@@ -1,4 +1,6 @@
-import { NavItem, User } from '@/types';
+import { userCanAddGame, userHasSpecialPermissions } from '@/composables/useCanInteract';
+import { useCurrentUser } from '@/composables/useUser';
+import { NavItem } from '@/types';
 import {
     Blocks,
     ChartNoAxesCombined,
@@ -14,9 +16,9 @@ import {
 } from 'lucide-vue-next';
 import { onBeforeMount } from 'vue';
 
-// TODO: Move this to back-end
+export function getNavigationElements(): { [key: string]: NavItem[] } {
+    const currentUser = useCurrentUser();
 
-export function getNavigationElements(user: User): { [key: string]: NavItem[] } {
     const items = {
         app: [
             {
@@ -56,14 +58,14 @@ export function getNavigationElements(user: User): { [key: string]: NavItem[] } 
     };
 
     onBeforeMount(() => {
-        if (user.role !== 'guest') {
+        if (currentUser.value.role !== 'guest') {
             items['app'].push({
                 title: 'My reports',
                 href: route('user.reports'),
                 icon: MessageCircleWarning,
             });
         }
-        if (['moderator', 'admin', 'developer'].includes(user.role)) {
+        if (userHasSpecialPermissions()) {
             items['app'].push({
                 title: 'Dashboard',
                 href: route('admin.dashboard'),
@@ -71,7 +73,7 @@ export function getNavigationElements(user: User): { [key: string]: NavItem[] } 
             });
         }
 
-        if (['game_creator', 'moderator', 'admin', 'developer'].includes(user.role)) {
+        if (userCanAddGame()) {
             items['games'].push({
                 title: 'Add new game',
                 href: route('games.create'),

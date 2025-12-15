@@ -14,7 +14,7 @@ import Review from '@/components/Review.vue';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { canInteract } from '@/composables/useCanInteract';
+import { userCanInteract } from '@/composables/useCanInteract';
 import AppLayout from '@/layouts/AppLayout.vue';
 import type { BreadcrumbItem, Discussion as DiscussionType, Game, Pagination, Permissions, Review as ReviewType, Ziggy } from '@/types';
 import { Deferred, Head, Link, usePage, WhenVisible } from '@inertiajs/vue3';
@@ -67,7 +67,7 @@ const shouldTeleport = useMediaQuery('(min-width: 1024px)');
         <MainContainer class="mx-auto flex max-w-5xl flex-col gap-4">
             <div
                 class="grid gap-4 lg:grid-rows-[auto_auto]"
-                :class="canInteract() ? 'ml:grid-cols-[auto_1fr_auto] grid-cols-[1fr_auto]' : 'grid-cols-1 md:grid-cols-[auto_1fr]'"
+                :class="userCanInteract() ? 'ml:grid-cols-[auto_1fr_auto] grid-cols-[1fr_auto]' : 'grid-cols-1 md:grid-cols-[auto_1fr]'"
             >
                 <Avatar class="h-96 w-80 overflow-hidden rounded-lg object-cover lg:row-span-2">
                     <AvatarImage :src="game.thumbnail" :alt="game.title" />

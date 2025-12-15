@@ -8,14 +8,6 @@ use App\Models\User;
 class ReviewPolicy
 {
 	/**
-	 * Determine whether the user can create models.
-	 */
-	public function create(User $user): bool
-	{
-		return !is_null($user);
-	}
-
-	/**
 	 * Determine whether the user can delete the model.
 	 */
 	public function delete(User $user, Review $review): bool

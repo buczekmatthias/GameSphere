@@ -76,7 +76,7 @@ const handleFileChange = (event: any): void => {
                 </template>
                 <div class="flex max-h-[75vh] flex-col gap-6 overflow-y-auto">
                     <div v-for="item in gameMedia" :key="item.path" class="flex flex-col gap-2">
-                        <Preview :type="item.type" :media="item.path" />
+                        <Preview :item />
                         <div class="flex items-center gap-2">
                             <Switch @update:model-value="toggleItem(item.filename)" :model-value="media_to_delete.includes(item.filename)" />
                             <p class="text-sm">Remove this item</p>

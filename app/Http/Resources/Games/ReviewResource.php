@@ -3,6 +3,7 @@
 namespace App\Http\Resources\Games;
 
 use App\Http\Resources\User\SimpleProfileResource;
+use App\Services\UserPermissions;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Str;
@@ -32,9 +33,15 @@ class ReviewResource extends JsonResource
 			),
 			'game' => $this->whenLoaded(
 				'game',
-				fn () => ['title' => $this->game->title, 'slug' => $this->game->slug]
+				fn () => [
+					...GamesListResource::make($this->game)->toArray($request),
+					'description' => $this->game->description
+				]
 			),
-			'created_at' => $this->created_at->format('Y-m-d')
+			'created_at' => $this->created_at->format('Y-m-d'),
+			'permissions' => [
+				'destroy' => UserPermissions::checkPermissions('delete', $this->resource),
+			],
 		];
 	}
 }

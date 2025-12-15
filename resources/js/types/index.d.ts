@@ -3,10 +3,6 @@ import type { PageProps } from '@inertiajs/core';
 import type { LucideIcon } from 'lucide-vue-next';
 import type { Config } from 'ziggy-js';
 
-export interface Auth {
-    user: User;
-}
-
 export interface BreadcrumbItem {
     title: string;
     href: string;
@@ -31,8 +27,11 @@ export interface SharedData extends PageProps {
     auth: Auth;
     ziggy: Ziggy;
     sidebarOpen: boolean;
-    can_interact: boolean;
-    has_special_permissions: boolean;
+    can_user: {
+        interact: boolean;
+        use_special_permissions: boolean;
+        add_game: boolean;
+    };
     report_reasons: Record<number, string>;
     constants: Constants;
 }
@@ -49,12 +48,6 @@ export interface User {
 }
 
 export type BreadcrumbItemType = BreadcrumbItem;
-
-export interface PaginationLink {
-    url?: string;
-    label: string;
-    active: boolean;
-}
 
 export interface Pagination {
     meta: {
@@ -90,6 +83,7 @@ export interface Game {
     list: string;
     score: number;
     reviews_count: number;
+    permissions: Permissions;
 }
 
 export interface Genre {
@@ -111,6 +105,7 @@ export interface Review {
     user: User & { is_email_verified: boolean };
     game: Game;
     created_at: string;
+    permissions: Permissions;
 }
 
 export interface ReviewRatings {
@@ -132,6 +127,7 @@ export interface Discussion {
     comments: Pagination & { data: DiscussionComment[] };
     comments_count: number;
     created_at: string;
+    permissions: Permissions;
 }
 
 export interface DiscussionComment {

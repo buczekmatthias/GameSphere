@@ -8,14 +8,6 @@ use App\Models\User;
 class CommentPolicy
 {
 	/**
-	 * Determine whether the user can create models.
-	 */
-	public function create(User $user): bool
-	{
-		return !is_null($user);
-	}
-
-	/**
 	 * Determine whether the user can update the model.
 	 */
 	public function update(User $user, Comment $comment): bool
@@ -51,7 +43,6 @@ class CommentPolicy
 		if (is_null($comment->user_id)) {
 			return false;
 		}
-		dd($user. $comment);
 
 		return $comment->user_id === $user->id;
 	}

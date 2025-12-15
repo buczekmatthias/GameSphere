@@ -8,14 +8,6 @@ use App\Models\User;
 class DiscussionPolicy
 {
 	/**
-	 * Determine whether the user can create models.
-	 */
-	public function create(User $user): bool
-	{
-		return !is_null($user);
-	}
-
-	/**
 	 * Determine whether the user can update the model.
 	 */
 	public function update(User $user, Discussion $discussion): bool

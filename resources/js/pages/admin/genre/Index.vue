@@ -2,7 +2,7 @@
 import Table from '@/components/Admin/Table.vue';
 import FormButton from '@/components/FormButton.vue';
 import MainContainer from '@/components/MainContainer.vue';
-import Pagination from '@/components/Pagination.vue';
+import PaginatedContent from '@/components/PaginatedContent.vue';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import {
@@ -18,13 +18,13 @@ import { Label } from '@/components/ui/label';
 import { TableCell, TableRow } from '@/components/ui/table';
 import { getPaginationData } from '@/composables/usePagination';
 import AdminLayout from '@/layouts/AdminLayout.vue';
-import type { Genre, Pagination as PaginationType } from '@/types';
+import type { Genre, Pagination } from '@/types';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import { Ellipsis, Eye, Pen, Plus, Trash } from 'lucide-vue-next';
 import { ref } from 'vue';
 
 defineProps<{
-    genres: PaginationType & { data: Genre[] };
+    genres: Pagination & { data: Genre[] };
 }>();
 
 const tableHeaders = [
@@ -81,47 +81,51 @@ const submit = () => {
                 </Dialog>
             </div>
 
-            <Table :reload-only :headers="tableHeaders">
-                <TableRow v-for="genre in genres.data" :key="genre.slug">
-                    <TableCell>{{ genre.slug }}</TableCell>
-                    <TableCell>{{ genre.name }}</TableCell>
-                    <TableCell class="text-center">{{ genre.discussions_count }}</TableCell>
-                    <TableCell class="text-center">{{ genre.games_count }}</TableCell>
-                    <TableCell>
-                        <DropdownMenu>
-                            <DropdownMenuTrigger as-child>
-                                <Button variant="outline">
-                                    <Ellipsis class="size-4" />
-                                </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent class="w-56">
-                                <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem as-child>
-                                    <Link :href="route('genres.show', { genre: genre.slug })" as="button" class="w-full cursor-pointer">
-                                        <Eye class="size-4" />
-                                        View
-                                    </Link>
-                                </DropdownMenuItem>
-                                <DropdownMenuItem as-child>
-                                    <Link :href="route('admin.genres.edit', { genre: genre.slug })" as="button" class="w-full cursor-pointer">
-                                        <Pen class="size-4" />
-                                        Edit
-                                    </Link>
-                                </DropdownMenuItem>
-                                <DropdownMenuItem as-child>
-                                    <Link :href="route('admin.genres.destroy', { genre: genre.slug })" method="delete" class="w-full cursor-pointer">
-                                        <Trash class="size-4" />
-                                        Delete
-                                    </Link>
-                                </DropdownMenuItem>
-                            </DropdownMenuContent>
-                        </DropdownMenu>
-                    </TableCell>
-                </TableRow>
-            </Table>
-
-            <Pagination :pagination="getPaginationData(genres)" :reload-only />
+            <PaginatedContent :pagination="getPaginationData(genres)" :reload-only pagination-position="bottom">
+                <Table :reload-only :headers="tableHeaders">
+                    <TableRow v-for="genre in genres.data" :key="genre.slug">
+                        <TableCell>{{ genre.slug }}</TableCell>
+                        <TableCell>{{ genre.name }}</TableCell>
+                        <TableCell class="text-center">{{ genre.discussions_count }}</TableCell>
+                        <TableCell class="text-center">{{ genre.games_count }}</TableCell>
+                        <TableCell>
+                            <DropdownMenu>
+                                <DropdownMenuTrigger as-child>
+                                    <Button variant="outline">
+                                        <Ellipsis class="size-4" />
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent class="w-56">
+                                    <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuItem as-child>
+                                        <Link :href="route('genres.show', { genre: genre.slug })" as="button" class="w-full cursor-pointer">
+                                            <Eye class="size-4" />
+                                            View
+                                        </Link>
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem as-child>
+                                        <Link :href="route('admin.genres.edit', { genre: genre.slug })" as="button" class="w-full cursor-pointer">
+                                            <Pen class="size-4" />
+                                            Edit
+                                        </Link>
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem as-child>
+                                        <Link
+                                            :href="route('admin.genres.destroy', { genre: genre.slug })"
+                                            method="delete"
+                                            class="w-full cursor-pointer"
+                                        >
+                                            <Trash class="size-4" />
+                                            Delete
+                                        </Link>
+                                    </DropdownMenuItem>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                        </TableCell>
+                    </TableRow>
+                </Table>
+            </PaginatedContent>
         </MainContainer>
     </AdminLayout>
 </template>

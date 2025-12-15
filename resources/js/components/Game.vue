@@ -28,13 +28,12 @@ const listTypeIcon: { [key: string]: LucideIcon } = {
                 <template #avatar>
                     <img v-lazy="game.thumbnail" :alt="game.title" class="h-full w-full object-cover" />
                 </template>
-                <!-- <AvatarImage :src="game.thumbnail" :alt="game.title" class="object-cover" /> -->
                 <AvatarFallback class="rounded-lg text-black dark:text-white" />
             </Avatar>
             <TooltipProvider v-if="game.list">
                 <Tooltip>
                     <TooltipTrigger as-child class="absolute top-2 right-2">
-                        <Button>
+                        <Button variant="outline">
                             <component :is="listTypeIcon[game.list]" class="size-[1.3rem]" />
                         </Button>
                     </TooltipTrigger>

@@ -12,7 +12,7 @@ class GamePolicy
 	 */
 	public function create(User $user): bool
 	{
-		return !is_null($user) && ($user->isStaff() || $user->isGameCreator());
+		return !is_null($user) && $user->canAddGame();
 	}
 
 	/**

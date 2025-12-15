@@ -2,23 +2,25 @@
 import MainContainer from '@/components/MainContainer.vue';
 import ReportModal from '@/components/ReportModal.vue';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Button, buttonVariants } from '@/components/ui/button';
+import { Button } from '@/components/ui/button';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import UserProfileTab from '@/components/UserProfileTab.vue';
 import UserRole from '@/components/UserRole.vue';
+import { userCanInteract } from '@/composables/useCanInteract';
 import { useInitials } from '@/composables/useInitials';
 import AppLayout from '@/layouts/AppLayout.vue';
-import type { BreadcrumbItem, Discussion, DiscussionComment, Game, Genre, Pagination as PaginationType, Review, User } from '@/types';
+import type { BreadcrumbItem, Discussion, DiscussionComment, Game, Genre, Pagination, Review, User } from '@/types';
 import { Head, Link, router } from '@inertiajs/vue3';
-import { Settings } from 'lucide-vue-next';
+import { CheckCircle, Settings } from 'lucide-vue-next';
 import { capitalize, computed } from 'vue';
 
 interface UserProfile extends User {
-    created_games: PaginationType & { data: Game[] };
-    games: PaginationType & { data: Game[] };
-    genres: PaginationType & { data: Genre[] };
-    reviews: PaginationType & { data: Review[] };
-    discussions: PaginationType & { data: Discussion[] };
-    comments: PaginationType & { data: DiscussionComment[] };
+    created_games: Pagination & { data: Game[] };
+    games: Pagination & { data: Game[] };
+    genres: Pagination & { data: Genre[] };
+    reviews: Pagination & { data: Review[] };
+    discussions: Pagination & { data: Discussion[] };
+    comments: Pagination & { data: DiscussionComment[] };
 }
 
 const props = defineProps<{
@@ -70,38 +72,61 @@ router.on('finish', () => {
     <Head :title="`${user.name}\'s profile | ${capitalize(activeTab)}`" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
-        <MainContainer class="flex flex-col gap-4">
-            <div class="flex flex-col gap-3">
-                <Avatar class="h-72 w-72 overflow-hidden rounded-lg">
-                    <AvatarImage v-if="showAvatar" :src="user.avatar!" :alt="user.name" class="bg-gray-900 object-contain" />
-                    <AvatarFallback class="rounded-lg text-4xl text-black dark:text-white">
+        <MainContainer class="mx-auto flex max-w-5xl flex-col gap-4">
+            <div
+                class="grid gap-4"
+                :class="userCanInteract() ? 'ml:grid-cols-[auto_1fr_auto] grid-cols-[1fr_auto]' : 'grid-cols-1 md:grid-cols-[auto_1fr]'"
+            >
+                <Avatar class="h-96 w-80 overflow-hidden rounded-lg object-cover lg:row-span-2">
+                    <AvatarImage v-if="showAvatar" :src="user.avatar!" :alt="user.name" class="object-cover" />
+                    <AvatarFallback class="rounded-lg text-black dark:text-white">
                         {{ getInitials(user.name) }}
                     </AvatarFallback>
                 </Avatar>
-                <div class="flex justify-between gap-4">
-                    <div>
-                        <p class="mb-0.5 text-2xl">{{ user.name }}</p>
-                        <p class="text-sm text-slate-400">@{{ user.username }}</p>
-                    </div>
-                    <UserRole :role="user.role" class="my-auto" v-if="user.role !== 'user'" />
+                <div class="flex flex-col gap-3 lg:col-start-3 lg:row-end-1">
+                    <ReportModal :contentId="user.username" contentType="user" show-icon :show-text="false" />
+                    <Button variant="outline" as-child v-if="isCurrentUserProfile">
+                        <Link :href="route('settings.profile.edit')" as="button">
+                            <Settings class="size-4" />
+                        </Link>
+                    </Button>
                 </div>
-                <p>Joined {{ user.created_at }}</p>
+                <div class="max-ml:col-span-full ml:col-start-2 ml:row-end-1 flex flex-col gap-4">
+                    <div class="ml:flex-col flex justify-between gap-4">
+                        <div>
+                            <div class="mb-0.5 flex items-center gap-2">
+                                <p class="text-2xl">{{ user.name }}</p>
+                                <TooltipProvider v-if="user.email_verified_at">
+                                    <Tooltip>
+                                        <TooltipTrigger as-child>
+                                            <CheckCircle class="text-sidebar-ring mt-1 size-5" />
+                                        </TooltipTrigger>
+                                        <TooltipContent>
+                                            <p>Verified user</p>
+                                        </TooltipContent>
+                                    </Tooltip>
+                                </TooltipProvider>
+                            </div>
+                            <p class="text-sm text-slate-400">@{{ user.username }}</p>
+                        </div>
+                        <UserRole :role="user.role" class="ml:order-first my-auto" v-if="user.role !== 'user'" />
+                    </div>
+                    <p>Joined {{ user.created_at }}</p>
+                </div>
             </div>
-            <Button variant="outline" as-child v-if="isCurrentUserProfile">
-                <Link :href="route('settings.profile.edit')" as="button">
-                    <Settings class="mt-0.5 size-4" />
-                    Profile settings
-                </Link>
-            </Button>
-            <ReportModal :contentId="user.username" contentType="user" :triggerClass="buttonVariants({ variant: 'destructive' })" show-icon />
-            <div class="flex gap-2 overflow-x-auto" id="tabs">
+            <div class="flex gap-6 overflow-x-auto" id="tabs">
                 <Link
+                    as="button"
                     v-for="tab in tabs"
                     :key="tab"
                     :href="route('user.profile', { user: user.username, tab: tab })"
                     :only="['activeTab', 'user']"
-                    class="rounded-md px-4 py-1.5 whitespace-nowrap capitalize"
-                    :class="activeTab === tab ? 'bg-primary/75 pointer-events-none text-slate-50' : 'hover:bg-primary/15 duration-150'"
+                    class="border-b-4 py-2 whitespace-nowrap capitalize"
+                    :class="
+                        activeTab === tab
+                            ? 'border-b-primary pointer-events-none text-slate-50'
+                            : 'text-muted-foreground border-transparent duration-150 hover:border-b-slate-200 hover:text-slate-100'
+                    "
                 >
                     {{ tab.replace('_', ' ') }}
                 </Link>

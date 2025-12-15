@@ -3,16 +3,16 @@ import GameSkeleton from '@/components/fallbacks/GameSkeleton.vue';
 import Game from '@/components/Game.vue';
 import GamesListFilter, { FilterData } from '@/components/GamesListFilter.vue';
 import MainContainer from '@/components/MainContainer.vue';
-import Pagination from '@/components/Pagination.vue';
+import PaginatedContent from '@/components/PaginatedContent.vue';
 import SearchHeaderText from '@/components/Partials/Game/Index/SearchHeaderText.vue';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { getPaginationData } from '@/composables/usePagination';
 import { useZiggy } from '@/composables/useZiggy';
 import AppLayout from '@/layouts/AppLayout.vue';
-import { BreadcrumbItem, Game as GameType, Pagination as PaginationType, Ziggy } from '@/types';
+import { BreadcrumbItem, Game as GameType, Pagination, Ziggy } from '@/types';
 import { Deferred, Head, router } from '@inertiajs/vue3';
-import { computed, ref } from 'vue';
+import { computed, ComputedRef, ref } from 'vue';
 
 export interface SearchData {
     per_page?: string | number;
@@ -34,24 +34,24 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 defineProps<{
-    games?: PaginationType & { data: GameType[] };
+    games?: Pagination & { data: GameType[] };
     per_page: number | string;
     genres?: string[];
 }>();
 
-const ziggy: ZiggyWithGamesQuery = useZiggy().value;
+const ziggy: ComputedRef<ZiggyWithGamesQuery> = useZiggy();
 
-const title = ref<string>(ziggy.query.title || '');
+const title = ref<string>(ziggy.value.query.title || '');
 const searchConditions = ref<FilterData>({
-    released_after: ziggy.query.released_after,
-    released_before: ziggy.query.released_before,
-    genre: ziggy.query.genre,
+    released_after: ziggy.value.query.released_after,
+    released_before: ziggy.value.query.released_before,
+    genre: ziggy.value.query.genre,
 });
 
 const searchEntries = () => {
     let data: Partial<SearchData> = {};
 
-    if (ziggy.query.per_page) data.per_page = ziggy.query.per_page;
+    if (ziggy.value.query.per_page) data.per_page = ziggy.value.query.per_page;
 
     if (title.value) data.title = title.value;
 
@@ -62,17 +62,17 @@ const searchEntries = () => {
             .reduce((acc, [key, value]) => ({ ...acc, [key]: value }), {}),
     };
 
-    router.get(route(ziggy.current), data, { only: reloadOnly });
+    router.get(route(ziggy.value.current), data, { only: reloadOnly });
 };
 
 const reloadOnly = ['games', 'ziggy'];
 
 const isQueried = computed(
     (): boolean =>
-        ziggy.query.title !== undefined ||
-        ziggy.query.released_after !== undefined ||
-        ziggy.query.released_before !== undefined ||
-        ziggy.query.genre !== undefined,
+        ziggy.value.query.title !== undefined ||
+        ziggy.value.query.released_after !== undefined ||
+        ziggy.value.query.released_before !== undefined ||
+        ziggy.value.query.genre !== undefined,
 );
 </script>
 
@@ -93,8 +93,9 @@ const isQueried = computed(
 
                 <SearchHeaderText :total="games!.meta.total" :query="ziggy.query" v-if="isQueried" />
                 <template v-if="games!.data.length > 0">
-                    <Game v-for="game in games!.data" :key="game.title" :game />
-                    <Pagination :customizable-per-page="true" :pagination="getPaginationData(games!)" :reload-only />
+                    <PaginatedContent :customizable-per-page="true" :pagination="getPaginationData(games!)" :reload-only pagination-position="bottom">
+                        <Game v-for="game in games!.data" :key="game.title" :game />
+                    </PaginatedContent>
                 </template>
                 <template v-else>
                     <p class="col-span-full border-t pt-4">Nothing to display</p>

@@ -2,75 +2,76 @@
 import Discussion from '@/components/Discussion.vue';
 import Game from '@/components/Game.vue';
 import Genre from '@/components/Genre.vue';
-import Pagination from '@/components/Pagination.vue';
+import PaginatedContent from '@/components/PaginatedContent.vue';
+import Comment from '@/components/Partials/Discussion/Show/Comment.vue';
 import Review from '@/components/Review.vue';
-import TextLink from '@/components/TextLink.vue';
 import { getPaginationData } from '@/composables/usePagination';
 import type {
     DiscussionComment,
     Discussion as DiscussionType,
     Game as GameType,
     Genre as GenreType,
-    Pagination as PaginationType,
+    Pagination,
     Review as ReviewType,
 } from '@/types';
+import { computed } from 'vue';
 
-defineProps<{
+const props = defineProps<{
     type: 'created_games' | 'games' | 'genres' | 'reviews' | 'discussions' | 'comments';
-    content: PaginationType & { data: GameType[] | GenreType[] | ReviewType[] | DiscussionType[] | DiscussionComment[] };
+    content: Pagination & { data: GameType[] | GenreType[] | ReviewType[] | DiscussionType[] | DiscussionComment[] };
 }>();
 
 const reloadOnly: string[] = ['user'];
+
+const gamesData = computed((): GameType[] => (props.type === 'created_games' || props.type === 'games' ? (props.content.data as GameType[]) : []));
+
+const genresData = computed((): GenreType[] => (props.type === 'genres' ? (props.content.data as GenreType[]) : []));
+
+const reviewsData = computed((): ReviewType[] => (props.type === 'reviews' ? (props.content.data as ReviewType[]) : []));
+
+const discussionsData = computed((): DiscussionType[] => (props.type === 'discussions' ? (props.content.data as DiscussionType[]) : []));
+
+const commentsData = computed((): DiscussionComment[] => (props.type === 'comments' ? (props.content.data as DiscussionComment[]) : []));
 </script>
 
 <template>
     <div class="flex flex-col gap-4">
         <template v-if="content.data.length > 0">
-            <Pagination :pagination="getPaginationData(content)" :reload-only />
+            <PaginatedContent :pagination="getPaginationData(content)" :reload-only>
+                <template v-if="type === 'created_games'">
+                    <div class="grid grid-cols-2 gap-4 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
+                        <Game v-for="game in gamesData" :key="game.title" :game />
+                    </div>
+                </template>
 
-            <template v-if="type === 'created_games'">
-                <div class="games-grid">
-                    <Game v-for="game in content.data as GameType[]" :key="game.title" :game />
-                </div>
-            </template>
+                <template v-if="type === 'games'">
+                    <div class="grid grid-cols-2 gap-4 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
+                        <Game v-for="game in gamesData" :key="game.title" :game />
+                    </div>
+                </template>
 
-            <template v-if="type === 'games'">
-                <div class="games-grid">
-                    <Game v-for="game in content.data as GameType[]" :key="game.title" :game />
-                </div>
-            </template>
+                <template v-else-if="type === 'genres'">
+                    <div class="flex flex-col gap-4">
+                        <Genre v-for="genre in genresData" :key="genre.name" :genre />
+                    </div>
+                </template>
 
-            <template v-else-if="type === 'genres'">
-                <div class="flex flex-col gap-4">
-                    <Genre v-for="genre in content.data as GenreType[]" :key="genre.name" :genre />
-                </div>
-            </template>
+                <template v-else-if="type === 'reviews'">
+                    <div class="flex flex-col gap-4">
+                        <Review v-for="review in reviewsData" :key="review.slug" :review with-link :show-user="false" />
+                    </div>
+                </template>
 
-            <template v-else-if="type === 'reviews'">
-                <div class="flex flex-col gap-4">
-                    <Review v-for="review in content.data as ReviewType[]" :key="review.slug" :review with-link :show-user="false" />
-                </div>
-            </template>
+                <template v-else-if="type === 'discussions'">
+                    <div class="flex flex-col gap-4">
+                        <Discussion v-for="discussion in discussionsData" :key="discussion.slug" :discussion :show-user="false" />
+                    </div>
+                </template>
 
-            <template v-else-if="type === 'discussions'">
-                <div class="flex flex-col gap-4">
-                    <Discussion v-for="discussion in content.data as DiscussionType[]" :key="discussion.slug" :discussion :show-user="false" />
-                </div>
-            </template>
-
-            <template v-else-if="type === 'comments'">
-                <div
-                    class="border-border flex flex-col items-start gap-3 rounded-md border border-solid p-2"
-                    v-for="comment in content.data as DiscussionComment[]"
-                    :key="comment.slug"
-                >
-                    <p class="text-sm text-slate-300">{{ comment.created_at }}</p>
-                    <p>{{ comment.content }}</p>
-                    <TextLink as="button" :href="route('comments.show', { comment: comment.slug })" class="cursor-pointer text-sm">
-                        View comment
-                    </TextLink>
-                </div>
-            </template>
+                <template v-else-if="type === 'comments'">
+                    <Comment v-for="comment in commentsData" :key="comment.slug" :comment />
+                </template>
+            </PaginatedContent>
         </template>
 
         <template v-else>

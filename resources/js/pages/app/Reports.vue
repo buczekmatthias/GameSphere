@@ -35,6 +35,7 @@ defineProps<{
                         <TableHead class="w-36">Entry type</TableHead>
                         <TableHead class="w-36">Status</TableHead>
                         <TableHead class="w-36">Created at</TableHead>
+                        <TableHead class="w-6">Actions</TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -47,6 +48,9 @@ defineProps<{
                         <TableCell>{{ capitalize(report.reportable_type) }}</TableCell>
                         <TableCell class="capitalize">{{ report.status }}</TableCell>
                         <TableCell>{{ report.created_at }}</TableCell>
+                        <TableCell class="text-center">
+                            <TextLink :href="report.reportable">View</TextLink>
+                        </TableCell>
                     </TableRow>
                 </TableBody>
             </Table>

@@ -3,6 +3,7 @@
 namespace App\Http\Resources\Games;
 
 use App\Http\Resources\User\SimpleProfileResource;
+use App\Services\UserPermissions;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Str;
@@ -24,7 +25,11 @@ class ShowGameResource extends JsonResource
 			'shortTitle' => Str::limit($this->title, 25, preserveWords: true),
 			'creator' => SimpleProfileResource::make($this->creator)->toArray($request),
 			'score' => $score,
-			'reviews_count' => $this->whenCounted('reviews')
+			'reviews_count' => $this->whenCounted('reviews'),
+			'permissions' => [
+				'update' => UserPermissions::checkPermissions('update', $this->resource),
+				'destroy' => UserPermissions::checkPermissions('delete', $this->resource),
+			],
 		];
 	}
 }

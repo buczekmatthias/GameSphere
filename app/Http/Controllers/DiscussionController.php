@@ -12,7 +12,6 @@ use App\Models\Discussion;
 use App\Models\Game;
 use App\Models\Genre;
 use App\Services\StoreCommentMedia;
-use App\Services\UserPermissions;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -98,10 +97,6 @@ class DiscussionController extends Controller
 
 		return Inertia::render('app/discussion/Show', [
 			'discussion' => ShowDiscussionResource::make($discussion),
-			'permissions' => [
-				'update' => UserPermissions::checkPermissions('update', $discussion),
-				'destroy' => UserPermissions::checkPermissions('delete', $discussion),
-			]
 		]);
 	}
 

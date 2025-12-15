@@ -3,12 +3,11 @@ import DeleteActionLink from '@/components/DeleteActionLink.vue';
 import ReportModal from '@/components/ReportModal.vue';
 import TextLink from '@/components/TextLink.vue';
 import UpdateDiscussionForm from '@/components/UpdateDiscussionForm.vue';
-import { DiscussableGame, DiscussableGenre, Discussion, Permissions } from '@/types';
+import { DiscussableGame, DiscussableGenre, Discussion } from '@/types';
 import { Blocks, Calendar, Gamepad2, MessageCircle, User } from 'lucide-vue-next';
 
 defineProps<{
     discussion: Discussion;
-    permissions: Permissions;
 }>();
 </script>
 
@@ -51,10 +50,8 @@ defineProps<{
         </div>
         <div class="flex gap-5">
             <ReportModal trigger-class="text-destructive text-sm" :contentId="discussion.slug" contentType="discussion" />
-            <UpdateDiscussionForm v-if="permissions.update" :old-title="discussion.title" :slug="discussion.slug" />
-            <DeleteActionLink :href="route('discussions.destroy', { discussion: discussion.slug })" v-if="permissions.destroy">
-                Delete
-            </DeleteActionLink>
+            <UpdateDiscussionForm v-if="discussion.permissions.update" :old-title="discussion.title" :slug="discussion.slug" />
+            <DeleteActionLink :href="route('discussions.destroy', { discussion: discussion.slug })" v-if="discussion.permissions.destroy" />
         </div>
     </div>
 </template>

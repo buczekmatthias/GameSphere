@@ -8,7 +8,7 @@ import MainContainer from '@/components/MainContainer.vue';
 import { AreaChart } from '@/components/ui/chart-area';
 import AdminLayout from '@/layouts/AdminLayout.vue';
 import { GameCreatorRequest } from '@/pages/admin/GameCreatorRequest.vue';
-import type { Pagination as PaginationType, Report } from '@/types';
+import type { Report } from '@/types';
 import { Head } from '@inertiajs/vue3';
 
 interface Entries {
@@ -29,8 +29,8 @@ interface ChartData {
 defineProps<{
     new_entries: Entries;
     chart_data: ChartData[];
-    active_reports: PaginationType & { data: Report[] };
-    pending_requests: PaginationType & { data: GameCreatorRequest[] };
+    active_reports: Report[];
+    pending_requests: GameCreatorRequest[];
 }>();
 </script>
 

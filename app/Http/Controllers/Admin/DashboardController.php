@@ -49,8 +49,8 @@ class DashboardController extends Controller
 				],
 			],
 			'chart_data' => $this->getChartData(),
-			'active_reports' => UserReportsTableResource::collection(Report::activeReports()->with(['reportable', 'user'])->orderBy('created_at', 'DESC')->paginate(15)),
-			'pending_requests' => GameCreatorRequestResource::collection(GameCreatorRequest::with(['user'])->orderBy('created_at', 'DESC')->paginate(15))
+			'active_reports' => UserReportsTableResource::collection(Report::activeReports()->with(['reportable', 'user'])->orderBy('created_at', 'DESC')->limit(5)->get()),
+			'pending_requests' => GameCreatorRequestResource::collection(GameCreatorRequest::with(['user'])->orderBy('created_at', 'DESC')->limit(5)->get())
 		]);
 	}
 

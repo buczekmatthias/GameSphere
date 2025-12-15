@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import UsersIndexSkeleton from '@/components/fallbacks/UsersIndexSkeleton.vue';
 import MainContainer from '@/components/MainContainer.vue';
-import Pagination from '@/components/Pagination.vue';
+import PaginatedContent from '@/components/PaginatedContent.vue';
 import RoleTabs from '@/components/Partials/User/RoleTabs.vue';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -10,9 +10,9 @@ import UserRole from '@/components/UserRole.vue';
 import { getPaginationData } from '@/composables/usePagination';
 import { useZiggy } from '@/composables/useZiggy';
 import AppLayout from '@/layouts/AppLayout.vue';
-import type { BreadcrumbItem, Pagination as PaginationType, User, Ziggy } from '@/types';
+import type { BreadcrumbItem, Pagination, User, Ziggy } from '@/types';
 import { Deferred, Head, Link, router } from '@inertiajs/vue3';
-import { ref } from 'vue';
+import { ComputedRef, ref } from 'vue';
 
 interface SearchData {
     per_page?: string | number;
@@ -25,34 +25,34 @@ export interface ZiggyWithGamesQuery extends Ziggy {
 }
 
 defineProps<{
-    users?: PaginationType & { data: User[] };
+    users?: Pagination & { data: User[] };
     roles: string[];
     users_count: number | string;
     per_page: string | number;
 }>();
 
-const ziggy: ZiggyWithGamesQuery = useZiggy().value;
+const ziggy: ComputedRef<ZiggyWithGamesQuery> = useZiggy();
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: 'Users',
-        href: route(ziggy.current),
+        href: route(ziggy.value.current),
     },
 ];
 
-const contains = ref<string>(ziggy.query.contains || '');
-const role = ref<string>(ziggy.query.role || '');
+const contains = ref<string>(ziggy.value.query.contains || '');
+const role = ref<string>(ziggy.value.query.role || '');
 
 const searchEntries = () => {
     const data: Partial<SearchData> = {};
 
-    if (ziggy.query.per_page) data.per_page = ziggy.query.per_page;
+    if (ziggy.value.query.per_page) data.per_page = ziggy.value.query.per_page;
 
     if (contains.value) data.contains = contains.value;
 
     if (role.value) data.role = role.value;
 
-    router.get(route(ziggy.current), data, { only: reloadOnly });
+    router.get(route(ziggy.value.current), data, { only: reloadOnly });
 };
 
 const reloadOnly = ['users', 'ziggy'];
@@ -74,16 +74,17 @@ const reloadOnly = ['users', 'ziggy'];
                         <Button type="submit" @click="searchEntries">Search</Button>
                     </div>
                     <RoleTabs :roles :ziggy :users_count :total="users!.meta.total" :reloadOnly />
-                    <Link
-                        :href="route('user.profile', { user: user.username })"
-                        v-for="user in users!.data"
-                        :key="user.username"
-                        class="flex w-full items-center justify-between gap-4 rounded-md border px-2.5 py-3.5"
-                    >
-                        <UserInfo show-username :user="user" />
-                        <UserRole :role="user.role" class="text-sm" :show-user-role-tag="false" />
-                    </Link>
-                    <Pagination class="mt-3" :customizable-per-page="true" :pagination="getPaginationData(users!)" :reload-only />
+                    <PaginatedContent :customizable-per-page="true" :pagination="getPaginationData(users!)" :reload-only pagination-position="bottom">
+                        <Link
+                            :href="route('user.profile', { user: user.username })"
+                            v-for="user in users!.data"
+                            :key="user.username"
+                            class="flex w-full items-center justify-between gap-4 rounded-md border px-2.5 py-3.5"
+                        >
+                            <UserInfo show-username :user="user" />
+                            <UserRole :role="user.role" class="text-sm" :show-user-role-tag="false" />
+                        </Link>
+                    </PaginatedContent>
                 </template>
                 <template v-else>
                     <p class="text-lg">No users to display</p>

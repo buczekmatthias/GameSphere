@@ -52,8 +52,11 @@ class HandleInertiaRequests extends Middleware
 					'query' => $request->query()
 				],
 				'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
-				'can_interact' => !is_null($request->user()),
-				'has_special_permissions' => $request->user()?->isStaff() ?? false,
+				'can_user' => [
+					'interact' => !is_null($request->user()),
+					'use_special_permissions' => $request->user()?->isStaff() ?? false,
+					'add_game' => $request->user()?->canAddGame() ?? false,
+				],
 				'constants' => config('globals')
 			],
 			ReportsServices::hasReportableContent() ? ['report_reasons' => ReportsServices::getReportReasons()] : []

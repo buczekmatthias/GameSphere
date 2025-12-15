@@ -9,7 +9,7 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Game, Permissions } from '@/types';
+import { Game } from '@/types';
 import { Link } from '@inertiajs/vue3';
 import { Check, EllipsisVertical, Pen, Trash } from 'lucide-vue-next';
 import { capitalize } from 'vue';
@@ -17,7 +17,6 @@ import { capitalize } from 'vue';
 defineProps<{
     game: Game;
     lists: { [key: string]: boolean };
-    permissions: Permissions;
 }>();
 </script>
 
@@ -42,12 +41,12 @@ defineProps<{
             </DropdownMenuContent>
         </DropdownMenu>
         <Button variant="outline" as-child>
-            <Link :href="route('games.edit', { game: game.slug })" as="button" v-if="permissions.update">
+            <Link :href="route('games.edit', { game: game.slug })" as="button" v-if="game.permissions.update">
                 <Pen class="size-4" />
             </Link>
         </Button>
         <Button variant="destructive" as-child>
-            <Link :href="route('games.destroy', { game: game.slug })" method="delete" v-if="permissions.destroy" as="button">
+            <Link :href="route('games.destroy', { game: game.slug })" method="delete" v-if="game.permissions.destroy" as="button">
                 <Trash class="size-4" />
             </Link>
         </Button>

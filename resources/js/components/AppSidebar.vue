@@ -10,7 +10,7 @@ import { Link } from '@inertiajs/vue3';
 
 const user = useCurrentUser();
 
-const mainNavItems: { [key: string]: NavItem[] } = getNavigationElements(user.value);
+const mainNavItems: { [key: string]: NavItem[] } = getNavigationElements();
 </script>
 
 <template>
