@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import DatePicker from '@/components/DatePicker.vue';
+import FormActionTap from '@/components/FormActionTap.vue';
 import TextLink from '@/components/TextLink.vue';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -83,10 +84,12 @@ watch(
             <div class="flex flex-col gap-2">
                 <p>Released after</p>
                 <DatePicker v-model="data.released_after" trigger-button-class="w-full" />
+                <FormActionTap @click="data.released_after = undefined" v-if="data.released_after">Remove</FormActionTap>
             </div>
             <div class="flex flex-col gap-2">
                 <p>Released before</p>
                 <DatePicker v-model="data.released_before" trigger-button-class="w-full" :min-value="getMinValue(data.released_after)" />
+                <FormActionTap @click="data.released_before = undefined" v-if="data.released_before">Remove</FormActionTap>
             </div>
             <Deferred data="genres">
                 <template #fallback>
@@ -107,9 +110,10 @@ watch(
                             </SelectItem>
                         </SelectContent>
                     </Select>
+                    <FormActionTap @click="data.genre = ''" v-if="data.genre">Remove</FormActionTap>
                 </div>
             </Deferred>
-            <TextLink class="self-start" :href="route(ziggy.current)" v-if="Object.keys(ziggy.query).length > 0">Reset filters</TextLink>
+            <TextLink class="self-start" :href="route(ziggy.current)" v-if="Object.keys(ziggy.query).length > 0">Remove all filters</TextLink>
         </PopoverContent>
     </Popover>
 </template>

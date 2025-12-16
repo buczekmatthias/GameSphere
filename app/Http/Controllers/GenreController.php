@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Resources\Genre\ListResource;
 use App\Http\Resources\Genre\ShowResource;
 use App\Models\Genre;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -26,7 +27,15 @@ class GenreController extends Controller
 		return Inertia::render('app/genre/Index', [
 			'genres' => Inertia::defer(
 				fn () => ListResource::collection(
-					Genre::withCount(['discussions', 'games'])->orderBy('name', 'ASC')->paginate(30),
+					Genre::withCount(['discussions', 'games'])
+						->when(
+							$request->has('name'),
+							function (Builder $query) use ($request) {
+								return $query->whereLike('name', "%{$request->get('name')}%");
+							}
+						)
+						->orderBy('name', 'ASC')
+						->paginate(30),
 				)
 			)
 		]);

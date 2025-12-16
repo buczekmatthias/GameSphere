@@ -16,10 +16,10 @@ use App\Models\Genre;
 use App\Models\User;
 use App\Services\UserGameListsServices;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -32,39 +32,55 @@ class GameController extends Controller
 	 */
 	public function index(Request $request): Response | RedirectResponse
 	{
-		$games = Game::orderBy('title');
 		$per_page = $request->get('per_page', 30);
 
-		if ($request->get('title')) {
-			$games->whereLike('title', "%{$request->get('title')}%");
-		}
-
-		if ($request->has('released_after') && $request->has('released_before')) {
-			$released_after = Carbon::createFromFormat('Y-m-d', $request->get('released_after'));
-			$released_before = Carbon::createFromFormat('Y-m-d', $request->get('released_before'));
-
-			if ($released_before->isBefore($released_after)) {
-				return redirect()->to(
-					url()->current() . '?' . http_build_query(array_merge(
-						request()->query(),
-						['released_before' => $request->get('released_after')]
-					))
-				);
-			}
-
-			$games->whereBetween('released_at', [$released_after->startOfDay(), $released_before->endOfDay()]);
-		} elseif ($request->has('released_after')) {
-			$games->whereDate('released_at', '>=', $request->get('released_after'));
-		} elseif ($request->has('released_before')) {
-			$games->whereDate('released_at', '<=', $request->get('released_before'));
-		}
-
-		if ($request->get('genre')) {
-			$games->where('genre_id', Genre::select('id')->where('name', $request->get('genre'))->first()->id);
-		}
-
 		return Inertia::render('app/game/Index', [
-			'games' => Inertia::defer(fn () => GamesListResource::collection($games->paginate($per_page))),
+			'games' => Inertia::defer(fn () => GamesListResource::collection(
+				Game::orderBy('title')
+					->when(
+						$request->has('title'),
+						function (Builder $query) use ($request) {
+							return $query->whereLike('title', "%{$request->get('title')}%");
+						}
+					)
+					->when(
+						$request->has('genre'),
+						function (Builder $query) use ($request) {
+							return $query->where('genre_id', Genre::select('id')->where('name', $request->get('genre'))->first()->id);
+						}
+					)
+					->when(
+						$request->has('released_after') && $request->has('released_before'),
+						function (Builder $query) use ($request) {
+							$released_after = Carbon::createFromFormat('Y-m-d', $request->get('released_after'));
+							$released_before = Carbon::createFromFormat('Y-m-d', $request->get('released_before'));
+
+							if ($released_before->isBefore($released_after)) {
+								return redirect()->to(
+									url()->current() . '?' . http_build_query(array_merge(
+										request()->query(),
+										['released_before' => $request->get('released_after')]
+									))
+								);
+							}
+
+							return $query->whereBetween('released_at', [$released_after->startOfDay(), $released_before->endOfDay()]);
+						}
+					)
+					->when(
+						$request->has('released_after') && !$request->has('released_before'),
+						function (Builder $query) use ($request) {
+							return $query->whereDate('released_at', '>=', $request->get('released_after'));
+						}
+					)
+					->when(
+						$request->has('released_before') && !$request->has('released_after'),
+						function (Builder $query) use ($request) {
+							return $query->whereDate('released_at', '<=', $request->get('released_before'));
+						}
+					)
+					->paginate($per_page)
+			)),
 			'per_page' => $per_page,
 			'genres' => Inertia::defer(fn () => Genre::select('name')->orderBy('name', 'ASC')->pluck('name'))
 		]);
@@ -75,8 +91,6 @@ class GameController extends Controller
 	 */
 	public function create(): Response
 	{
-		Gate::authorize('create', Game::class);
-
 		return Inertia::render('app/game/Create', [
 			'genres' => Genre::select(['slug', 'name'])->get()
 		]);

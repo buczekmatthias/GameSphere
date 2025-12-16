@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Enum\UserRole;
 use App\Models\User;
 use App\Services\ShorterNumbers;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -20,13 +21,13 @@ class UserListController extends Controller
 
 		$users = User::select(['name', 'username', 'role', 'avatar'])
 			->orderBy('name', 'ASC')
-			->when($request->has('contains'), function ($query) use ($request) {
+			->when($request->has('contains'), function (Builder $query) use ($request) {
 				return $query->where(function ($q) use ($request) {
 					$q->whereLike('name', "%{$request->get('contains')}%")
 						->orWhereLike('username', "%{$request->get('contains')}%");
 				});
 			})
-			->when($request->has('role'), function ($query) use ($request) {
+			->when($request->has('role'), function (Builder $query) use ($request) {
 				return $query->where('role', $request->get('role'));
 			})
 			->paginate($request->get('per_page', $per_page));

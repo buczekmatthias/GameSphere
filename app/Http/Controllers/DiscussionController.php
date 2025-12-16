@@ -12,6 +12,7 @@ use App\Models\Discussion;
 use App\Models\Game;
 use App\Models\Genre;
 use App\Services\StoreCommentMedia;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -23,11 +24,21 @@ use Inertia\Response;
 
 class DiscussionController extends Controller
 {
-	public function index(): Response
+	public function index(Request $request): Response
 	{
 		return Inertia::render('app/discussion/Index', [
 			'discussions' => Inertia::defer(fn () => ListDiscussionResource::collection(
-				Discussion::with(['author', 'discussable'])->withCount('comments')->orderBy('created_at', 'DESC')->paginate(15)
+				Discussion::with(['author', 'discussable'])
+					->when(
+						$request->has('title'),
+						function (Builder $query) use ($request) {
+							return $query->whereLike('title', "%{$request->get('title')}%");
+						}
+					)
+					->withCount('comments')
+					->orderBy('created_at', 'DESC')
+					->orderBy('id', 'ASC')
+					->paginate(15)
 			))
 		]);
 	}
