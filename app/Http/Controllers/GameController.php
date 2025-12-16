@@ -5,11 +5,11 @@ namespace App\Http\Controllers;
 use App\Enum\GameCollectionType;
 use App\Http\Requests\Game\EditRequest;
 use App\Http\Requests\Game\StoreRequest;
-use App\Http\Resources\Games\DiscussionResource;
+use App\Http\Resources\Games\GameDiscussionResource;
 use App\Http\Resources\Games\EditGameResource;
 use App\Http\Resources\Games\GamesListResource;
 use App\Http\Resources\Games\ShowGameResource;
-use App\Http\Resources\Games\ReviewResource;
+use App\Http\Resources\Games\GameReviewResource;
 use App\Http\Resources\User\SimpleProfileResource;
 use App\Models\Game;
 use App\Models\Genre;
@@ -146,8 +146,8 @@ class GameController extends Controller
 		return Inertia::render('app/game/Show', [
 			'game' => ShowGameResource::make($game),
 			'userLists' => Inertia::defer(fn () => UserGameListsServices::checkIfGameIsInAnyUserGamesList($game)),
-			'reviews' => Inertia::defer(fn () => ReviewResource::collection($game->reviews()->with(['user'])->orderBy('created_at', 'DESC')->paginate(30, pageName: 'reviews_page'))),
-			'discussions' => Inertia::defer(fn () => DiscussionResource::collection($game->discussions()->with('author')->withCount('comments')->orderBy('created_at', 'DESC')->paginate(30, pageName: 'discussions_page'))),
+			'reviews' => Inertia::defer(fn () => GameReviewResource::collection($game->reviews()->with(['user'])->orderBy('created_at', 'DESC')->paginate(30, pageName: 'reviews_page'))),
+			'discussions' => Inertia::defer(fn () => GameDiscussionResource::collection($game->discussions()->with('author')->withCount('comments')->orderBy('created_at', 'DESC')->paginate(30, pageName: 'discussions_page'))),
 		]);
 	}
 

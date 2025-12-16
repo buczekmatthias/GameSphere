@@ -7,7 +7,7 @@ use App\Http\Requests\Discussion\UpdateRequest;
 use App\Http\Resources\Discussion\ListDiscussionResource;
 use App\Http\Resources\Discussion\ShowDiscussionResource;
 use App\Http\Resources\Games\GamesListResource;
-use App\Http\Resources\Genre\ListResource;
+use App\Http\Resources\Genre\GenreListResource;
 use App\Models\Discussion;
 use App\Models\Game;
 use App\Models\Genre;
@@ -50,7 +50,7 @@ class DiscussionController extends Controller
 		if ($type === 'game') {
 			$item = GamesListResource::make(Game::where('slug', $slug)->first());
 		} else {
-			$item = ListResource::make(Genre::where('slug', $slug)->first());
+			$item = GenreListResource::make(Genre::where('slug', $slug)->first());
 		}
 
 		return Inertia::render('app/discussion/Create', [

@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Storage;
 
-class CommentResource extends JsonResource
+class DiscussionCommentResource extends JsonResource
 {
 	/**
 	 * Transform the resource into an array.

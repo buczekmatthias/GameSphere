@@ -5,7 +5,6 @@ import HeadingSmall from '@/components/HeadingSmall.vue';
 import InputError from '@/components/InputError.vue';
 import MainContainer from '@/components/MainContainer.vue';
 import Preview from '@/components/Preview.vue';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
@@ -13,7 +12,6 @@ import { useZiggy } from '@/composables/useZiggy';
 import AppLayout from '@/layouts/AppLayout.vue';
 import type { BreadcrumbItem, DiscussionComment, Ziggy } from '@/types';
 import { Head, useForm } from '@inertiajs/vue3';
-import { ImageOff, PlayCircle } from 'lucide-vue-next';
 import { computed, ComputedRef } from 'vue';
 
 interface ZiggyWithBackLink extends Ziggy {
@@ -93,21 +91,7 @@ const getBackLinkHref = (): string =>
                 <div class="flex flex-col justify-between gap-4">
                     <HeadingSmall title="Media to delete" :description="`${updateCommentForm.media_to_delete.length} selected`" />
                     <div v-for="item in comment.media" :key="item.path" class="flex items-center justify-between gap-3">
-                        <Preview :item>
-                            <template v-if="item.type === 'image'">
-                                <Avatar class="size-16 cursor-pointer rounded-lg">
-                                    <AvatarImage :src="item.path" :alt="item.filename" class="object-cover" />
-                                    <AvatarFallback class="rounded-lg text-black dark:text-white">
-                                        <ImageOff class="size-8" />
-                                    </AvatarFallback>
-                                </Avatar>
-                            </template>
-                            <template v-if="item.type === 'video'">
-                                <div class="flex size-16 cursor-pointer items-center justify-center rounded-md bg-black">
-                                    <PlayCircle class="size-8" />
-                                </div>
-                            </template>
-                        </Preview>
+                        <Preview :item />
                         <div class="flex items-center gap-2">
                             <p class="text-sm">Remove this item</p>
                             <Switch

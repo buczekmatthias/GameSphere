@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Enum\UserRole;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\User\UpdateRoleRequest;
-use App\Http\Resources\Admin\User\UserListResource;
+use App\Http\Resources\Admin\User\AdminUserListResource;
 use App\Models\GameCreatorRequest;
 use App\Models\User;
 use App\Services\UserDeleteServices;
@@ -42,7 +42,7 @@ class UserController extends Controller
 		};
 
 		return Inertia::render('admin/User', [
-			'users' => UserListResource::collection($entries->paginate(50)),
+			'users' => AdminUserListResource::collection($entries->paginate(50)),
 			'roles' => array_values(array_filter(array_reverse(array_column(UserRole::cases(), 'value')), fn ($i) => $i !== UserRole::DEVELOPER->value)),
 			'roles_user_can_manage' => UserPermissions::getRolesListUserCanManage($request->user()),
 			'game_creator_requests_count' => GameCreatorRequest::count()

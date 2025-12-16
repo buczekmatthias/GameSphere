@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\Admin\Comment\CommentListResource;
+use App\Http\Resources\Admin\Comment\AdminCommentListResource;
 use App\Models\Comment;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -37,7 +37,7 @@ class CommentController extends Controller
 		};
 
 		return Inertia::render('admin/Comment', [
-			'comments' => CommentListResource::collection($entries->paginate(50)),
+			'comments' => AdminCommentListResource::collection($entries->paginate(50)),
 		]);
 	}
 }

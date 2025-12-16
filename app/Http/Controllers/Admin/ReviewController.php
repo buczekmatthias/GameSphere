@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\Admin\Review\ReviewListResource;
-use App\Http\Resources\Admin\Review\ReviewResource;
+use App\Http\Resources\Admin\Review\AdminReviewListResource;
+use App\Http\Resources\Admin\Review\AdminReviewShowResource;
 use App\Http\Resources\Report\UserReportsTableResource;
 use App\Models\Review;
 use Illuminate\Http\Request;
@@ -39,7 +39,7 @@ class ReviewController extends Controller
 		};
 
 		return Inertia::render('admin/review/Index', [
-			'reviews' => ReviewListResource::collection($entries->paginate(50)),
+			'reviews' => AdminReviewListResource::collection($entries->paginate(50)),
 		]);
 	}
 
@@ -48,7 +48,7 @@ class ReviewController extends Controller
 		$review->load(['user', 'game']);
 
 		return Inertia::render('admin/review/Show', [
-			'review' => ReviewResource::make($review),
+			'review' => AdminReviewShowResource::make($review),
 			'reports' => UserReportsTableResource::collection($review->reports()->with(['user'])->paginate(50))
 		]);
 	}

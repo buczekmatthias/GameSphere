@@ -7,7 +7,7 @@ use App\Services\UserPermissions;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class UserListResource extends JsonResource
+class AdminUserListResource extends JsonResource
 {
 	/**
 	 * Transform the resource into an array.

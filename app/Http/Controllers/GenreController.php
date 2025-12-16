@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\Genre\ListResource;
-use App\Http\Resources\Genre\ShowResource;
+use App\Http\Resources\Genre\GenreListResource;
+use App\Http\Resources\Genre\ShowGenreResource;
 use App\Models\Genre;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
@@ -26,7 +26,7 @@ class GenreController extends Controller
 
 		return Inertia::render('app/genre/Index', [
 			'genres' => Inertia::defer(
-				fn () => ListResource::collection(
+				fn () => GenreListResource::collection(
 					Genre::withCount(['discussions', 'games'])
 						->when(
 							$request->has('name'),
@@ -47,7 +47,7 @@ class GenreController extends Controller
 	public function show(Genre $genre): Response
 	{
 		return Inertia::render('app/genre/Show', [
-			'genre' => ShowResource::make($genre)
+			'genre' => ShowGenreResource::make($genre)
 		]);
 	}
 

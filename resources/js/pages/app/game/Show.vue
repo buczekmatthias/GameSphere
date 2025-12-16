@@ -7,16 +7,16 @@ import DiscussionSkeleton from '@/components/fallbacks/DiscussionSkeleton.vue';
 import ReviewSkeleton from '@/components/fallbacks/ReviewSkeleton.vue';
 import FormActionTap from '@/components/FormActionTap.vue';
 import GameActions from '@/components/GameActions.vue';
+import LazyAvatar from '@/components/LazyAvatar.vue';
 import MainContainer from '@/components/MainContainer.vue';
 import PaginatedContent from '@/components/PaginatedContent.vue';
 import GameDetails from '@/components/Partials/Game/Show/GameDetails.vue';
 import Review from '@/components/Review.vue';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { userCanInteract } from '@/composables/useCanInteract';
 import AppLayout from '@/layouts/AppLayout.vue';
-import type { BreadcrumbItem, Discussion as DiscussionType, Game, Pagination, Permissions, Review as ReviewType, Ziggy } from '@/types';
+import type { BreadcrumbItem, Discussion as DiscussionType, Game, Pagination, Review as ReviewType, Ziggy } from '@/types';
 import { Deferred, Head, Link, usePage, WhenVisible } from '@inertiajs/vue3';
 import { useMediaQuery } from '@vueuse/core';
 import { LucideIcon, Plus, Rss, Star } from 'lucide-vue-next';
@@ -28,7 +28,6 @@ const props = withDefaults(
         userLists?: { [key: string]: boolean };
         reviews?: Pagination & { data: ReviewType[] };
         discussions?: Pagination & { data: DiscussionType[] };
-        permissions: Permissions;
     }>(),
     {
         userLists: () => ({}),
@@ -69,10 +68,7 @@ const shouldTeleport = useMediaQuery('(min-width: 1024px)');
                 class="grid gap-4 lg:grid-rows-[auto_auto]"
                 :class="userCanInteract() ? 'ml:grid-cols-[auto_1fr_auto] grid-cols-[1fr_auto]' : 'grid-cols-1 md:grid-cols-[auto_1fr]'"
             >
-                <Avatar class="h-96 w-80 overflow-hidden rounded-lg object-cover lg:row-span-2">
-                    <AvatarImage :src="game.thumbnail" :alt="game.title" />
-                    <AvatarFallback class="rounded-lg text-black dark:text-white" />
-                </Avatar>
+                <LazyAvatar :src="game.thumbnail" :alt="game.title" class="h-96 w-80" />
                 <CanInteract>
                     <Deferred data="userLists">
                         <template #fallback>
@@ -82,7 +78,7 @@ const shouldTeleport = useMediaQuery('(min-width: 1024px)');
                             </div>
                         </template>
 
-                        <GameActions :game :lists="userLists" :permissions />
+                        <GameActions :game :lists="userLists" />
                     </Deferred>
                 </CanInteract>
 

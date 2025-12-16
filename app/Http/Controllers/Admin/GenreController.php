@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Genre\GenreRequest;
 use App\Http\Resources\Admin\Genre\EditGenreResource;
-use App\Http\Resources\Genre\ListResource;
+use App\Http\Resources\Genre\GenreListResource;
 use App\Models\Genre;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -40,7 +40,7 @@ class GenreController extends Controller
 		};
 
 		return Inertia::render('admin/genre/Index', [
-			'genres' => ListResource::collection($entries->paginate(50)),
+			'genres' => GenreListResource::collection($entries->paginate(50)),
 		]);
 	}
 

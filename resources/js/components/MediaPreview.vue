@@ -1,10 +1,9 @@
 <script setup lang="ts">
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import Preview from '@/components/Preview.vue';
 import { Media } from '@/types';
 import { useScroll } from '@vueuse/core';
-import { ArrowLeft, ArrowRight, ImageOff, PlayCircle } from 'lucide-vue-next';
+import { ArrowLeft, ArrowRight } from 'lucide-vue-next';
 import { onMounted, ref, useTemplateRef } from 'vue';
-import Preview from './Preview.vue';
 
 defineProps<{
     media: Media[];
@@ -46,21 +45,7 @@ window.addEventListener('resize', updateOverflowStatus);
             <ArrowLeft class="size-4" />
         </button>
         <template v-for="item in media" :key="item.filename">
-            <Preview :item>
-                <template v-if="item.type === 'image'">
-                    <Avatar class="size-16 cursor-pointer rounded-lg">
-                        <AvatarImage :src="item.path" :alt="item.filename" class="object-cover" />
-                        <AvatarFallback class="rounded-lg text-black dark:text-white">
-                            <ImageOff class="size-8" />
-                        </AvatarFallback>
-                    </Avatar>
-                </template>
-                <template v-if="item.type === 'video'">
-                    <div class="flex size-16 cursor-pointer items-center justify-center rounded-md bg-black">
-                        <PlayCircle class="size-8" />
-                    </div>
-                </template>
-            </Preview>
+            <Preview :item />
         </template>
         <button
             class="bg-input sticky right-0 z-10 cursor-pointer px-1.5 duration-300"

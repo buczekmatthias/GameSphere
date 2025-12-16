@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import DeleteActionLink from '@/components/DeleteActionLink.vue';
 import Heading from '@/components/Heading.vue';
+import LazyAvatar from '@/components/LazyAvatar.vue';
 import MainContainer from '@/components/MainContainer.vue';
 import ReportModal from '@/components/ReportModal.vue';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import UserInfo from '@/components/UserInfo.vue';
 import UserRole from '@/components/UserRole.vue';
 import AppLayout from '@/layouts/AppLayout.vue';
@@ -59,14 +59,7 @@ const avgRating = computed(() =>
             </div>
             <Link as="button" class="hover:bg-card/50 duration-150" :href="route('games.show', { game: review.game.slug })">
                 <div class="flex gap-4 rounded-md border p-2">
-                    <Avatar
-                        class="group-hover:border-primary h-48 w-40 overflow-hidden rounded-lg border-2 border-solid border-transparent duration-150"
-                    >
-                        <template #avatar>
-                            <img v-lazy="review.game.thumbnail" :alt="review.game.title" class="h-full w-full object-cover" />
-                        </template>
-                        <AvatarFallback class="rounded-lg text-black dark:text-white" />
-                    </Avatar>
+                    <LazyAvatar :src="review.game.thumbnail" :alt="review.game.title" class="h-48 w-40" />
                     <Heading class="text-left" :title="review.game.title" :description="review.game.description" />
                 </div>
             </Link>

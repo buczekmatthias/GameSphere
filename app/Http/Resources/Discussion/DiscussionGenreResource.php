@@ -5,7 +5,7 @@ namespace App\Http\Resources\Discussion;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class GenreResource extends JsonResource
+class DiscussionGenreResource extends JsonResource
 {
 	/**
 	 * Transform the resource into an array.

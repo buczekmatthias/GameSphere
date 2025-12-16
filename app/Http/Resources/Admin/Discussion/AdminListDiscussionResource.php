@@ -7,7 +7,7 @@ use App\Services\MorphTypeToLowerString;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class ListDiscussionResource extends JsonResource
+class AdminListDiscussionResource extends JsonResource
 {
 	/**
 	 * Transform the resource into an array.

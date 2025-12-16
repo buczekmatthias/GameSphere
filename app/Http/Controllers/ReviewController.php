@@ -7,7 +7,7 @@ use Illuminate\Support\Str;
 use App\Models\Game;
 use App\Http\Requests\Review\StoreRequest;
 use App\Http\Resources\Games\GamesListResource;
-use App\Http\Resources\Games\ReviewResource;
+use App\Http\Resources\Games\GameReviewResource;
 use App\Models\Review;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -22,7 +22,7 @@ class ReviewController extends Controller
 		$review->load(['user', 'game']);
 
 		return Inertia::render('app/review/Show', [
-			'review' => ReviewResource::make($review)
+			'review' => GameReviewResource::make($review)
 		]);
 	}
 

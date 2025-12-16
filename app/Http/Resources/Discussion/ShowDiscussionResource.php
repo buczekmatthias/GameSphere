@@ -33,15 +33,15 @@ class ShowDiscussionResource extends JsonResource
 			'discussable' => $this->whenLoaded(
 				'discussable',
 				fn () => str_contains($this->discussable_type, 'Game')
-					? new GameResource($this->discussable)
-					: new GenreResource($this->discussable)
+					? new DiscussionGameResource($this->discussable)
+					: new DiscussionGenreResource($this->discussable)
 			),
 			'discussable_type' => $this->whenLoaded(
 				'discussable',
 				fn () => MorphTypeToLowerString::getTransformedString($this->discussable_type)
 			),
 			'comments' => [
-				'data' => CommentResource::collection($comments),
+				'data' => DiscussionCommentResource::collection($comments),
 				'meta' => [
 					'current_page' => $comments->currentPage(),
 					'from' => $from,

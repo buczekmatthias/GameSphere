@@ -67,6 +67,7 @@ const handleFileChange = (event: any): void => {
             :key="inputKey"
         />
         <div class="flex justify-between gap-2">
+            <!-- TODO: Remove modal, add accordion like in comment.edit -->
             <Modal v-if="gameMedia.length > 0">
                 <template #trigger>
                     <FormActionTap class="self-end">Show media</FormActionTap>

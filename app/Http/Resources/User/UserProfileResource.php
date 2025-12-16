@@ -2,11 +2,11 @@
 
 namespace App\Http\Resources\User;
 
-use App\Http\Resources\Admin\Comment\CommentListResource;
+use App\Http\Resources\Comment\ShowCommentResource;
 use App\Http\Resources\Discussion\ListDiscussionResource;
 use App\Http\Resources\Games\GamesListResource;
-use App\Http\Resources\Games\ReviewResource as ReviewListResource;
-use App\Http\Resources\Genre\ListResource as GenreListResource;
+use App\Http\Resources\Games\GameReviewResource;
+use App\Http\Resources\Genre\GenreListResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -92,7 +92,7 @@ class UserProfileResource extends JsonResource
 			'reviews' => [
 				...$data,
 				'reviews' => [
-					'data' => ReviewListResource::collection($entries),
+					'data' => GameReviewResource::collection($entries),
 					'meta' => $meta
 				]
 			],
@@ -106,7 +106,7 @@ class UserProfileResource extends JsonResource
 			'comments' => [
 				...$data,
 				'comments' => [
-					'data' => CommentListResource::collection($entries),
+					'data' => ShowCommentResource::collection($entries),
 					'meta' => $meta
 				]
 			],

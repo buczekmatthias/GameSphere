@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\Admin\Game\GameListResource;
+use App\Http\Resources\Admin\Game\AdminGameListResource;
 use App\Models\Game;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -37,7 +37,7 @@ class GameController extends Controller
 		};
 
 		return Inertia::render('admin/Game', [
-			'games' => GameListResource::collection($entries->paginate(50))
+			'games' => AdminGameListResource::collection($entries->paginate(50))
 		]);
 	}
 }

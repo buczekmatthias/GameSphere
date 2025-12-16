@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import Modal from '@/components/Modal.vue';
-import Preview from '@/components/Preview.vue';
+import MediaPreview from '@/components/MediaPreview.vue';
 import TextLink from '@/components/TextLink.vue';
 import { Game } from '@/types';
 import { Blocks, Calendar, Star, User } from 'lucide-vue-next';
@@ -38,20 +37,7 @@ defineProps<{
             </div>
         </div>
         <div v-if="game.media.length > 0">
-            <Modal>
-                <template #trigger>
-                    <p class="cursor-pointer text-sm text-sky-600 dark:text-sky-400">Show {{ game.media.length }} media</p>
-                </template>
-                <template #title>
-                    <p>"{{ game.title }}" media</p>
-                </template>
-                <template #description>{{ game.media.length }} media</template>
-                <div class="flex max-h-[75vh] flex-col gap-6 overflow-y-auto">
-                    <div v-for="media in game.media" :key="media.path" class="flex flex-col gap-2">
-                        <Preview :type="media.type" :media="media.path" />
-                    </div>
-                </div>
-            </Modal>
+            <MediaPreview :media="game.media" />
         </div>
     </div>
 </template>

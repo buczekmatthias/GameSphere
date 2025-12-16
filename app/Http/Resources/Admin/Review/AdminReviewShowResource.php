@@ -6,7 +6,7 @@ use App\Http\Resources\User\SimpleProfileResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class ReviewResource extends JsonResource
+class AdminReviewShowResource extends JsonResource
 {
 	/**
 	 * Transform the resource into an array.

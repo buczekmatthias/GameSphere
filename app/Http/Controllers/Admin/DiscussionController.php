@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\Admin\Discussion\ListDiscussionResource;
+use App\Http\Resources\Admin\Discussion\AdminListDiscussionResource;
 use App\Models\Discussion;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -36,7 +36,7 @@ class DiscussionController extends Controller
 		};
 
 		return Inertia::render('admin/Discussion', [
-			'discussions' => ListDiscussionResource::collection($entries->paginate(50)),
+			'discussions' => AdminListDiscussionResource::collection($entries->paginate(50)),
 		]);
 	}
 }

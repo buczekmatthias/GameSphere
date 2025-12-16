@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import LazyAvatar from '@/components/LazyAvatar.vue';
 import { useInitials } from '@/composables/useInitials';
 import type { User } from '@/types';
 
@@ -17,12 +17,7 @@ const { getInitials } = useInitials();
 </script>
 
 <template>
-    <Avatar class="h-8 w-8 overflow-hidden rounded-lg">
-        <AvatarImage :src="user.avatar! ?? ''" :alt="user.name" />
-        <AvatarFallback class="rounded-lg text-black dark:text-white">
-            {{ getInitials(user.name) }}
-        </AvatarFallback>
-    </Avatar>
+    <LazyAvatar :src="user.avatar" :alt="user.name" :fallback="getInitials(user.name)" class="size-8 lg:row-span-2" />
 
     <div class="grid flex-1 text-left text-sm leading-tight">
         <span class="truncate font-medium">{{ user.name }}</span>

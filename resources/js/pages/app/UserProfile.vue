@@ -1,7 +1,7 @@
 <script setup lang="ts">
+import LazyAvatar from '@/components/LazyAvatar.vue';
 import MainContainer from '@/components/MainContainer.vue';
 import ReportModal from '@/components/ReportModal.vue';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import UserProfileTab from '@/components/UserProfileTab.vue';
@@ -86,12 +86,13 @@ onMounted(() => {
                 class="grid gap-4"
                 :class="userCanInteract() ? 'ml:grid-cols-[auto_1fr_auto] grid-cols-[1fr_auto]' : 'grid-cols-1 md:grid-cols-[auto_1fr]'"
             >
-                <Avatar class="h-56 w-44 overflow-hidden rounded-lg object-cover lg:row-span-2">
-                    <AvatarImage v-if="showAvatar" :src="user.avatar!" :alt="user.name" class="object-cover" />
-                    <AvatarFallback class="rounded-lg text-black dark:text-white">
-                        {{ getInitials(user.name) }}
-                    </AvatarFallback>
-                </Avatar>
+                <LazyAvatar
+                    :src="user.avatar"
+                    :alt="user.name"
+                    v-if="showAvatar"
+                    :fallback="getInitials(user.name)"
+                    class="h-56 w-44 lg:row-span-2"
+                />
                 <div class="flex flex-col gap-3 lg:col-start-3 lg:row-end-1">
                     <ReportModal :contentId="user.username" contentType="user" show-icon :show-text="false" />
                     <Button variant="outline" as-child v-if="isCurrentUserProfile">

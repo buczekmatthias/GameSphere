@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Str;
 
-class GameListResource extends JsonResource
+class AdminGameListResource extends JsonResource
 {
 	/**
 	 * Transform the resource into an array.

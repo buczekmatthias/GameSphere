@@ -2,8 +2,8 @@
 import FormBox from '@/components/FormBox.vue';
 import FormButton from '@/components/FormButton.vue';
 import InputError from '@/components/InputError.vue';
+import LazyAvatar from '@/components/LazyAvatar.vue';
 import CommentMedia from '@/components/Partials/Game/Create/Form/GameMedia.vue';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Textarea } from '@/components/ui/textarea';
 import { useInitials } from '@/composables/useInitials';
 import { constants } from '@/constants';
@@ -42,12 +42,7 @@ const submitForm = () => {
 <template>
     <form @submit.prevent="submitForm" class="flex flex-col gap-2">
         <div class="flex items-center gap-2">
-            <Avatar class="h-8 w-8 overflow-hidden rounded-lg">
-                <AvatarImage :src="user.avatar!" :alt="user.name" />
-                <AvatarFallback class="rounded-lg text-black dark:text-white">
-                    {{ getInitials(user.name) }}
-                </AvatarFallback>
-            </Avatar>
+            <LazyAvatar :src="user.avatar" :alt="user.name" class="h-8 w-8" :fallback="getInitials(user.name)" />
             <span class="truncate font-medium">{{ user.name }}</span>
         </div>
         <FormBox>

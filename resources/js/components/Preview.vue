@@ -1,18 +1,34 @@
 <script setup lang="ts">
+import LazyAvatar from '@/components/LazyAvatar.vue';
 import { Media } from '@/types';
-import { X } from 'lucide-vue-next';
+import { PlayCircle, X } from 'lucide-vue-next';
 import { ref } from 'vue';
 
-defineProps<{
-    item: Media;
-}>();
+withDefaults(
+    defineProps<{
+        item: Media;
+        imgSize?: string;
+    }>(),
+    {
+        imgSize: () => 'size-16',
+    },
+);
 
 const isPreviewOpen = ref<boolean>(false);
 </script>
 
 <template>
     <button @click="isPreviewOpen = !isPreviewOpen">
-        <slot />
+        <slot>
+            <template v-if="item.type === 'image'">
+                <LazyAvatar :src="item.path" :alt="item.filename" :class="imgSize" />
+            </template>
+            <template v-if="item.type === 'video'">
+                <div class="flex size-16 cursor-pointer items-center justify-center rounded-md bg-black">
+                    <PlayCircle class="size-8" />
+                </div>
+            </template>
+        </slot>
     </button>
 
     <Teleport to="body">
