@@ -68,7 +68,7 @@ const shouldTeleport = useMediaQuery('(min-width: 1024px)');
                 class="grid gap-4 lg:grid-rows-[auto_auto]"
                 :class="userCanInteract() ? 'ml:grid-cols-[auto_1fr_auto] grid-cols-[1fr_auto]' : 'grid-cols-1 md:grid-cols-[auto_1fr]'"
             >
-                <LazyAvatar :src="game.thumbnail" :alt="game.title" class="h-96 w-80" />
+                <LazyAvatar :src="game.thumbnail" :alt="game.title" class="h-96 w-80 lg:row-span-2" />
                 <CanInteract>
                     <Deferred data="userLists">
                         <template #fallback>

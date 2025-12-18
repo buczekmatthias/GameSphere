@@ -3,7 +3,6 @@ import FormActionTap from '@/components/FormActionTap.vue';
 import FormBox from '@/components/FormBox.vue';
 import InputError from '@/components/InputError.vue';
 import InputInfo from '@/components/InputInfo.vue';
-import Modal from '@/components/Modal.vue';
 import Preview from '@/components/Preview.vue';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
@@ -66,31 +65,22 @@ const handleFileChange = (event: any): void => {
             :disabled="isDisabled"
             :key="inputKey"
         />
-        <div class="flex justify-between gap-2">
-            <!-- TODO: Remove modal, add accordion like in comment.edit -->
-            <Modal v-if="gameMedia.length > 0">
-                <template #trigger>
-                    <FormActionTap class="self-end">Show media</FormActionTap>
-                </template>
-                <template #title>
-                    <p>Game media</p>
-                </template>
-                <div class="flex max-h-[75vh] flex-col gap-6 overflow-y-auto">
-                    <div v-for="item in gameMedia" :key="item.path" class="flex flex-col gap-2">
-                        <Preview :item />
-                        <div class="flex items-center gap-2">
-                            <Switch @update:model-value="toggleItem(item.filename)" :model-value="media_to_delete.includes(item.filename)" />
-                            <p class="text-sm">Remove this item</p>
-                        </div>
-                    </div>
-                </div>
-            </Modal>
-            <FormActionTap v-if="media.length > 0" @click="discardNewFiles" class="self-end">Discard new files</FormActionTap>
-        </div>
         <InputInfo
             :message="`${gameMedia.length} of ${constants.form.files.media.max_files} files used. ${fileSlotsLeft} more files can be uploaded`"
         />
         <InputInfo v-if="media_to_delete.length > 0" :message="`${media_to_delete.length} selected to delete.`" />
         <InputError :message="error" />
+        <div class="flex flex-col gap-4">
+            <div class="mt-4 flex max-h-[75vh] w-full flex-col gap-6 overflow-y-auto" v-if="gameMedia.length > 0">
+                <div v-for="item in gameMedia" :key="item.path" class="flex items-center justify-between gap-2">
+                    <Preview :item />
+                    <div class="flex items-center gap-2">
+                        <Switch @update:model-value="toggleItem(item.filename)" :model-value="media_to_delete.includes(item.filename)" />
+                        <p class="text-sm">Remove this item</p>
+                    </div>
+                </div>
+            </div>
+            <FormActionTap v-if="media.length > 0" @click="discardNewFiles" class="self-end">Discard new files</FormActionTap>
+        </div>
     </FormBox>
 </template>
