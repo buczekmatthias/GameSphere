@@ -23,6 +23,7 @@ defineProps<{
                     <GameSkeleton />
                 </template>
 
+                <!-- TODO: Different filters -->
                 <div class="games-grid mx-auto max-w-5xl">
                     <Game v-for="game in games" :key="game.title" :game />
                 </div>

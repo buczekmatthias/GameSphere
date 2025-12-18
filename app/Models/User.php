@@ -131,33 +131,9 @@ class User extends Authenticatable
 		return $this->games()->wherePivot('list_type', value: GameCollectionType::UPCOMING_RELEASES->value);
 	}
 
-	//
-	// Roles functions
-	//
-	//TODO: remove useless role functions
-	public function isUser(): bool
-	{
-		return $this->role === UserRole::USER->value;
-	}
-
 	public function isGameCreator(): bool
 	{
 		return $this->role === UserRole::GAME_CREATOR->value;
-	}
-
-	public function isModerator(): bool
-	{
-		return $this->role === UserRole::MODERATOR->value;
-	}
-
-	public function isAdmin(): bool
-	{
-		return $this->role === UserRole::ADMIN->value;
-	}
-
-	public function isDeveloper(): bool
-	{
-		return $this->role === UserRole::DEVELOPER->value;
 	}
 
 	public function isStaff(): bool

@@ -60,7 +60,6 @@ const hasFormChanged = (): boolean => {
     );
 };
 
-// TODO: Add validation
 const submitForm = (): void => {
     if (form.title.length > 0 && form.description.length >= constants.value.form.description.min_length) {
         form.transform((data) => ({
