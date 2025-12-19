@@ -1,5 +1,6 @@
 <?php
 
+use App\Enum\HomepageSortingType;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\DiscussionController;
 use App\Http\Controllers\GameController;
@@ -13,7 +14,7 @@ use App\Http\Controllers\UserListController;
 use App\Http\Controllers\UserProfileController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', HomepageController::class)->name('home');
+Route::get('/{type?}', HomepageController::class)->whereIn('type', array_column(HomepageSortingType::cases(), 'value'))->name('home');
 
 Route::get('/u/{user:username}/{tab?}', UserProfileController::class)->name('user.profile');
 

@@ -2,6 +2,7 @@
 import LazyAvatar from '@/components/LazyAvatar.vue';
 import MainContainer from '@/components/MainContainer.vue';
 import ReportModal from '@/components/ReportModal.vue';
+import TabNavigation, { TabNavigationItem } from '@/components/TabNavigation.vue';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import UserProfileTab from '@/components/UserProfileTab.vue';
@@ -12,7 +13,7 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import type { BreadcrumbItem, Discussion, DiscussionComment, Game, Genre, Pagination, Review, User } from '@/types';
 import { Head, Link } from '@inertiajs/vue3';
 import { CheckCircle, Settings } from 'lucide-vue-next';
-import { capitalize, computed, nextTick, onMounted, ref } from 'vue';
+import { capitalize, computed } from 'vue';
 
 interface UserProfile extends User {
     created_games: Pagination & { data: Game[] };
@@ -26,7 +27,7 @@ interface UserProfile extends User {
 const props = defineProps<{
     user: UserProfile;
     isCurrentUserProfile: boolean;
-    tabs: string[];
+    tabs: TabNavigationItem[];
     activeTab: 'created_games' | 'games' | 'genres' | 'reviews' | 'discussions' | 'comments';
 }>();
 
@@ -48,33 +49,6 @@ const breadcrumbs: BreadcrumbItem[] = [
 const { getInitials } = useInitials();
 
 const showAvatar = computed(() => props.user.avatar !== '');
-
-const scrollContainer = ref<HTMLDivElement | null>(null);
-
-const scrollToActiveLink = () => {
-    nextTick(() => {
-        if (!scrollContainer.value) return;
-
-        const container = scrollContainer.value;
-        const activeLink = container.querySelector(`.active`) as HTMLElement;
-
-        if (activeLink) {
-            const containerWidth = container.clientWidth;
-            const linkLeft = activeLink.offsetLeft;
-
-            const scrollPosition = linkLeft - containerWidth / 5;
-
-            container.scrollTo({
-                left: scrollPosition,
-                behavior: 'smooth',
-            });
-        }
-    });
-};
-
-onMounted(() => {
-    scrollToActiveLink();
-});
 </script>
 
 <template>
@@ -124,23 +98,7 @@ onMounted(() => {
                     <p>Joined {{ user.created_at }}</p>
                 </div>
             </div>
-            <div class="flex gap-6 overflow-x-auto" ref="scrollContainer">
-                <Link
-                    as="button"
-                    v-for="tab in tabs"
-                    :key="tab"
-                    :href="route('user.profile', { user: user.username, tab: tab })"
-                    :only="['activeTab', 'user']"
-                    class="border-b-4 py-2 whitespace-nowrap capitalize"
-                    :class="
-                        activeTab === tab
-                            ? 'border-b-primary active pointer-events-none text-slate-50'
-                            : 'text-muted-foreground border-transparent duration-150 hover:border-b-slate-200 hover:text-slate-100'
-                    "
-                >
-                    {{ tab.replace('_', ' ') }}
-                </Link>
-            </div>
+            <TabNavigation :tabs="tabs" :active-tab :reload-only="['activeTab', 'user']" />
             <UserProfileTab :type="activeTab" :content="user[activeTab]" />
         </MainContainer>
     </AppLayout>

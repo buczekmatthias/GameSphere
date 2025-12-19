@@ -16,13 +16,13 @@ class UserProfileController extends Controller
 		$tabs = ['created_games', 'games', 'genres', 'reviews', 'discussions', 'comments'];
 
 		if (!in_array($tab, $tabs)) {
-			return to_route('user.profile');
+			return to_route('user.profile', ['user' => $user]);
 		}
 
 		return Inertia::render('app/UserProfile', [
 			'user' => UserProfileResource::make($user),
 			'isCurrentUserProfile' => $request->user() ? $user->username === $request->user()->username : false,
-			'tabs' => $tabs,
+			'tabs' => array_map(fn ($t) => ['name' => $t, 'route' => route('user.profile', ['user' => $user, 'tab' => $t])], $tabs),
 			'activeTab' => $tab
 		]);
 	}
