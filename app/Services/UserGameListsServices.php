@@ -18,16 +18,27 @@ final class UserGameListsServices
 			return null;
 		}
 
-		$games = $user->games()->withPivot(['list_type'])->get();
+		$listToUse = self::getList($game);
+
+		$games = $user->games()->withPivot(['list_type'])->wherePivotIn('list_type', $listToUse)->get();
 
 		$lists = [];
 
-		foreach (array_column(GameCollectionType::cases(), 'value') as $key) {
+		foreach ($listToUse as $key) {
 			$lists[$key] = $games->contains(function ($userGame) use ($game, $key) {
 				return $userGame->slug === $game->slug && $userGame->pivot->list_type === $key;
 			});
 		}
 
 		return $lists;
+	}
+
+	public static function getList(Game $game): array
+	{
+		if ($game->isGameReleased()) {
+			return [GameCollectionType::WISHLIST->value];
+		}
+
+		return array_column(GameCollectionType::cases(), 'value');
 	}
 }

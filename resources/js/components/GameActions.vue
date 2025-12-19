@@ -11,7 +11,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Game } from '@/types';
 import { Link } from '@inertiajs/vue3';
-import { Check, EllipsisVertical, Pen, Trash } from 'lucide-vue-next';
+import { Check, ListChecks, Pen, Trash } from 'lucide-vue-next';
 import { capitalize } from 'vue';
 
 defineProps<{
@@ -26,7 +26,7 @@ defineProps<{
         <DropdownMenu>
             <DropdownMenuTrigger as-child>
                 <Button variant="outline">
-                    <EllipsisVertical class="size-4" />
+                    <ListChecks class="size-4" />
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent class="w-48" side="left" align="start">

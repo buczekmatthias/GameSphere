@@ -30,6 +30,7 @@ class ShowGameResource extends JsonResource
 				'update' => UserPermissions::checkPermissions('update', $this->resource),
 				'destroy' => UserPermissions::checkPermissions('delete', $this->resource),
 			],
+			'is_released' => $this->isGameReleased()
 		];
 	}
 }

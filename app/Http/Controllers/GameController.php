@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Enum\GameCollectionType;
 use App\Http\Requests\Game\EditRequest;
 use App\Http\Requests\Game\StoreRequest;
 use App\Http\Resources\Games\GameDiscussionResource;
@@ -250,7 +249,7 @@ class GameController extends Controller
 	public function toggleGameOnList(Game $game, Request $request): RedirectResponse
 	{
 		$list = $request->validate([
-			'list' => ['string', 'required', 'in:'.implode(",", array_column(GameCollectionType::cases(), 'value'))]
+			'list' => ['string', 'required', 'in:'.implode(",", UserGameListsServices::getList($game))]
 		])['list'];
 
 		/** @var \App\Models\User */

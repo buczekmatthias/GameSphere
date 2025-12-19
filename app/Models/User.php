@@ -126,11 +126,6 @@ class User extends Authenticatable
 		return $this->games()->wherePivot('list_type', value: GameCollectionType::FAVORITE->value);
 	}
 
-	public function upcomingReleases(): BelongsToMany
-	{
-		return $this->games()->wherePivot('list_type', value: GameCollectionType::UPCOMING_RELEASES->value);
-	}
-
 	public function isGameCreator(): bool
 	{
 		return $this->role === UserRole::GAME_CREATOR->value;

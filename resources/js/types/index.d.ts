@@ -84,6 +84,7 @@ export interface Game {
     score: number;
     reviews_count: number;
     permissions: Permissions;
+    is_released: boolean;
 }
 
 export interface Genre {

@@ -12,6 +12,7 @@ import { constants } from '@/constants';
 import AppLayout from '@/layouts/AppLayout.vue';
 import type { BreadcrumbItem, Genre } from '@/types';
 import { Head, useForm } from '@inertiajs/vue3';
+import { getLocalTimeZone, today } from '@internationalized/date';
 
 defineProps<{
     genres: Genre[];
@@ -22,7 +23,7 @@ const form = useForm({
     description: '',
     thumbnail: null,
     media: [],
-    released_at: null,
+    released_at: today(getLocalTimeZone()).toString(),
     genre: '',
 });
 

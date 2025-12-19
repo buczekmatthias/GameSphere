@@ -71,4 +71,9 @@ class Game extends Model
 	{
 		return $this->users()->wherePivot('list_type', GameCollectionType::FAVORITE->value);
 	}
+
+	public function isGameReleased(): bool
+	{
+		return $this->released_at <= now()->endOfDay();
+	}
 }

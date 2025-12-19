@@ -7,11 +7,13 @@ import DiscussionSkeleton from '@/components/fallbacks/DiscussionSkeleton.vue';
 import ReviewSkeleton from '@/components/fallbacks/ReviewSkeleton.vue';
 import FormActionTap from '@/components/FormActionTap.vue';
 import GameActions from '@/components/GameActions.vue';
+import Heading from '@/components/Heading.vue';
 import LazyAvatar from '@/components/LazyAvatar.vue';
 import MainContainer from '@/components/MainContainer.vue';
 import PaginatedContent from '@/components/PaginatedContent.vue';
 import GameDetails from '@/components/Partials/Game/Show/GameDetails.vue';
 import Review from '@/components/Review.vue';
+import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { userCanInteract } from '@/composables/useCanInteract';
@@ -83,9 +85,9 @@ const shouldTeleport = useMediaQuery('(min-width: 1024px)');
                 </CanInteract>
 
                 <GameDetails :game />
-                <div id="tab_switch_teleport" class="self-end lg:col-start-2 lg:col-end-4 lg:row-end-2"></div>
+                <div id="tab_switch_teleport" class="self-end lg:col-start-2 lg:col-end-4 lg:row-end-2" v-if="game.is_released"></div>
             </div>
-            <Tabs :default-value="tab">
+            <Tabs :default-value="tab" v-if="game.is_released">
                 <ClientOnly>
                     <Teleport to="#tab_switch_teleport" :disabled="!shouldTeleport">
                         <TabsList class="h-auto w-full">
@@ -148,6 +150,28 @@ const shouldTeleport = useMediaQuery('(min-width: 1024px)');
                     </WhenVisible>
                 </TabsContent>
             </Tabs>
+            <template v-else>
+                <Separator />
+                <Heading title="Game unreleased" description="No reviews can be posted nor discussions created until release date listed above." />
+                <!-- TODO: Add initial discussion creation for games with future release date -->
+                <!-- TODO: ^ either only game creator or game creator + users to discuss about it -->
+                <!-- TODO: Limit comment adding in game creator discussion -->
+                <!-- <WhenVisible data="reviews">
+                    <template #fallback>
+                        <DiscussionSkeleton />
+                    </template>
+
+                    <div class="mb-4 flex w-full items-center justify-between gap-4 border-y py-3">
+                        <p class="text-xl">Discussions</p>
+                    </div>
+
+                    <ContentWithFallback :has-value="discussions!.data.length > 0">
+                        <PaginatedContent page-name="discussions_page" :pagination="discussions!">
+                            <Discussion v-for="discussion in discussions!.data" :key="discussion.slug" :discussion />
+                        </PaginatedContent>
+                    </ContentWithFallback>
+                </WhenVisible> -->
+            </template>
         </MainContainer>
     </AppLayout>
 </template>

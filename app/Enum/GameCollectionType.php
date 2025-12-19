@@ -9,5 +9,4 @@ enum GameCollectionType: string
 	case PLAYING = 'playing';
 	case COMPLETED = 'completed';
 	case FAVORITE = 'favorite';
-	case UPCOMING_RELEASES = 'upcoming_releases';
 }

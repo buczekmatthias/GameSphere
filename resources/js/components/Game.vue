@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Game } from '@/types';
 import { Link } from '@inertiajs/vue3';
-import { CalendarCheck, CircleCheckBig, Coins, Gamepad2, Heart, ListCheck, LucideIcon } from 'lucide-vue-next';
+import { CircleCheckBig, Coins, Gamepad2, Heart, ListCheck, LucideIcon } from 'lucide-vue-next';
 import { capitalize } from 'vue';
 
 defineProps<{
@@ -17,7 +17,6 @@ const listTypeIcon: { [key: string]: LucideIcon } = {
     playing: Gamepad2,
     completed: CircleCheckBig,
     favorite: Heart,
-    upcoming_releases: CalendarCheck,
 };
 </script>
 
