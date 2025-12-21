@@ -132,6 +132,27 @@ class GameController extends Controller
 
 		$game->save();
 
+		if (Carbon::parse($data['released_at']) > now()->endOfDay()) {
+			// Game creator discussion, exclusive to game creator and staff
+			$discussion = $game->discussions()->make([
+				'slug' => Str::uuid(),
+				'title' => 'Game creator updates',
+				'is_locked' => true
+			]);
+			$discussion->author()->associate($request->user());
+
+			$discussion->save();
+
+			// Game discussion, used for users to discuss about it before now() > released_at
+			$discussion = $game->discussions()->make([
+				'slug' => Str::uuid(),
+				'title' => 'Pre-release discussion'
+			]);
+			$discussion->author()->associate($request->user());
+
+			$discussion->save();
+		}
+
 		return to_route('games.show', ['game' => $game->slug]);
 	}
 
@@ -146,7 +167,7 @@ class GameController extends Controller
 			'game' => ShowGameResource::make($game),
 			'userLists' => Inertia::defer(fn () => UserGameListsServices::checkIfGameIsInAnyUserGamesList($game)),
 			'reviews' => Inertia::defer(fn () => GameReviewResource::collection($game->reviews()->with(['user'])->orderBy('created_at', 'DESC')->paginate(30, pageName: 'reviews_page'))),
-			'discussions' => Inertia::defer(fn () => GameDiscussionResource::collection($game->discussions()->with('author')->withCount('comments')->orderBy('created_at', 'DESC')->paginate(30, pageName: 'discussions_page'))),
+			'discussions' => Inertia::defer(fn () => GameDiscussionResource::collection($game->discussions()->with('author')->withCount('comments')->orderBy('created_at', 'DESC')->orderBy('id', 'DESC')->paginate(30, pageName: 'discussions_page'))),
 		]);
 	}
 

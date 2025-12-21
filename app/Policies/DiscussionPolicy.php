@@ -12,19 +12,7 @@ class DiscussionPolicy
 	 */
 	public function update(User $user, Discussion $discussion): bool
 	{
-		if (is_null($user)) {
-			return false;
-		}
-
-		if ($user->isStaff()) {
-			return true;
-		}
-
-		if (is_null($discussion->user_id)) {
-			return false;
-		}
-
-		return $discussion->user_id === $user->id;
+		return $this->canModifyDiscussion($user, $discussion);
 	}
 
 	/**
@@ -32,10 +20,16 @@ class DiscussionPolicy
 	 */
 	public function delete(User $user, Discussion $discussion): bool
 	{
-		if (is_null($user)) {
-			return false;
-		}
+		return $this->canModifyDiscussion($user, $discussion);
+	}
 
+	public function lock(User $user, Discussion $discussion): bool
+	{
+		return $this->canModifyDiscussion($user, $discussion);
+	}
+
+	private function canModifyDiscussion(User $user, Discussion $discussion): bool
+	{
 		if ($user->isStaff()) {
 			return true;
 		}

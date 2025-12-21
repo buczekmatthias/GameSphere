@@ -21,6 +21,7 @@ class Discussion extends Model
 	protected $fillable = [
 		'slug',
 		'title',
+		'is_locked'
 	];
 
 	public function author(): BelongsTo

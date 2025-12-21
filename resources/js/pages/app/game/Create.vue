@@ -7,7 +7,6 @@ import GameReleasedAt from '@/components/Partials/Game/Create/Form/GameReleasedA
 import GameThumbnail from '@/components/Partials/Game/Create/Form/GameThumbnail.vue';
 import GameDescription from '@/components/Partials/Game/Edit/Form/GameDescription.vue';
 import GameTitle from '@/components/Partials/Game/Edit/Form/GameTitle.vue';
-import { transformDate } from '@/composables/useTransformDatePicker';
 import { constants } from '@/constants';
 import AppLayout from '@/layouts/AppLayout.vue';
 import type { BreadcrumbItem, Genre } from '@/types';
@@ -51,7 +50,7 @@ const isFormValid = () => {
 const submitForm = () => {
     form.transform((data) => ({
         ...data,
-        released_at: transformDate(data.released_at),
+        released_at: data.released_at.toString(),
     })).post(route('games.store'));
 };
 </script>

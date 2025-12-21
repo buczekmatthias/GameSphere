@@ -12,10 +12,6 @@ class ReviewPolicy
 	 */
 	public function delete(User $user, Review $review): bool
 	{
-		if (is_null($user)) {
-			return false;
-		}
-
 		if ($user->isStaff()) {
 			return true;
 		}

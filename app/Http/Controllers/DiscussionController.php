@@ -146,4 +146,11 @@ class DiscussionController extends Controller
 
 		return to_route('discussions.index', status: 303);
 	}
+
+	public function toggleLock(Discussion $discussion): RedirectResponse
+	{
+		$discussion->update(['is_locked' => !$discussion->is_locked]);
+
+		return back(303);
+	}
 }

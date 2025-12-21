@@ -56,7 +56,9 @@ class ShowDiscussionResource extends JsonResource
 			'permissions' => [
 				'update' => UserPermissions::checkPermissions('update', $this->resource),
 				'destroy' => UserPermissions::checkPermissions('delete', $this->resource),
+				'lock' => UserPermissions::checkPermissions('lock', $this->resource)
 			],
+			'is_locked' => $this->is_locked
 		];
 	}
 }

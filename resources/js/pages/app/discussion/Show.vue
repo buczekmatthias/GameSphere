@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import LockedDiscussion from '@/components/LockedDiscussion.vue';
 import LoginRequired from '@/components/LoginRequired.vue';
 import MainContainer from '@/components/MainContainer.vue';
 import NewCommentForm from '@/components/NewCommentForm.vue';
@@ -37,7 +38,9 @@ const breadcrumbs: BreadcrumbItem[] = [
                     <Comment :comment v-for="comment in discussion.comments.data" :key="comment.slug" back-to-discussion />
                 </PaginatedContent>
                 <LoginRequired>
-                    <NewCommentForm :discussion-slug="discussion.slug" />
+                    <LockedDiscussion :is-locked="discussion.is_locked && !discussion.permissions.lock">
+                        <NewCommentForm :discussion-slug="discussion.slug" />
+                    </LockedDiscussion>
                 </LoginRequired>
             </div>
         </MainContainer>

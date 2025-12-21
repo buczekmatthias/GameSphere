@@ -12,7 +12,7 @@ class GamePolicy
 	 */
 	public function create(User $user): bool
 	{
-		return !is_null($user) && $user->canAddGame();
+		return $user->canAddGame();
 	}
 
 	/**
@@ -20,19 +20,7 @@ class GamePolicy
 	 */
 	public function update(User $user, Game $game): bool
 	{
-		if (is_null($user)) {
-			return false;
-		}
-
-		if ($user->isStaff()) {
-			return true;
-		}
-
-		if (is_null($game->user_id)) {
-			return false;
-		}
-
-		return $game->user_id === $user->id;
+		return $this->canModifyGame($user, $game);
 	}
 
 	/**
@@ -40,10 +28,11 @@ class GamePolicy
 	 */
 	public function delete(User $user, Game $game): bool
 	{
-		if (is_null($user)) {
-			return false;
-		}
+		return $this->canModifyGame($user, $game);
+	}
 
+	private function canModifyGame(User $user, Game $game): bool
+	{
 		if ($user->isStaff()) {
 			return true;
 		}

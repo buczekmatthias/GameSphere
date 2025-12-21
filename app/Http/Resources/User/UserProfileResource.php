@@ -34,20 +34,13 @@ class UserProfileResource extends JsonResource
 			'comments' => 20
 		};
 
-		$entries = $this->{$tab === 'created_games' ? 'createdGames' : $tab}()->orderBy('created_at', 'ASC');
-
-		if ($tab === 'reviews') {
-			$entries = $entries->with(['game']);
-		}
-		if ($tab === 'games') {
-			$entries = $entries->withPivot(['list_type']);
-		}
-		if ($tab === 'discussions') {
-			$entries = $entries->with(['discussable'])->withCount(['comments']);
-		}
-		if ($tab === 'genres') {
-			$entries = $entries->withCount(['games', 'discussions']);
-		}
+		$entries = match ($tab) {
+			'created_games' => $this->createdGames()->orderBy('released_at', 'DESC'),
+			'games' => $this->games()->withPivot(['list_type'])->orderBy('released_at', 'DESC'),
+			'reviews' => $this->reviews()->with(['game'])->orderBy('created_at', 'DESC'),
+			'discussions' => $this->discussions()->with(['discussable'])->withCount(['comments'])->orderBy('created_at', 'DESC'),
+			'genres' => $this->genres()->withCount(['games', 'discussions'])->orderBy('name', 'ASC')
+		};
 
 		$entries = $entries->paginate($length);
 		$from = (($entries->currentPage() - 1) * $entries->perPage()) + 1;

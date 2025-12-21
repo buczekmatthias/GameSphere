@@ -12,19 +12,7 @@ class CommentPolicy
 	 */
 	public function update(User $user, Comment $comment): bool
 	{
-		if (is_null($user)) {
-			return false;
-		}
-
-		if ($user->isStaff()) {
-			return true;
-		}
-
-		if (is_null($comment->user_id)) {
-			return false;
-		}
-
-		return $comment->user_id === $user->id;
+		return $this->canModifyComment($user, $comment);
 	}
 
 	/**
@@ -32,10 +20,11 @@ class CommentPolicy
 	 */
 	public function delete(User $user, Comment $comment): bool
 	{
-		if (is_null($user)) {
-			return false;
-		}
+		return $this->canModifyComment($user, $comment);
+	}
 
+	private function canModifyComment(User $user, Comment $comment): bool
+	{
 		if ($user->isStaff()) {
 			return true;
 		}

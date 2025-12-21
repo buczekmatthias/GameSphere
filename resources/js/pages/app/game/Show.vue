@@ -152,25 +152,18 @@ const shouldTeleport = useMediaQuery('(min-width: 1024px)');
             </Tabs>
             <template v-else>
                 <Separator />
-                <Heading title="Game unreleased" description="No reviews can be posted nor discussions created until release date listed above." />
-                <!-- TODO: Add initial discussion creation for games with future release date -->
-                <!-- TODO: ^ either only game creator or game creator + users to discuss about it -->
-                <!-- TODO: Limit comment adding in game creator discussion -->
-                <!-- <WhenVisible data="reviews">
+                <Heading
+                    title="Game unreleased"
+                    description="No reviews can be posted nor discussions created until release date listed above."
+                    class="mb-0!"
+                />
+                <WhenVisible data="reviews">
                     <template #fallback>
                         <DiscussionSkeleton />
                     </template>
 
-                    <div class="mb-4 flex w-full items-center justify-between gap-4 border-y py-3">
-                        <p class="text-xl">Discussions</p>
-                    </div>
-
-                    <ContentWithFallback :has-value="discussions!.data.length > 0">
-                        <PaginatedContent page-name="discussions_page" :pagination="discussions!">
-                            <Discussion v-for="discussion in discussions!.data" :key="discussion.slug" :discussion />
-                        </PaginatedContent>
-                    </ContentWithFallback>
-                </WhenVisible> -->
+                    <Discussion v-for="discussion in discussions!.data" :key="discussion.slug" :discussion />
+                </WhenVisible>
             </template>
         </MainContainer>
     </AppLayout>

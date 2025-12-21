@@ -18,7 +18,6 @@ class UserProfileController extends Controller
 		if (!in_array($tab, $tabs)) {
 			return to_route('user.profile', ['user' => $user]);
 		}
-		// TODO: Possibly add some way to pick games from certain list in `games` tab
 
 		return Inertia::render('app/UserProfile', [
 			'user' => UserProfileResource::make($user),

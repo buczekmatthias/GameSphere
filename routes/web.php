@@ -33,8 +33,11 @@ Route::middleware(['auth'])->group(function () {
 
 	Route::get("/games/{game}/reviews/create", [ReviewController::class, 'create'])->name('reviews.create');
 	Route::resource('reviews', ReviewController::class)->only(['store', 'destroy']);
+
 	Route::get("/{type}/{slug}/discussions/create", [DiscussionController::class, 'create'])->name('discussions.create')->whereIn('type', ['game', 'genre']);
 	Route::resource('discussions', DiscussionController::class)->only(['store', 'update', 'destroy']);
+	Route::patch('/discussions/{discussion}/toggle-lock', [DiscussionController::class, 'toggleLock'])->name('discussions.lock.toggle');
+
 	Route::resource('comments', CommentController::class)->only(['store', 'edit', 'update', 'destroy']);
 });
 

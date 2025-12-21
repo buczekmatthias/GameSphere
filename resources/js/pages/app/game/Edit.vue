@@ -9,7 +9,6 @@ import GameMedia from '@/components/Partials/Game/Edit/Form/GameMedia.vue';
 import GameReleasedAt from '@/components/Partials/Game/Edit/Form/GameReleasedAt.vue';
 import GameThumbnail from '@/components/Partials/Game/Edit/Form/GameThumbnail.vue';
 import GameTitle from '@/components/Partials/Game/Edit/Form/GameTitle.vue';
-import { transformDate } from '@/composables/useTransformDatePicker';
 import { constants } from '@/constants';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { BreadcrumbItem, Game, Genre, User } from '@/types';
@@ -53,7 +52,7 @@ const hasFormChanged = (): boolean => {
         props.game.description !== form.description ||
         form.thumbnail !== null ||
         form.media.length > 0 ||
-        props.game.released_at !== transformDate(form.released_at) ||
+        props.game.released_at !== form.released_at.toString() ||
         props.game.genre.slug !== form.genre ||
         form.media_to_delete.length > 0 ||
         props.game.creator.username !== form.creator
@@ -64,7 +63,7 @@ const submitForm = (): void => {
     if (form.title.length > 0 && form.description.length >= constants.value.form.description.min_length) {
         form.transform((data) => ({
             ...data,
-            released_at: transformDate(data.released_at),
+            released_at: data.released_at.toString(),
         })).post(route('games.update', { game: props.game.slug }));
     }
 };

@@ -129,6 +129,7 @@ export interface Discussion {
     comments_count: number;
     created_at: string;
     permissions: Permissions;
+    is_locked: boolean;
 }
 
 export interface DiscussionComment {
