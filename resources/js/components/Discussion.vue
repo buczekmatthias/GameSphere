@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import TextLink from '@/components/TextLink.vue';
 import { DiscussableGame, DiscussableGenre, Discussion } from '@/types';
-import { Blocks, Calendar, Gamepad2, MessageCircle, User } from 'lucide-vue-next';
+import { Blocks, Calendar, Gamepad2, Lock, MessageCircle, User } from 'lucide-vue-next';
 
 withDefaults(
     defineProps<{
@@ -32,6 +32,10 @@ withDefaults(
             <div class="flex gap-0.5">
                 <MessageCircle class="h-5" />
                 <p class="text-sm">{{ discussion.comments_count }}</p>
+            </div>
+            <div class="flex gap-0.5" v-if="discussion.is_locked">
+                <Lock class="h-5" />
+                <p class="text-sm">Locked discussion</p>
             </div>
             <div class="flex items-center gap-1 text-sm" v-if="discussion.discussable_type">
                 <template v-if="discussion.discussable_type === 'game'">

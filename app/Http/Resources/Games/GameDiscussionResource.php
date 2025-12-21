@@ -24,7 +24,8 @@ class GameDiscussionResource extends JsonResource
 				fn () => SimpleProfileResource::make($this->author)->toArray($request),
 			),
 			'comments_count' => $this->whenCounted('comments'),
-			'created_at' => $this->created_at->format('Y-m-d')
+			'created_at' => $this->created_at->format('Y-m-d'),
+			'is_locked' => $this->is_locked
 		];
 	}
 }
