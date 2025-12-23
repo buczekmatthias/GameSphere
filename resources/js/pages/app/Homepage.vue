@@ -17,7 +17,7 @@ defineProps<{
 </script>
 
 <template>
-    <Head title="Home" />
+    <Head title="Homepage" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <MainContainer>

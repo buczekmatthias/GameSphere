@@ -70,7 +70,7 @@ const submitForm = (): void => {
 </script>
 
 <template>
-    <Head :title="game.title" />
+    <Head title="Edit game" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <MainContainer class="mx-auto flex max-w-5xl flex-col gap-4">

@@ -33,7 +33,7 @@ const avgRating = computed(() =>
 </script>
 
 <template>
-    <Head :title="`Review: #${review.slug}`" />
+    <Head :title="`Review by ${review.user.name}`" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <MainContainer class="mx-auto flex max-w-4xl flex-col gap-6">

@@ -24,7 +24,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 </script>
 
 <template>
-    <Head :title="`Comment: #${comment.slug}`" />
+    <Head :title="comment.user ? `Comment by ${comment.user.name}` : 'Discussion comment'" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <MainContainer class="mx-auto flex max-w-5xl flex-col gap-4">

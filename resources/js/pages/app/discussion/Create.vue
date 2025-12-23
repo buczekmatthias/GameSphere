@@ -58,7 +58,7 @@ const submitForm = () => {
 </script>
 
 <template>
-    <Head title="Create review" />
+    <Head title="Create discussion" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <MainContainer class="mx-auto flex max-w-3xl flex-col gap-5">
