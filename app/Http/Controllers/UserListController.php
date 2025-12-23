@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Enum\UserRole;
 use App\Models\User;
-use App\Services\ShorterNumbers;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -47,7 +46,6 @@ class UserListController extends Controller
 					'total' => $users->total(),
 				]
 			]),
-			'users_count' => ShorterNumbers::convertIntToHumanReadable(User::select('username')->count(), 999),
 			'roles' => array_filter(array_reverse(array_column(UserRole::cases(), 'value')), fn ($r) => $r !== UserRole::USER->value),
 			'per_page' => $per_page
 		]);

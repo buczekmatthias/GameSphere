@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import DeleteActionLink from '@/components/DeleteActionLink.vue';
+import FallbackContentAuthor from '@/components/FallbackContentAuthor.vue';
 import FormActionTap from '@/components/FormActionTap.vue';
 import ReportModal from '@/components/ReportModal.vue';
 import TextLink from '@/components/TextLink.vue';
 import UpdateDiscussionForm from '@/components/UpdateDiscussionForm.vue';
 import { DiscussableGame, DiscussableGenre, Discussion } from '@/types';
 import { Link } from '@inertiajs/vue3';
-import { Blocks, Calendar, Gamepad2, Lock, MessageCircle, User } from 'lucide-vue-next';
+import { Blocks, Calendar, Gamepad2, Lock, MessageCircle } from 'lucide-vue-next';
 
 defineProps<{
     discussion: Discussion;
@@ -28,13 +29,7 @@ defineProps<{
                 <MessageCircle class="h-5" />
                 <p>{{ discussion.comments_count }}</p>
             </div>
-            <div class="flex items-center gap-1">
-                <User class="h-5" />
-                <TextLink :href="route('user.profile', { user: discussion.author.username })" class="truncate" v-if="discussion.author">
-                    {{ discussion.author.name }}
-                </TextLink>
-                <p class="text-sm italic" v-else>Deleted user</p>
-            </div>
+            <FallbackContentAuthor :user="discussion.author" class="gap-1" />
             <div class="flex items-center gap-1">
                 <template v-if="discussion.discussable">
                     <template v-if="discussion.discussable_type === 'game'">

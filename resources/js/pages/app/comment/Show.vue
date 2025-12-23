@@ -1,7 +1,7 @@
 <script setup lang="ts">
+import Comment from '@/components/app/comment/DiscussionComment.vue';
+import FallbackContentAuthor from '@/components/FallbackContentAuthor.vue';
 import MainContainer from '@/components/MainContainer.vue';
-import Comment from '@/components/Partials/Discussion/Show/Comment.vue';
-import UserInfo from '@/components/UserInfo.vue';
 import AppLayout from '@/layouts/AppLayout.vue';
 import type { BreadcrumbItem, DiscussionComment } from '@/types';
 import { Head, Link } from '@inertiajs/vue3';
@@ -32,10 +32,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 
             <div class="flex flex-col gap-4">
                 <div class="flex flex-col gap-4 rounded-md border p-3">
-                    <Link class="mr-auto flex gap-3" :href="route('user.profile', { user: comment.user.username })" as="button" v-if="comment.user">
-                        <UserInfo :show-username="true" :user="comment.user" />
-                    </Link>
-                    <p class="text-sm italic" v-else>Deleted user</p>
+                    <FallbackContentAuthor :user="comment.user" />
                     <Link :href="route('discussions.show', { discussion: comment.discussion.slug })">
                         <p class="text-xl">{{ comment.discussion.title }}</p>
                     </Link>

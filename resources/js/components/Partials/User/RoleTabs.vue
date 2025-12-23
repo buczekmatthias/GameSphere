@@ -6,7 +6,6 @@ import { capitalize, computed } from 'vue';
 const props = defineProps<{
     roles: string[];
     ziggy: ZiggyWithGamesQuery;
-    users_count: number | string;
     total: number;
     reloadOnly: string[];
 }>();

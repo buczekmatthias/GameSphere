@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import ContentWithFallback from '@/components/ContentWithFallback.vue';
 import UsersIndexSkeleton from '@/components/fallbacks/UsersIndexSkeleton.vue';
 import MainContainer from '@/components/MainContainer.vue';
 import PaginatedContent from '@/components/PaginatedContent.vue';
@@ -27,7 +28,6 @@ export interface ZiggyWithGamesQuery extends Ziggy {
 defineProps<{
     users?: Pagination & { data: User[] };
     roles: string[];
-    users_count: number | string;
     per_page: string | number;
 }>();
 
@@ -68,12 +68,12 @@ const reloadOnly = ['users', 'ziggy'];
                     <UsersIndexSkeleton />
                 </template>
 
-                <template v-if="users!.data.length > 0">
+                <ContentWithFallback :has-value="users!.data.length > 0">
                     <div class="grid grid-cols-[1fr_auto] gap-2">
                         <Input type="text" v-model="contains" placeholder="Search by name or username..." @keyup.enter="searchEntries" />
                         <Button type="submit" @click="searchEntries">Search</Button>
                     </div>
-                    <RoleTabs :roles :ziggy :users_count :total="users!.meta.total" :reloadOnly />
+                    <RoleTabs :roles :ziggy :total="users!.meta.total" :reloadOnly />
                     <PaginatedContent :customizable-per-page="true" :pagination="getPaginationData(users!)" :reload-only pagination-position="bottom">
                         <Link
                             :href="route('user.profile', { user: user.username })"
@@ -85,10 +85,7 @@ const reloadOnly = ['users', 'ziggy'];
                             <UserRole :role="user.role" class="text-sm" :show-user-role-tag="false" />
                         </Link>
                     </PaginatedContent>
-                </template>
-                <template v-else>
-                    <p class="text-lg">No users to display</p>
-                </template>
+                </ContentWithFallback>
             </Deferred>
         </MainContainer>
     </AppLayout>

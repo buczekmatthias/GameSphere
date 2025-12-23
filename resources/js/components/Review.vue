@@ -1,15 +1,12 @@
 <script setup lang="ts">
 import DeleteActionLink from '@/components/DeleteActionLink.vue';
+import FallbackContentAuthor from '@/components/FallbackContentAuthor.vue';
 import ReportModal from '@/components/ReportModal.vue';
 import TextLink from '@/components/TextLink.vue';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Card } from '@/components/ui/card';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import UserInfo from '@/components/UserInfo.vue';
-import UserRole from '@/components/UserRole.vue';
 import { Review } from '@/types';
-import { Link } from '@inertiajs/vue3';
-import { MailCheck, Star } from 'lucide-vue-next';
+import { Star } from 'lucide-vue-next';
 
 withDefaults(
     defineProps<{
@@ -36,27 +33,7 @@ withDefaults(
                 >
                     {{ review.game.title }}
                 </TextLink>
-                <template v-if="showUser">
-                    <template v-if="review.user">
-                        <Link :href="route('user.profile', { user: review.user.username })" class="mr-auto flex gap-3">
-                            <UserInfo :show-username="true" :user="review.user" />
-                        </Link>
-                        <UserRole v-if="review.user.role !== 'user'" :role="review.user.role" class="text-xs" />
-                        <template v-if="review.user.is_email_verified">
-                            <TooltipProvider>
-                                <Tooltip>
-                                    <TooltipTrigger as-child>
-                                        <MailCheck class="size-5" />
-                                    </TooltipTrigger>
-                                    <TooltipContent side="left">
-                                        <p>Verified user</p>
-                                    </TooltipContent>
-                                </Tooltip>
-                            </TooltipProvider>
-                        </template>
-                    </template>
-                    <p class="text-lg" v-else>Posted by deleted user</p>
-                </template>
+                <FallbackContentAuthor :user="review.user" with-role v-if="showUser" />
             </div>
             <p class="text-sm text-slate-300">{{ review.created_at }}</p>
         </div>

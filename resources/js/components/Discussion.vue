@@ -1,7 +1,8 @@
 <script setup lang="ts">
+import FallbackContentAuthor from '@/components/FallbackContentAuthor.vue';
 import TextLink from '@/components/TextLink.vue';
 import { DiscussableGame, DiscussableGenre, Discussion } from '@/types';
-import { Blocks, Calendar, Gamepad2, Lock, MessageCircle, User } from 'lucide-vue-next';
+import { Blocks, Calendar, Gamepad2, Lock, MessageCircle } from 'lucide-vue-next';
 
 withDefaults(
     defineProps<{
@@ -18,16 +19,10 @@ withDefaults(
     <div class="border-border flex flex-col gap-3 rounded-md border border-solid p-3">
         <p class="truncate text-xl font-semibold">{{ discussion.title }}</p>
         <div class="flex flex-wrap items-center gap-3">
+            <FallbackContentAuthor :user="discussion.author" v-if="showUser" />
             <div class="flex gap-0.5">
                 <Calendar class="h-5" />
                 <p class="text-sm">{{ discussion.created_at }}</p>
-            </div>
-            <div class="flex gap-0.5" v-if="showUser">
-                <User class="h-5" />
-                <TextLink class="text-sm" :href="route('user.profile', { user: discussion.author.username })" v-if="discussion.author">
-                    {{ discussion.author.name }}
-                </TextLink>
-                <p class="text-sm italic" v-else>Deleted user</p>
             </div>
             <div class="flex gap-0.5">
                 <MessageCircle class="h-5" />

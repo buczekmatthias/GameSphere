@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import Table from '@/components/Admin/Table.vue';
+import FallbackContentAuthor from '@/components/FallbackContentAuthor.vue';
 import MainContainer from '@/components/MainContainer.vue';
 import PaginatedContent from '@/components/PaginatedContent.vue';
 import TextLink from '@/components/TextLink.vue';
@@ -65,10 +66,7 @@ const reloadOnly: string[] = ['comments'];
                             </TooltipProvider>
                         </TableCell>
                         <TableCell>
-                            <TextLink :href="route('user.profile', { user: comment.user.username })" v-if="comment.user">
-                                {{ comment.user.name }}
-                            </TextLink>
-                            <p class="text-sm italic" v-else>Deleted user</p>
+                            <FallbackContentAuthor :user="comment.user" />
                         </TableCell>
                         <TableCell>
                             <TextLink :href="route('discussions.show', { discussion: comment.discussion.slug })">{{

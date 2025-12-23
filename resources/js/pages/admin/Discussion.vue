@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import Table from '@/components/Admin/Table.vue';
+import FallbackContentAuthor from '@/components/FallbackContentAuthor.vue';
 import MainContainer from '@/components/MainContainer.vue';
 import PaginatedContent from '@/components/PaginatedContent.vue';
 import TextLink from '@/components/TextLink.vue';
@@ -52,10 +53,7 @@ const reloadOnly: string[] = ['discussions'];
                         <TableCell>{{ discussion.slug }}</TableCell>
                         <TableCell>{{ discussion.title }}</TableCell>
                         <TableCell>
-                            <TextLink :href="route('user.profile', { user: discussion.author.username })" v-if="discussion.author">
-                                {{ discussion.author.name }}
-                            </TextLink>
-                            <p class="text-sm italic" v-else>Deleted user</p>
+                            <FallbackContentAuthor :user="discussion.author" />
                         </TableCell>
                         <TableCell>
                             <TextLink :href="discussion.discussable">Show {{ discussion.discussable_type }}</TextLink>

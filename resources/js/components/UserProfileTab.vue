@@ -1,9 +1,9 @@
 <script setup lang="ts">
+import Comment from '@/components/app/comment/DiscussionComment.vue';
 import Discussion from '@/components/Discussion.vue';
 import Game from '@/components/Game.vue';
 import Genre from '@/components/Genre.vue';
 import PaginatedContent from '@/components/PaginatedContent.vue';
-import Comment from '@/components/Partials/Discussion/Show/Comment.vue';
 import Review from '@/components/Review.vue';
 import { getPaginationData } from '@/composables/usePagination';
 import type {

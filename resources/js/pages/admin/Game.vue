@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import Table from '@/components/Admin/Table.vue';
+import FallbackContentAuthor from '@/components/FallbackContentAuthor.vue';
 import MainContainer from '@/components/MainContainer.vue';
 import PaginatedContent from '@/components/PaginatedContent.vue';
 import TextLink from '@/components/TextLink.vue';
@@ -66,10 +67,7 @@ const reloadOnly: string[] = ['games'];
                             <p class="text-sm italic" v-else>Deleted genre</p>
                         </TableCell>
                         <TableCell>
-                            <TextLink :href="route('user.profile', { user: game.creator.username })" v-if="game.creator">
-                                {{ game.creator.name }}
-                            </TextLink>
-                            <p class="text-sm italic" v-else>Deleted user</p>
+                            <FallbackContentAuthor :user="game.creator" />
                         </TableCell>
                         <TableCell>{{ game.released_at }}</TableCell>
                         <TableCell>{{ game.created_at }}</TableCell>

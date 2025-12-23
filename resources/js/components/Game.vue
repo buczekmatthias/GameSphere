@@ -1,10 +1,8 @@
 <script setup lang="ts">
 import LazyAvatar from '@/components/LazyAvatar.vue';
-import { Button } from '@/components/ui/button';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Game } from '@/types';
 import { Link } from '@inertiajs/vue3';
-import { CircleCheckBig, Coins, Gamepad2, Heart, ListCheck, LucideIcon } from 'lucide-vue-next';
+import { CircleCheckBig, Coins, Gamepad2, Heart, ListCheck, LucideIcon, Star } from 'lucide-vue-next';
 import { capitalize } from 'vue';
 
 defineProps<{
@@ -26,20 +24,18 @@ const listTypeIcon: { [key: string]: LucideIcon } = {
             <LazyAvatar
                 :src="game.thumbnail"
                 :alt="game.title"
-                class="group-hover:border-primary h-80 w-full border-2 border-solid border-transparent duration-150"
+                class="group-hover:border-primary h-80 w-full border-2 border-solid border-transparent duration-300"
             />
-            <TooltipProvider v-if="game.list">
-                <Tooltip>
-                    <TooltipTrigger as-child class="absolute top-2 right-2">
-                        <Button variant="outline">
-                            <component :is="listTypeIcon[game.list]" class="size-[1.3rem]" />
-                        </Button>
-                    </TooltipTrigger>
-                    <TooltipContent class="max-w-[75vw]">
-                        <p>{{ capitalize(game.list).replace('_', ' ') }}</p>
-                    </TooltipContent>
-                </Tooltip>
-            </TooltipProvider>
+            <div class="absolute top-2 left-2 flex flex-wrap gap-1.5">
+                <div class="game-floating-label" v-if="game.list" @click.prevent>
+                    <component :is="listTypeIcon[game.list]" class="size-4" />
+                    <p>{{ capitalize(game.list).replace('_', ' ') }}</p>
+                </div>
+                <div class="game-floating-label">
+                    <Star class="mt-0.5 size-5" />
+                    <p>{{ game.score }}</p>
+                </div>
+            </div>
         </div>
 
         <p class="self-start truncate">{{ game.title }}</p>

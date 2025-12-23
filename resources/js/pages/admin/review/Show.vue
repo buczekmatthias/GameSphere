@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import FallbackContentAuthor from '@/components/FallbackContentAuthor.vue';
 import MainContainer from '@/components/MainContainer.vue';
 import PaginatedContent from '@/components/PaginatedContent.vue';
 import TextLink from '@/components/TextLink.vue';
@@ -13,13 +14,11 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Separator } from '@/components/ui/separator';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import UserInfo from '@/components/UserInfo.vue';
 import { getPaginationData } from '@/composables/usePagination';
 import AdminLayout from '@/layouts/AdminLayout.vue';
 import type { Pagination, Report, Review } from '@/types';
 import { Head, Link } from '@inertiajs/vue3';
 import { Ban, ChevronLeft, Circle, CircleX, Ellipsis, Gamepad2, Trash } from 'lucide-vue-next';
-import { capitalize } from 'vue';
 
 defineProps<{
     review: Review;
@@ -46,13 +45,7 @@ const reloadOnly: string[] = ['reports'];
                 </Link>
             </Button>
             <div class="flex items-center gap-3">
-                <template v-if="review.user">
-                    <Link class="mr-auto flex gap-3" :href="route('user.profile', { user: review.user.username })">
-                        <UserInfo :show-username="true" :user="review.user" />
-                    </Link>
-                    <p v-if="review.user.role !== 'user'" class="text-sm">{{ capitalize(review.user.role) }}</p>
-                </template>
-                <p class="text-sm italic" v-else>Deleted user</p>
+                <FallbackContentAuthor :user="review.user" with-role />
             </div>
             <p>{{ review.content }}</p>
             <p>Created at: {{ review.created_at }}</p>

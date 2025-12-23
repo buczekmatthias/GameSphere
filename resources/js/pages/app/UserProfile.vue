@@ -83,7 +83,7 @@ const showAvatar = computed(() => props.user.avatar !== '');
                                 <TooltipProvider v-if="user.email_verified_at">
                                     <Tooltip>
                                         <TooltipTrigger as-child>
-                                            <CheckCircle class="text-sidebar-ring mt-1 size-5" />
+                                            <CheckCircle class="text-primary mt-1 size-4" />
                                         </TooltipTrigger>
                                         <TooltipContent>
                                             <p>Verified user</p>

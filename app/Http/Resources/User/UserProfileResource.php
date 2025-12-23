@@ -35,8 +35,8 @@ class UserProfileResource extends JsonResource
 		};
 
 		$entries = match ($tab) {
-			'created_games' => $this->createdGames()->orderBy('released_at', 'DESC'),
-			'games' => $this->games()->withPivot(['list_type'])->orderBy('released_at', 'DESC'),
+			'created_games' => $this->createdGames()->with(['reviews:ratings,game_id'])->orderBy('released_at', 'DESC'),
+			'games' => $this->games()->with(['reviews:ratings,game_id'])->withPivot(['list_type'])->orderBy('released_at', 'DESC'),
 			'reviews' => $this->reviews()->with(['game'])->orderBy('created_at', 'DESC'),
 			'discussions' => $this->discussions()->with(['discussable'])->withCount(['comments'])->orderBy('created_at', 'DESC'),
 			'genres' => $this->genres()->withCount(['games', 'discussions'])->orderBy('name', 'ASC')

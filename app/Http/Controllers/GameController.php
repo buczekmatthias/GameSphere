@@ -161,7 +161,7 @@ class GameController extends Controller
 	 */
 	public function show(Game $game): Response
 	{
-		$game->load(['genre', 'creator'])->loadCount(['reviews']);
+		$game->load(['genre', 'creator', 'reviews:ratings,game_id'])->loadCount(['reviews']);
 
 		return Inertia::render('app/game/Show', [
 			'game' => ShowGameResource::make($game),

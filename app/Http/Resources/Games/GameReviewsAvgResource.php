@@ -4,9 +4,8 @@ namespace App\Http\Resources\Games;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-use Illuminate\Support\Facades\Storage;
 
-class GamesListResource extends JsonResource
+class GameReviewsAvgResource extends JsonResource
 {
 	/**
 	 * Transform the resource into an array.
@@ -16,10 +15,15 @@ class GamesListResource extends JsonResource
 	public function toArray(Request $request): array
 	{
 		return [
-			'slug' => $this->slug,
-			'title' => $this->title,
-			'thumbnail' => asset(Storage::url("games/{$this->slug}/{$this->thumbnail}")),
-			...GameReviewsAvgResource::make($this)->toArray($request)
+			'score' => $this->whenLoaded(
+				'reviews',
+				round(
+					$this->reviews->flatMap(
+						fn ($review) => array_values($review->ratings)
+					)->avg(),
+					1
+				)
+			)
 		];
 	}
 }

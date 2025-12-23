@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import ContentWithFallback from '@/components/ContentWithFallback.vue';
 import GameSkeleton from '@/components/fallbacks/GameSkeleton.vue';
 import Game from '@/components/Game.vue';
 import GamesListFilter, { FilterData } from '@/components/GamesListFilter.vue';
@@ -92,7 +93,7 @@ const isQueried = computed(
                 </template>
 
                 <SearchHeaderText :total="games!.meta.total" :query="ziggy.query" v-if="isQueried" />
-                <template v-if="games!.data.length > 0">
+                <ContentWithFallback :has-value="games!.data.length > 0">
                     <PaginatedContent
                         container-class="games-grid"
                         :customizable-per-page="true"
@@ -102,10 +103,7 @@ const isQueried = computed(
                     >
                         <Game v-for="game in games!.data" :key="game.title" :game />
                     </PaginatedContent>
-                </template>
-                <template v-else>
-                    <p class="col-span-full border-t pt-4">Nothing to display</p>
-                </template>
+                </ContentWithFallback>
             </Deferred>
         </MainContainer>
     </AppLayout>
