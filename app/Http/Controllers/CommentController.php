@@ -20,7 +20,7 @@ class CommentController extends Controller
 {
 	public function show(Comment $comment): Response
 	{
-		$comment->load(['user', 'discussion']);
+		$comment->load(['user', 'discussion', 'discussion.author']);
 
 		return Inertia::render('app/comment/Show', [
 			'comment' => ShowCommentResource::make($comment),

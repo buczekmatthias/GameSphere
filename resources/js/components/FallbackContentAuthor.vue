@@ -21,7 +21,7 @@ withDefaults(
 </script>
 
 <template>
-    <div :class="{ 'flex gap-0.5': withIcon }">
+    <div class="flex gap-0.5">
         <UserIcon class="size-5" v-if="withIcon" />
         <template v-if="user">
             <Link class="mr-auto flex gap-3" :href="route('user.profile', { user: user.username })" as="button">

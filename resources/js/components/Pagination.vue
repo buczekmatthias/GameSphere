@@ -13,11 +13,18 @@ import {
 } from '@/components/ui/combobox';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useZiggy } from '@/composables/useZiggy';
 import { cn } from '@/lib/utils';
 import { Pagination, Ziggy } from '@/types';
-import { router, usePage } from '@inertiajs/vue3';
+import { router } from '@inertiajs/vue3';
 import { Check, ChevronsUpDown, Search } from 'lucide-vue-next';
-import { computed, ref, watch } from 'vue';
+import { computed, ComputedRef, ref, watch } from 'vue';
+
+interface ZiggyWithQuery extends Ziggy {
+    query: {
+        per_page?: string;
+    };
+}
 
 const props = withDefaults(
     defineProps<{
@@ -45,11 +52,11 @@ const isNumber = (e: any) => {
     }
 };
 
+const ziggy: ComputedRef<ZiggyWithQuery> = useZiggy();
+
 const currentPage = ref<number>(props.pagination.meta.current_page);
 
 const pages = computed(() => Array.from(Array(props.pagination.meta.last_page).keys(), (_, j) => j + 1));
-
-const query = computed(() => (usePage().props.ziggy as Ziggy & { query: { per_page: string } }).query);
 
 const rangeString = computed(
     () => `${props.pagination.meta.from} - ${props.pagination.meta.to > props.pagination.meta.total ? props.pagination.meta.total : props.pagination.meta.to} of
@@ -58,9 +65,9 @@ const rangeString = computed(
 
 const preferredPerPage = ref<number>(props.pagination.meta.per_page);
 
-watch(currentPage, () => router.reload({ only: props.reloadOnly, data: { ...query.value, [props.pageName]: currentPage.value } }));
+watch(currentPage, () => router.reload({ only: props.reloadOnly, data: { ...ziggy.value.query, [props.pageName]: currentPage.value } }));
 watch(preferredPerPage, () =>
-    router.reload({ only: props.reloadOnly, data: { ...query.value, per_page: preferredPerPage.value, [props.pageName]: 1 } }),
+    router.reload({ only: props.reloadOnly, data: { ...ziggy.value.query, per_page: preferredPerPage.value, [props.pageName]: 1 } }),
 );
 </script>
 

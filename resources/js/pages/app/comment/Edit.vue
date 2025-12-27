@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import FormBox from '@/components/FormBox.vue';
 import FormButton from '@/components/FormButton.vue';
 import GoBackLink from '@/components/GoBackLink.vue';
 import HeadingSmall from '@/components/HeadingSmall.vue';
@@ -82,11 +83,11 @@ const getBackLinkHref = (): string =>
     <AppLayout :breadcrumbs="breadcrumbs">
         <MainContainer class="mx-auto flex max-w-5xl flex-col gap-6">
             <GoBackLink :href="getBackLinkHref()" />
-            <div class="grid gap-2">
+            <FormBox>
                 <Label html-for="content">Content</Label>
                 <Textarea id="content" v-model="updateCommentForm.content" :default-value="comment.content" class="h-64 resize-none" />
                 <InputError :message="updateCommentForm.errors.content" />
-            </div>
+            </FormBox>
             <template v-if="comment.media.length > 0">
                 <div class="flex flex-col justify-between gap-4">
                     <HeadingSmall title="Media to delete" :description="`${updateCommentForm.media_to_delete.length} selected`" />

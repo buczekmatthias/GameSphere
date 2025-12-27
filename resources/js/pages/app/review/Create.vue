@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import FormBox from '@/components/FormBox.vue';
 import FormButton from '@/components/FormButton.vue';
 import GoBackLink from '@/components/GoBackLink.vue';
 import HeadingSmall from '@/components/HeadingSmall.vue';
@@ -60,11 +61,11 @@ const submitForm = () => {
         <MainContainer class="mx-auto flex max-w-3xl flex-col gap-6">
             <GoBackLink :href="route('games.show', { game: game.slug })" />
             <HeadingSmall title="Create new review" :description="`Game: ${game.title} (${game.slug})`" />
-            <div class="grid gap-2">
+            <FormBox>
                 <Label html-for="content">Content</Label>
                 <Textarea id="content" v-model="newReviewForm.content" class="h-48 resize-none" />
                 <InputError :message="newReviewForm.errors.content" />
-            </div>
+            </FormBox>
             <div class="flex flex-col gap-6">
                 <p class="text-lg">Ratings</p>
                 <div class="grid grid-cols-[1fr_auto] gap-2" v-for="(k, ind) in Object.keys(newReviewForm.ratings)" :key="k">

@@ -33,7 +33,7 @@ withDefaults(
                 >
                     {{ review.game.title }}
                 </TextLink>
-                <FallbackContentAuthor :user="review.user" with-role v-if="showUser" />
+                <FallbackContentAuthor :user="review.user" v-if="showUser" />
             </div>
             <p class="text-sm text-slate-300">{{ review.created_at }}</p>
         </div>

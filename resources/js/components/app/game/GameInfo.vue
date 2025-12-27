@@ -36,8 +36,7 @@ defineProps<{
                 <TextLink :href="route('user.profile', { user: game.creator.username })">{{ game.creator.name }}</TextLink>
             </div>
         </div>
-        <div v-if="game.media.length > 0">
-            <MediaPreview :media="game.media" />
-        </div>
+
+        <MediaPreview :media="game.media" v-if="game.media.length > 0" />
     </div>
 </template>

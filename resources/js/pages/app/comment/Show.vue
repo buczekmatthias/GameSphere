@@ -32,7 +32,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 
             <div class="flex flex-col gap-4">
                 <div class="flex flex-col gap-4 rounded-md border p-3">
-                    <FallbackContentAuthor :user="comment.user" />
+                    <FallbackContentAuthor :user="comment.discussion.author" />
                     <Link :href="route('discussions.show', { discussion: comment.discussion.slug })">
                         <p class="text-xl">{{ comment.discussion.title }}</p>
                     </Link>

@@ -39,7 +39,8 @@ class UserProfileResource extends JsonResource
 			'games' => $this->games()->with(['reviews:ratings,game_id'])->withPivot(['list_type'])->orderBy('released_at', 'DESC'),
 			'reviews' => $this->reviews()->with(['game'])->orderBy('created_at', 'DESC'),
 			'discussions' => $this->discussions()->with(['discussable'])->withCount(['comments'])->orderBy('created_at', 'DESC'),
-			'genres' => $this->genres()->withCount(['games', 'discussions'])->orderBy('name', 'ASC')
+			'genres' => $this->genres()->withCount(['games', 'discussions'])->orderBy('name', 'ASC'),
+			'comments' => $this->comments()->with(['discussion'])->orderBy('created_at', 'DESC')
 		};
 
 		$entries = $entries->paginate($length);

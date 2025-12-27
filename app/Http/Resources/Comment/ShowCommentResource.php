@@ -45,7 +45,7 @@ class ShowCommentResource extends JsonResource
 				fn () => [
 					'title' => $this->discussion->title,
 					'slug' => $this->discussion->slug,
-					'author' => SimpleProfileResource::make($this->discussion->author)->toArray($request),
+					'author' => $this->when($this->discussion->relationLoaded('author'), fn () => SimpleProfileResource::make($this->discussion->author)->toArray($request)),
 					'comments_count' => $this->discussion->comments()->count(),
 					'created_at' => $this->discussion->created_at->format('Y-m-d')
 				]

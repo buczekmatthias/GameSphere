@@ -1,27 +1,20 @@
 <script setup lang="ts">
-import CanInteract from '@/components/CanInteract.vue';
+import GameDetails from '@/components/app/game/GameDetails.vue';
+import GameTabContent from '@/components/app/game/GameTabContent.vue';
 import ClientOnly from '@/components/ClientOnly.vue';
-import ContentWithFallback from '@/components/ContentWithFallback.vue';
 import Discussion from '@/components/Discussion.vue';
 import DiscussionSkeleton from '@/components/fallbacks/DiscussionSkeleton.vue';
-import ReviewSkeleton from '@/components/fallbacks/ReviewSkeleton.vue';
-import FormActionTap from '@/components/FormActionTap.vue';
-import GameActions from '@/components/GameActions.vue';
 import Heading from '@/components/Heading.vue';
-import LazyAvatar from '@/components/LazyAvatar.vue';
 import MainContainer from '@/components/MainContainer.vue';
-import PaginatedContent from '@/components/PaginatedContent.vue';
-import GameDetails from '@/components/Partials/Game/Show/GameDetails.vue';
 import Review from '@/components/Review.vue';
 import { Separator } from '@/components/ui/separator';
-import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { userCanInteract } from '@/composables/useCanInteract';
+import { useZiggy } from '@/composables/useZiggy';
 import AppLayout from '@/layouts/AppLayout.vue';
 import type { BreadcrumbItem, Discussion as DiscussionType, Game, Pagination, Review as ReviewType, Ziggy } from '@/types';
-import { Deferred, Head, Link, usePage, WhenVisible } from '@inertiajs/vue3';
+import { Head, WhenVisible } from '@inertiajs/vue3';
 import { useMediaQuery } from '@vueuse/core';
-import { LucideIcon, Plus, Rss, Star } from 'lucide-vue-next';
+import { LucideIcon, Rss, Star } from 'lucide-vue-next';
 import { computed } from 'vue';
 
 const props = withDefaults(
@@ -53,12 +46,14 @@ const tabs: { [key: string]: LucideIcon } = {
 };
 
 const tab = computed(() => {
-    const query = (usePage().props.ziggy as Ziggy & { query: { discussions_page?: number } }).query;
+    const query = (useZiggy().value as Ziggy & { query: { discussions_page?: number } }).query;
 
     return query?.discussions_page ? 'discussions' : 'reviews';
 });
 
 const shouldTeleport = useMediaQuery('(min-width: 1024px)');
+
+const teleportId = 'tab_switch_teleport';
 </script>
 
 <template>
@@ -66,30 +61,11 @@ const shouldTeleport = useMediaQuery('(min-width: 1024px)');
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <MainContainer class="mx-auto flex max-w-5xl flex-col gap-4">
-            <div
-                class="grid gap-4 lg:grid-rows-[auto_auto]"
-                :class="userCanInteract() ? 'ml:grid-cols-[auto_1fr_auto] grid-cols-[1fr_auto]' : 'grid-cols-1 md:grid-cols-[auto_1fr]'"
-            >
-                <LazyAvatar :src="game.thumbnail" :alt="game.title" class="h-96 w-80 lg:row-span-2" />
-                <CanInteract>
-                    <Deferred data="userLists">
-                        <template #fallback>
-                            <div class="flex flex-col gap-3">
-                                <Skeleton class="h-9 w-12" />
-                                <Skeleton class="h-9 w-12" />
-                            </div>
-                        </template>
+            <GameDetails :teleport-id :game :user-lists />
 
-                        <GameActions :game :lists="userLists" />
-                    </Deferred>
-                </CanInteract>
-
-                <GameDetails :game />
-                <div id="tab_switch_teleport" class="self-end lg:col-start-2 lg:col-end-4 lg:row-end-2" v-if="game.is_released"></div>
-            </div>
             <Tabs :default-value="tab" v-if="game.is_released">
                 <ClientOnly>
-                    <Teleport to="#tab_switch_teleport" :disabled="!shouldTeleport">
+                    <Teleport :to="`#${teleportId}`" :disabled="!shouldTeleport">
                         <TabsList class="h-auto w-full">
                             <TabsTrigger
                                 v-for="[name, icon] in Object.entries(tabs)"
@@ -105,49 +81,19 @@ const shouldTeleport = useMediaQuery('(min-width: 1024px)');
                     </Teleport>
                 </ClientOnly>
                 <TabsContent value="reviews">
-                    <WhenVisible data="reviews">
-                        <template #fallback>
-                            <ReviewSkeleton />
-                        </template>
-
-                        <div class="mb-4 flex w-full items-center justify-between gap-4 border-y py-3">
-                            <p class="text-xl">Reviews</p>
-                            <CanInteract>
-                                <Link :href="route('reviews.create', { game: game.slug })">
-                                    <FormActionTap> <Plus class="size-4" /> Create review </FormActionTap>
-                                </Link>
-                            </CanInteract>
-                        </div>
-
-                        <ContentWithFallback :has-value="reviews!.data.length > 0">
-                            <PaginatedContent page-name="reviews_page" :pagination="reviews!">
-                                <Review v-for="review in reviews!.data" :key="review.slug" :review />
-                            </PaginatedContent>
-                        </ContentWithFallback>
-                    </WhenVisible>
+                    <GameTabContent :action-href="route('reviews.create', { game: game.slug })" data="review" :pagination="reviews">
+                        <Review v-for="review in reviews!.data" :key="review.slug" :review />
+                    </GameTabContent>
                 </TabsContent>
 
                 <TabsContent value="discussions">
-                    <WhenVisible data="reviews">
-                        <template #fallback>
-                            <DiscussionSkeleton />
-                        </template>
-
-                        <div class="mb-4 flex w-full items-center justify-between gap-4 border-y py-3">
-                            <p class="text-xl">Discussions</p>
-                            <CanInteract>
-                                <Link :href="route('discussions.create', { type: 'game', slug: game.slug })">
-                                    <FormActionTap> <Plus class="size-4" /> Create discussion </FormActionTap>
-                                </Link>
-                            </CanInteract>
-                        </div>
-
-                        <ContentWithFallback :has-value="discussions!.data.length > 0">
-                            <PaginatedContent page-name="discussions_page" :pagination="discussions!">
-                                <Discussion v-for="discussion in discussions!.data" :key="discussion.slug" :discussion />
-                            </PaginatedContent>
-                        </ContentWithFallback>
-                    </WhenVisible>
+                    <GameTabContent
+                        :action-href="route('discussions.create', { type: 'game', slug: game.slug })"
+                        data="discussion"
+                        :pagination="discussions"
+                    >
+                        <Discussion v-for="discussion in discussions!.data" :key="discussion.slug" :discussion />
+                    </GameTabContent>
                 </TabsContent>
             </Tabs>
             <template v-else>
