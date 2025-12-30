@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enum\UserRole;
+use App\Http\Resources\User\SimpleProfileResource;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
@@ -31,21 +32,8 @@ class UserListController extends Controller
 			})
 			->paginate($request->get('per_page', $per_page));
 
-		$from = (($users->currentPage() - 1) * $users->perPage()) + 1;
-		$to = ($users->currentPage() - 1) * $users->perPage() + $users->count();
-
 		return Inertia::render('app/Users', [
-			'users' => Inertia::defer(fn () => [
-				'data' => $users->getCollection(),
-				'meta' => [
-					'current_page' => $users->currentPage(),
-					'from' => $from,
-					'last_page' => $users->lastPage(),
-					'per_page' => $users->perPage(),
-					'to' => $to,
-					'total' => $users->total(),
-				]
-			]),
+			'users' => Inertia::defer(fn () => SimpleProfileResource::collection($users)),
 			'roles' => array_filter(array_reverse(array_column(UserRole::cases(), 'value')), fn ($r) => $r !== UserRole::USER->value),
 			'per_page' => $per_page
 		]);

@@ -4,8 +4,6 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Admin\Review\AdminReviewListResource;
-use App\Http\Resources\Admin\Review\AdminReviewShowResource;
-use App\Http\Resources\Report\UserReportsTableResource;
 use App\Models\Review;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -18,7 +16,7 @@ class ReviewController extends Controller
 	/**
 	 * Handle the incoming request.
 	 */
-	public function index(Request $request): Response
+	public function __invoke(Request $request): Response
 	{
 		$entries = Review::with(['user', 'game'])->withCount(['reports']);
 		$column = strtolower($request->get('column', 'content'));
@@ -40,16 +38,6 @@ class ReviewController extends Controller
 
 		return Inertia::render('admin/review/Index', [
 			'reviews' => AdminReviewListResource::collection($entries->paginate(50)),
-		]);
-	}
-
-	public function show(Review $review): Response
-	{
-		$review->load(['user', 'game']);
-
-		return Inertia::render('admin/review/Show', [
-			'review' => AdminReviewShowResource::make($review),
-			'reports' => UserReportsTableResource::collection($review->reports()->with(['user'])->paginate(50))
 		]);
 	}
 }

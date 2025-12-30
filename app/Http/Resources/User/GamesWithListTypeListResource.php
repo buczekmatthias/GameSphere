@@ -2,9 +2,10 @@
 
 namespace App\Http\Resources\User;
 
+use App\Http\Resources\Games\GamesListResource;
 use Illuminate\Http\Request;
 
-class CurrentUserResource extends SimpleProfileResource
+class GamesWithListTypeListResource extends GamesListResource
 {
 	/**
 	 * Transform the resource into an array.
@@ -15,8 +16,7 @@ class CurrentUserResource extends SimpleProfileResource
 	{
 		return [
 			...parent::toArray($request),
-			'is_verified' => !is_null($this->email_verified_at),
-			'created_at' => $this->created_at->format('M jS, Y'),
+			'list' => $this->pivot->list_type
 		];
 	}
 }

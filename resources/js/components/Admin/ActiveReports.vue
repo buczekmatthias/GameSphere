@@ -13,7 +13,8 @@ import {
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import type { Report } from '@/types';
 import { Link } from '@inertiajs/vue3';
-import { Ban, CircleX, Ellipsis } from 'lucide-vue-next';
+import { Ban, CircleX, Ellipsis, Eye } from 'lucide-vue-next';
+import { capitalize } from 'vue';
 
 defineProps<{
     active_reports: Report[];
@@ -47,9 +48,7 @@ defineProps<{
                         <TableCell>
                             <TextLink :href="route('user.profile', { user: report.user.username })">{{ report.user.name }}</TextLink>
                         </TableCell>
-                        <TableCell>
-                            <TextLink :href="report.reportable">Show {{ report.reportable_type }}</TextLink>
-                        </TableCell>
+                        <TableCell>{{ capitalize(report.reportable_type) }}</TableCell>
                         <TableCell>{{ report.created_at }}</TableCell>
                         <TableCell>
                             <DropdownMenu>
@@ -60,6 +59,13 @@ defineProps<{
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent class="w-56">
                                     <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuItem as-child>
+                                        <Link :href="report.reportable" as="button" class="w-full cursor-pointer">
+                                            <Eye class="size-4" />
+                                            View
+                                        </Link>
+                                    </DropdownMenuItem>
                                     <DropdownMenuSeparator />
                                     <DropdownMenuItem as-child>
                                         <Link

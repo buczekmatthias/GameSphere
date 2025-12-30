@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import Table from '@/components/Admin/Table.vue';
+import Table from '@/components/admin/Table.vue';
 import TextLink from '@/components/TextLink.vue';
 import { Button } from '@/components/ui/button';
 import {

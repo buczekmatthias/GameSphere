@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import TableLoader from '@/components/Admin/TableLoader.vue';
+import TableLoader from '@/components/admin/TableLoader.vue';
 import { Table, TableBody, TableHeader, TableRow } from '@/components/ui/table';
 import { router } from '@inertiajs/vue3';
 import SortableTableHeader from './SortableTableHeader.vue';

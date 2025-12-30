@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import Table from '@/components/Admin/Table.vue';
+import Table from '@/components/admin/Table.vue';
 import FallbackContentAuthor from '@/components/FallbackContentAuthor.vue';
 import MainContainer from '@/components/MainContainer.vue';
 import PaginatedContent from '@/components/PaginatedContent.vue';
@@ -69,7 +69,7 @@ const reloadOnly: string[] = ['reviews'];
                                     <DropdownMenuLabel>Actions</DropdownMenuLabel>
                                     <DropdownMenuSeparator />
                                     <DropdownMenuItem as-child>
-                                        <Link :href="route('admin.reviews.show', { review: review.slug })" as="button" class="w-full cursor-pointer">
+                                        <Link :href="route('reviews.show', { review: review.slug })" as="button" class="w-full cursor-pointer">
                                             <Eye class="size-4" />
                                             View
                                         </Link>

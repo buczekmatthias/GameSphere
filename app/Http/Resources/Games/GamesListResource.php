@@ -3,10 +3,9 @@
 namespace App\Http\Resources\Games;
 
 use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Storage;
 
-class GamesListResource extends JsonResource
+class GamesListResource extends GameReviewResource
 {
 	/**
 	 * Transform the resource into an array.
@@ -19,7 +18,7 @@ class GamesListResource extends JsonResource
 			'slug' => $this->slug,
 			'title' => $this->title,
 			'thumbnail' => asset(Storage::url("games/{$this->slug}/{$this->thumbnail}")),
-			...GameReviewsAvgResource::make($this)->toArray($request)
+			...parent::toArray($request)
 		];
 	}
 }

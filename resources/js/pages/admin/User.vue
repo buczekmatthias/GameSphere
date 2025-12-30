@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import Table from '@/components/Admin/Table.vue';
+import Table from '@/components/admin/Table.vue';
 import FormActionTap from '@/components/FormActionTap.vue';
 import HeadingSmall from '@/components/HeadingSmall.vue';
 import MainContainer from '@/components/MainContainer.vue';

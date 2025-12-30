@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import Table from '@/components/Admin/Table.vue';
+import Table from '@/components/admin/Table.vue';
 import FormButton from '@/components/FormButton.vue';
 import MainContainer from '@/components/MainContainer.vue';
 import PaginatedContent from '@/components/PaginatedContent.vue';

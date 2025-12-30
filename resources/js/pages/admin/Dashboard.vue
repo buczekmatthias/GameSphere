@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import ActiveReports from '@/components/Admin/ActiveReports.vue';
-import CustomChartTooltip from '@/components/Admin/CustomChartTooltip.vue';
-import PendingGameCreatorRequests from '@/components/Admin/PendingGameCreatorRequests.vue';
-import Trend from '@/components/Admin/Trend.vue';
+import ActiveReports from '@/components/admin/ActiveReports.vue';
+import CustomChartTooltip from '@/components/admin/CustomChartTooltip.vue';
+import PendingGameCreatorRequests from '@/components/admin/PendingGameCreatorRequests.vue';
+import Trend from '@/components/admin/Trend.vue';
 import Heading from '@/components/Heading.vue';
 import MainContainer from '@/components/MainContainer.vue';
 import { AreaChart } from '@/components/ui/chart-area';

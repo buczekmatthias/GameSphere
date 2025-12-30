@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\Discussion;
 
+use App\Http\Resources\PaginatedContentResource;
 use App\Http\Resources\User\SimpleProfileResource;
 use App\Services\MorphTypeToLowerString;
 use App\Services\UserPermissions;
@@ -18,10 +19,6 @@ class ShowDiscussionResource extends JsonResource
 	 */
 	public function toArray(Request $request): array
 	{
-		$comments = $this->comments()->with('user')->orderBy('created_at', 'ASC')->orderBy('id', 'ASC')->paginate(10);
-		$from = (($comments->currentPage() - 1) * $comments->perPage()) + 1;
-		$to = ($comments->currentPage() - 1) * $comments->perPage() + $comments->count();
-
 		return [
 			'slug' => $this->slug,
 			'shortTitle' => Str::limit($this->title, 25, preserveWords: true),
@@ -40,17 +37,7 @@ class ShowDiscussionResource extends JsonResource
 				'discussable',
 				fn () => MorphTypeToLowerString::getTransformedString($this->discussable_type)
 			),
-			'comments' => [
-				'data' => DiscussionCommentResource::collection($comments),
-				'meta' => [
-					'current_page' => $comments->currentPage(),
-					'from' => $from,
-					'last_page' => $comments->lastPage(),
-					'per_page' => $comments->perPage(),
-					'to' => $to,
-					'total' => $comments->total(),
-				]
-			],
+			'comments' => PaginatedContentResource::make($this->comments()->with('user')->orderBy('created_at', 'ASC')->orderBy('id', 'ASC')->paginate(10))->additional(['data_resource' => DiscussionCommentResource::class])->toArray($request),
 			'comments_count' => $this->whenCounted('comments'),
 			'created_at' => $this->created_at->format('Y-m-d'),
 			'permissions' => [

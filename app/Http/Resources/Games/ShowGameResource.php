@@ -5,10 +5,9 @@ namespace App\Http\Resources\Games;
 use App\Http\Resources\User\SimpleProfileResource;
 use App\Services\UserPermissions;
 use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Str;
 
-class ShowGameResource extends JsonResource
+class ShowGameResource extends EditGameResource
 {
 	/**
 	 * Transform the resource into an array.
@@ -18,7 +17,7 @@ class ShowGameResource extends JsonResource
 	public function toArray(Request $request): array
 	{
 		return [
-			...EditGameResource::make($this)->toArray($request),
+			...parent::toArray($request),
 			'shortTitle' => Str::limit($this->title, 25, preserveWords: true),
 			'creator' => SimpleProfileResource::make($this->creator)->toArray($request),
 			'reviews_count' => $this->whenCounted('reviews'),

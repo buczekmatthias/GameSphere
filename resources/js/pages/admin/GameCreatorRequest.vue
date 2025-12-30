@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import GameCreatorRequestTable from '@/components/Admin/GameCreatorRequestTable.vue';
+import GameCreatorRequestTable from '@/components/admin/GameCreatorRequestTable.vue';
 import Heading from '@/components/Heading.vue';
 import MainContainer from '@/components/MainContainer.vue';
 import PaginatedContent from '@/components/PaginatedContent.vue';

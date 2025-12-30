@@ -18,7 +18,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
 
 	Route::get('/games', GameController::class)->name('games.index');
 
-	Route::resource('reviews', ReviewController::class)->only(['index', 'show']);
+	Route::get('/reviews', ReviewController::class)->name('reviews.index');
 
 	Route::get('/users', [UserController::class, 'index'])->name('users.index');
 	Route::patch('/users/{user}/role', [UserController::class, 'updateRole'])->name('users.role');
