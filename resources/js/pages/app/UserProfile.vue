@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import LazyAvatar from '@/components/LazyAvatar.vue';
-import MainContainer from '@/components/MainContainer.vue';
-import ReportModal from '@/components/ReportModal.vue';
-import TabNavigation, { TabNavigationItem } from '@/components/TabNavigation.vue';
+import LazyAvatar from '@/components/app/LazyAvatar.vue';
+import MainContainer from '@/components/app/MainContainer.vue';
+import ReportModal from '@/components/app/ReportModal.vue';
+import TabNavigation, { TabNavigationItem } from '@/components/app/TabNavigation.vue';
+import UserProfileTab from '@/components/app/user/UserProfileTab.vue';
+import UserRole from '@/components/app/user/UserRole.vue';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import UserProfileTab from '@/components/UserProfileTab.vue';
-import UserRole from '@/components/UserRole.vue';
 import { userCanInteract } from '@/composables/useCanInteract';
 import { useInitials } from '@/composables/useInitials';
 import AppLayout from '@/layouts/AppLayout.vue';

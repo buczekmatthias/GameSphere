@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import FormBox from '@/components/FormBox.vue';
-import FormButton from '@/components/FormButton.vue';
-import GoBackLink from '@/components/GoBackLink.vue';
+import FormBox from '@/components/app/FormBox.vue';
+import FormButton from '@/components/app/FormButton.vue';
+import GoBackLink from '@/components/app/GoBackLink.vue';
+import MainContainer from '@/components/app/MainContainer.vue';
 import HeadingSmall from '@/components/HeadingSmall.vue';
 import InputError from '@/components/InputError.vue';
-import MainContainer from '@/components/MainContainer.vue';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import AppLayout from '@/layouts/AppLayout.vue';

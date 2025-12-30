@@ -1,12 +1,12 @@
 <script setup lang="ts">
+import ClientOnly from '@/components/app/ClientOnly.vue';
+import Discussion from '@/components/app/Discussion.vue';
 import GameDetails from '@/components/app/game/GameDetails.vue';
 import GameTabContent from '@/components/app/game/GameTabContent.vue';
-import ClientOnly from '@/components/ClientOnly.vue';
-import Discussion from '@/components/Discussion.vue';
+import MainContainer from '@/components/app/MainContainer.vue';
+import Review from '@/components/app/Review.vue';
 import DiscussionSkeleton from '@/components/fallbacks/DiscussionSkeleton.vue';
 import Heading from '@/components/Heading.vue';
-import MainContainer from '@/components/MainContainer.vue';
-import Review from '@/components/Review.vue';
 import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useZiggy } from '@/composables/useZiggy';

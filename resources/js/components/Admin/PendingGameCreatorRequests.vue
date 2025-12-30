@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import GameCreatorRequestTable from '@/components/admin/GameCreatorRequestTable.vue';
-import FormActionTap from '@/components/FormActionTap.vue';
+import FormActionTap from '@/components/app/FormActionTap.vue';
 import { GameCreatorRequest } from '@/pages/admin/GameCreatorRequest.vue';
 import { Link } from '@inertiajs/vue3';
 

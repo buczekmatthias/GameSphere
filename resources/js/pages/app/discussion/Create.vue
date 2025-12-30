@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import FormBox from '@/components/FormBox.vue';
-import FormButton from '@/components/FormButton.vue';
-import GoBackLink from '@/components/GoBackLink.vue';
+import FormBox from '@/components/app/FormBox.vue';
+import FormButton from '@/components/app/FormButton.vue';
+import CommentMedia from '@/components/app/game/create/GameMedia.vue';
+import CommentTitle from '@/components/app/game/edit/GameTitle.vue';
+import GoBackLink from '@/components/app/GoBackLink.vue';
+import MainContainer from '@/components/app/MainContainer.vue';
 import HeadingSmall from '@/components/HeadingSmall.vue';
 import InputError from '@/components/InputError.vue';
-import MainContainer from '@/components/MainContainer.vue';
-import CommentMedia from '@/components/Partials/Game/Create/Form/GameMedia.vue';
-import CommentTitle from '@/components/Partials/Game/Edit/Form/GameTitle.vue';
 import Textarea from '@/components/ui/textarea/Textarea.vue';
 import AppLayout from '@/layouts/AppLayout.vue';
 import type { BreadcrumbItem, Game, Genre } from '@/types';

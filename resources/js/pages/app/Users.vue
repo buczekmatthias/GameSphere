@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import ContentWithFallback from '@/components/ContentWithFallback.vue';
+import ContentWithFallback from '@/components/app/ContentWithFallback.vue';
+import MainContainer from '@/components/app/MainContainer.vue';
+import PaginatedContent from '@/components/app/PaginatedContent.vue';
+import RoleTabs from '@/components/app/user/RoleTabs.vue';
+import UserRole from '@/components/app/user/UserRole.vue';
 import UsersIndexSkeleton from '@/components/fallbacks/UsersIndexSkeleton.vue';
-import MainContainer from '@/components/MainContainer.vue';
-import PaginatedContent from '@/components/PaginatedContent.vue';
-import RoleTabs from '@/components/Partials/User/RoleTabs.vue';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import UserInfo from '@/components/UserInfo.vue';
-import UserRole from '@/components/UserRole.vue';
 import { getPaginationData } from '@/composables/usePagination';
 import { useZiggy } from '@/composables/useZiggy';
 import AppLayout from '@/layouts/AppLayout.vue';

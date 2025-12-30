@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import CanInteract from '@/components/CanInteract.vue';
-import Discussion from '@/components/Discussion.vue';
-import Game from '@/components/Game.vue';
+import CanInteract from '@/components/app/CanInteract.vue';
+import Discussion from '@/components/app/Discussion.vue';
+import Game from '@/components/app/Game.vue';
+import MainContainer from '@/components/app/MainContainer.vue';
+import PaginatedContent from '@/components/app/PaginatedContent.vue';
 import Heading from '@/components/Heading.vue';
-import MainContainer from '@/components/MainContainer.vue';
-import PaginatedContent from '@/components/PaginatedContent.vue';
 import { getPaginationData } from '@/composables/usePagination';
 import AppLayout from '@/layouts/AppLayout.vue';
 import type { BreadcrumbItem, Discussion as DiscussionType, Game as GameType, Genre, Pagination } from '@/types';

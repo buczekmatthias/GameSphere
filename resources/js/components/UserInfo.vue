@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import LazyAvatar from '@/components/LazyAvatar.vue';
+import LazyAvatar from '@/components/app/LazyAvatar.vue';
 import { useInitials } from '@/composables/useInitials';
 import type { User } from '@/types';
 

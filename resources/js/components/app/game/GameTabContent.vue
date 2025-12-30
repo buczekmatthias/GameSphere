@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import CanInteract from '@/components/CanInteract.vue';
-import ContentWithFallback from '@/components/ContentWithFallback.vue';
+import CanInteract from '@/components/app/CanInteract.vue';
+import ContentWithFallback from '@/components/app/ContentWithFallback.vue';
+import FormActionTap from '@/components/app/FormActionTap.vue';
+import PaginatedContent from '@/components/app/PaginatedContent.vue';
 import DiscussionSkeleton from '@/components/fallbacks/DiscussionSkeleton.vue';
 import ReviewSkeleton from '@/components/fallbacks/ReviewSkeleton.vue';
-import FormActionTap from '@/components/FormActionTap.vue';
-import PaginatedContent from '@/components/PaginatedContent.vue';
 import { Discussion, Pagination, Review } from '@/types';
 import { Link, WhenVisible } from '@inertiajs/vue3';
 import { Plus } from 'lucide-vue-next';

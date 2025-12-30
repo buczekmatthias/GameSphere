@@ -1,6 +1,6 @@
 <script setup lang="ts">
+import MainContainer from '@/components/app/MainContainer.vue';
 import Heading from '@/components/Heading.vue';
-import MainContainer from '@/components/MainContainer.vue';
 import TextLink from '@/components/TextLink.vue';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import AppLayout from '@/layouts/AppLayout.vue';

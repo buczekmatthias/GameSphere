@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import FormActionTap from '@/components/FormActionTap.vue';
+import FormActionTap from '@/components/app/FormActionTap.vue';
 import TextLink from '@/components/TextLink.vue';
 import { Button } from '@/components/ui/button';
 import {

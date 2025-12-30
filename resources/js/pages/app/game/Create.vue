@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import FormButton from '@/components/FormButton.vue';
-import MainContainer from '@/components/MainContainer.vue';
-import GameGenre from '@/components/Partials/Game/Create/Form/GameGenre.vue';
-import GameMedia from '@/components/Partials/Game/Create/Form/GameMedia.vue';
-import GameReleasedAt from '@/components/Partials/Game/Create/Form/GameReleasedAt.vue';
-import GameThumbnail from '@/components/Partials/Game/Create/Form/GameThumbnail.vue';
-import GameDescription from '@/components/Partials/Game/Edit/Form/GameDescription.vue';
-import GameTitle from '@/components/Partials/Game/Edit/Form/GameTitle.vue';
+import FormButton from '@/components/app/FormButton.vue';
+import GameGenre from '@/components/app/game/create/GameGenre.vue';
+import GameMedia from '@/components/app/game/create/GameMedia.vue';
+import GameReleasedAt from '@/components/app/game/create/GameReleasedAt.vue';
+import GameThumbnail from '@/components/app/game/create/GameThumbnail.vue';
+import GameDescription from '@/components/app/game/edit/GameDescription.vue';
+import GameTitle from '@/components/app/game/edit/GameTitle.vue';
+import MainContainer from '@/components/app/MainContainer.vue';
 import { constants } from '@/constants';
 import AppLayout from '@/layouts/AppLayout.vue';
 import type { BreadcrumbItem, Genre } from '@/types';

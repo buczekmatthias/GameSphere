@@ -1,8 +1,8 @@
 <script setup lang="ts">
+import Game from '@/components/app/Game.vue';
+import MainContainer from '@/components/app/MainContainer.vue';
+import TabNavigation, { TabNavigationItem } from '@/components/app/TabNavigation.vue';
 import GameSkeleton from '@/components/fallbacks/GameSkeleton.vue';
-import Game from '@/components/Game.vue';
-import MainContainer from '@/components/MainContainer.vue';
-import TabNavigation, { TabNavigationItem } from '@/components/TabNavigation.vue';
 import AppLayout from '@/layouts/AppLayout.vue';
 import type { BreadcrumbItem, Game as GameType } from '@/types';
 import { Deferred, Head } from '@inertiajs/vue3';

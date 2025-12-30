@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import Table from '@/components/admin/Table.vue';
-import FormActionTap from '@/components/FormActionTap.vue';
+import FormActionTap from '@/components/app/FormActionTap.vue';
+import MainContainer from '@/components/app/MainContainer.vue';
+import PaginatedContent from '@/components/app/PaginatedContent.vue';
+import Preview from '@/components/app/Preview.vue';
+import UserRole from '@/components/app/user/UserRole.vue';
 import HeadingSmall from '@/components/HeadingSmall.vue';
-import MainContainer from '@/components/MainContainer.vue';
-import PaginatedContent from '@/components/PaginatedContent.vue';
-import Preview from '@/components/Preview.vue';
 import { Button } from '@/components/ui/button';
 import {
     DropdownMenu,
@@ -16,7 +17,6 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Separator } from '@/components/ui/separator';
 import { TableCell, TableRow } from '@/components/ui/table';
-import UserRole from '@/components/UserRole.vue';
 import { getPaginationData } from '@/composables/usePagination';
 import AdminLayout from '@/layouts/AdminLayout.vue';
 import type { Pagination, User } from '@/types';

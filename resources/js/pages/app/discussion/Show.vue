@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import Comment from '@/components/app/comment/DiscussionComment.vue';
-import LockedDiscussion from '@/components/LockedDiscussion.vue';
-import LoginRequired from '@/components/LoginRequired.vue';
-import MainContainer from '@/components/MainContainer.vue';
-import NewCommentForm from '@/components/NewCommentForm.vue';
-import PaginatedContent from '@/components/PaginatedContent.vue';
-import DiscussionBaseInformation from '@/components/Partials/Discussion/Show/DiscussionBaseInformation.vue';
+import DiscussionBaseInformation from '@/components/app/discussion/DiscussionBaseInformation.vue';
+import NewCommentForm from '@/components/app/discussion/NewCommentForm.vue';
+import LockedDiscussion from '@/components/app/LockedDiscussion.vue';
+import LoginRequired from '@/components/app/LoginRequired.vue';
+import MainContainer from '@/components/app/MainContainer.vue';
+import PaginatedContent from '@/components/app/PaginatedContent.vue';
 import AppLayout from '@/layouts/AppLayout.vue';
 import type { BreadcrumbItem, Discussion as DiscussionType } from '@/types';
 import { Head } from '@inertiajs/vue3';

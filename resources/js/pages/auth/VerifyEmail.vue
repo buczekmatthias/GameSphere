@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import FormButton from '@/components/FormButton.vue';
+import FormButton from '@/components/app/FormButton.vue';
 import TextLink from '@/components/TextLink.vue';
 import AuthLayout from '@/layouts/AuthLayout.vue';
 import { Head, useForm } from '@inertiajs/vue3';

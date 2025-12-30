@@ -107,6 +107,7 @@ export interface Review {
     game: Game;
     created_at: string;
     permissions: Permissions;
+    reports: Pagination & { data: Report[] };
 }
 
 export interface ReviewRatings {

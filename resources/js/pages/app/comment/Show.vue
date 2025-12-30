@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import Comment from '@/components/app/comment/DiscussionComment.vue';
-import FallbackContentAuthor from '@/components/FallbackContentAuthor.vue';
-import MainContainer from '@/components/MainContainer.vue';
+import FallbackContentAuthor from '@/components/app/FallbackContentAuthor.vue';
+import MainContainer from '@/components/app/MainContainer.vue';
 import AppLayout from '@/layouts/AppLayout.vue';
 import type { BreadcrumbItem, DiscussionComment } from '@/types';
 import { Head, Link } from '@inertiajs/vue3';

@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import DeleteActionLink from '@/components/DeleteActionLink.vue';
-import FallbackContentAuthor from '@/components/FallbackContentAuthor.vue';
-import FormActionTap from '@/components/FormActionTap.vue';
-import MediaPreview from '@/components/MediaPreview.vue';
-import ReportModal from '@/components/ReportModal.vue';
+import DeleteActionLink from '@/components/app/DeleteActionLink.vue';
+import FallbackContentAuthor from '@/components/app/FallbackContentAuthor.vue';
+import FormActionTap from '@/components/app/FormActionTap.vue';
+import MediaPreview from '@/components/app/MediaPreview.vue';
+import ReportModal from '@/components/app/ReportModal.vue';
 import TextLink from '@/components/TextLink.vue';
 import { DiscussionComment } from '@/types';
 import { Link } from '@inertiajs/vue3';

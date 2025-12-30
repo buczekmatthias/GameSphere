@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import ContentWithFallback from '@/components/ContentWithFallback.vue';
+import ContentWithFallback from '@/components/app/ContentWithFallback.vue';
+import Game from '@/components/app/Game.vue';
+import GamesListFilter, { FilterData } from '@/components/app/game/GamesListFilter.vue';
+import SearchHeaderText from '@/components/app/game/SearchHeaderText.vue';
+import MainContainer from '@/components/app/MainContainer.vue';
+import PaginatedContent from '@/components/app/PaginatedContent.vue';
 import GameSkeleton from '@/components/fallbacks/GameSkeleton.vue';
-import Game from '@/components/Game.vue';
-import GamesListFilter, { FilterData } from '@/components/GamesListFilter.vue';
-import MainContainer from '@/components/MainContainer.vue';
-import PaginatedContent from '@/components/PaginatedContent.vue';
-import SearchHeaderText from '@/components/Partials/Game/Index/SearchHeaderText.vue';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { getPaginationData } from '@/composables/usePagination';

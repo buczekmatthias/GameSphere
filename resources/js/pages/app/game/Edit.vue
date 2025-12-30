@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import FormButton from '@/components/FormButton.vue';
-import GoBackLink from '@/components/GoBackLink.vue';
-import MainContainer from '@/components/MainContainer.vue';
-import GameCreator from '@/components/Partials/Game/Edit/Form/GameCreator.vue';
-import GameDescription from '@/components/Partials/Game/Edit/Form/GameDescription.vue';
-import GameGenre from '@/components/Partials/Game/Edit/Form/GameGenre.vue';
-import GameMedia from '@/components/Partials/Game/Edit/Form/GameMedia.vue';
-import GameReleasedAt from '@/components/Partials/Game/Edit/Form/GameReleasedAt.vue';
-import GameThumbnail from '@/components/Partials/Game/Edit/Form/GameThumbnail.vue';
-import GameTitle from '@/components/Partials/Game/Edit/Form/GameTitle.vue';
+import FormButton from '@/components/app/FormButton.vue';
+import GameCreator from '@/components/app/game/edit/GameCreator.vue';
+import GameDescription from '@/components/app/game/edit/GameDescription.vue';
+import GameGenre from '@/components/app/game/edit/GameGenre.vue';
+import GameMedia from '@/components/app/game/edit/GameMedia.vue';
+import GameReleasedAt from '@/components/app/game/edit/GameReleasedAt.vue';
+import GameThumbnail from '@/components/app/game/edit/GameThumbnail.vue';
+import GameTitle from '@/components/app/game/edit/GameTitle.vue';
+import GoBackLink from '@/components/app/GoBackLink.vue';
+import MainContainer from '@/components/app/MainContainer.vue';
 import { constants } from '@/constants';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { BreadcrumbItem, Game, Genre, User } from '@/types';

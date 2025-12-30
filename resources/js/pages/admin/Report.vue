@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import Table from '@/components/admin/Table.vue';
-import MainContainer from '@/components/MainContainer.vue';
-import PaginatedContent from '@/components/PaginatedContent.vue';
+import MainContainer from '@/components/app/MainContainer.vue';
+import PaginatedContent from '@/components/app/PaginatedContent.vue';
 import TextLink from '@/components/TextLink.vue';
 import { Button } from '@/components/ui/button';
 import {

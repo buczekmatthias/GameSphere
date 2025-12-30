@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import CanInteract from '@/components/CanInteract.vue';
-import GameActions from '@/components/GameActions.vue';
-import LazyAvatar from '@/components/LazyAvatar.vue';
+import CanInteract from '@/components/app/CanInteract.vue';
+import GameActions from '@/components/app/game/GameActions.vue';
 import GameInfo from '@/components/app/game/GameInfo.vue';
+import LazyAvatar from '@/components/app/LazyAvatar.vue';
 import { Skeleton } from '@/components/ui/skeleton';
 import { userCanInteract } from '@/composables/useCanInteract';
 import { Game } from '@/types';

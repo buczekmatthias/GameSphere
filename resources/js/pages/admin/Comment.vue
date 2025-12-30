@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import Table from '@/components/admin/Table.vue';
-import FallbackContentAuthor from '@/components/FallbackContentAuthor.vue';
-import MainContainer from '@/components/MainContainer.vue';
-import PaginatedContent from '@/components/PaginatedContent.vue';
+import FallbackContentAuthor from '@/components/app/FallbackContentAuthor.vue';
+import MainContainer from '@/components/app/MainContainer.vue';
+import PaginatedContent from '@/components/app/PaginatedContent.vue';
 import TextLink from '@/components/TextLink.vue';
 import { Button } from '@/components/ui/button';
 import {
@@ -69,9 +69,9 @@ const reloadOnly: string[] = ['comments'];
                             <FallbackContentAuthor :user="comment.user" />
                         </TableCell>
                         <TableCell>
-                            <TextLink :href="route('discussions.show', { discussion: comment.discussion.slug })">{{
-                                comment.discussion.title
-                            }}</TextLink>
+                            <TextLink :href="route('discussions.show', { discussion: comment.discussion.slug })">
+                                {{ comment.discussion.title }}
+                            </TextLink>
                         </TableCell>
                         <TableCell class="text-center">{{ comment.media }}</TableCell>
                         <TableCell class="text-center">{{ comment.reports_count }}</TableCell>

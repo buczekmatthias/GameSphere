@@ -1,7 +1,7 @@
 <script setup lang="ts">
+import LazyAvatar from '@/components/app/LazyAvatar.vue';
 import AppLogo from '@/components/AppLogo.vue';
 import AppLogoIcon from '@/components/AppLogoIcon.vue';
-import LazyAvatar from '@/components/LazyAvatar.vue';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import {

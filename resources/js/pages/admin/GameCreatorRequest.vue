@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import GameCreatorRequestTable from '@/components/admin/GameCreatorRequestTable.vue';
+import MainContainer from '@/components/app/MainContainer.vue';
+import PaginatedContent from '@/components/app/PaginatedContent.vue';
 import Heading from '@/components/Heading.vue';
-import MainContainer from '@/components/MainContainer.vue';
-import PaginatedContent from '@/components/PaginatedContent.vue';
 import { getPaginationData } from '@/composables/usePagination';
 import AdminLayout from '@/layouts/AdminLayout.vue';
 import type { Pagination, User as UserType } from '@/types';

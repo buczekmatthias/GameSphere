@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import MediaPreview from '@/components/MediaPreview.vue';
+import MediaPreview from '@/components/app/MediaPreview.vue';
 import TextLink from '@/components/TextLink.vue';
 import { Game } from '@/types';
 import { Blocks, Calendar, Star, User } from 'lucide-vue-next';

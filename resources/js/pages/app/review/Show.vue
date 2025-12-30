@@ -1,11 +1,14 @@
 <script setup lang="ts">
-import DeleteActionLink from '@/components/DeleteActionLink.vue';
+import DeleteActionLink from '@/components/app/DeleteActionLink.vue';
+import LazyAvatar from '@/components/app/LazyAvatar.vue';
+import MainContainer from '@/components/app/MainContainer.vue';
+import ReportModal from '@/components/app/ReportModal.vue';
+import ReviewReportsTable from '@/components/app/review/ReviewReportsTable.vue';
+import UserRole from '@/components/app/user/UserRole.vue';
 import Heading from '@/components/Heading.vue';
-import LazyAvatar from '@/components/LazyAvatar.vue';
-import MainContainer from '@/components/MainContainer.vue';
-import ReportModal from '@/components/ReportModal.vue';
+import { Separator } from '@/components/ui/separator';
 import UserInfo from '@/components/UserInfo.vue';
-import UserRole from '@/components/UserRole.vue';
+import { userHasSpecialPermissions } from '@/composables/useCanInteract';
 import AppLayout from '@/layouts/AppLayout.vue';
 import type { BreadcrumbItem, Review } from '@/types';
 import { Head, Link } from '@inertiajs/vue3';
@@ -72,8 +75,12 @@ const avgRating = computed(() =>
             </div>
             <div class="text-destructive flex gap-6 text-sm [&>*]:cursor-pointer">
                 <DeleteActionLink :href="route('reviews.destroy', { review: review.slug, to_route: 'home' })" v-if="review.permissions.destroy" />
-                <ReportModal :contentId="review.slug" contentType="review" trigger-class="text-destructive text-sm" />
+                <ReportModal :reload-only="['review']" :contentId="review.slug" contentType="review" trigger-class="text-destructive text-sm" />
             </div>
+            <template v-if="userHasSpecialPermissions()">
+                <Separator />
+                <ReviewReportsTable :review />
+            </template>
         </MainContainer>
     </AppLayout>
 </template>

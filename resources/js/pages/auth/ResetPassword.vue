@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import FormButton from '@/components/FormButton.vue';
+import FormButton from '@/components/app/FormButton.vue';
 import InputError from '@/components/InputError.vue';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
