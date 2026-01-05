@@ -103,8 +103,7 @@ class DiscussionController extends Controller
 	 */
 	public function show(Discussion $discussion): Response
 	{
-		$discussion->load(['author', 'discussable']);
-		$discussion->loadCount('comments');
+		$discussion->load(['author', 'discussable'])->loadCount('comments');
 
 		return Inertia::render('app/discussion/Show', [
 			'discussion' => ShowDiscussionResource::make($discussion),
@@ -126,16 +125,20 @@ class DiscussionController extends Controller
 	 */
 	public function destroy(Discussion $discussion, Request $request): RedirectResponse
 	{
-		foreach ($discussion->comments as $comment) {
-			ManageMedia::deleteDirectoryWithMedia("discussions/{$discussion->slug}/{$comment->slug}", $comment->media);
-		}
-		Storage::deleteDirectory("discussions/{$discussion->slug}");
+		$path = "discussions/{$discussion->slug}";
+		$comments = $discussion->comments()->select(['slug', 'media'])->get();
 
 		DB::transaction(function () use ($discussion) {
 			$discussion->reports()->delete();
 
 			$discussion->delete();
 		});
+
+		foreach ($comments as $comment) {
+			ManageMedia::deleteDirectoryWithMedia("{$path}/{$comment->slug}", $comment->media);
+		}
+
+		Storage::deleteDirectory($path);
 
 		if ($request->get('return_back')) {
 			return back(303);

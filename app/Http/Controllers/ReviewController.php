@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use App\Models\Game;
 use App\Http\Requests\Review\StoreRequest;
@@ -44,7 +43,7 @@ class ReviewController extends Controller
 			'ratings' => $request->post('ratings')
 		]);
 
-		$review->user_id = Auth::user()->id;
+		$review->user_id = $request->user()->id;
 		$review->save();
 
 		return to_route('games.show', ['game' => $request->post('game_slug')]);

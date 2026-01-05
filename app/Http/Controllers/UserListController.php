@@ -17,7 +17,7 @@ class UserListController extends Controller
 	 */
 	public function __invoke(Request $request): Response
 	{
-		$per_page = 30;
+		$per_page = $request->get('per_page', 30);
 
 		$users = User::select(['name', 'username', 'role', 'avatar'])
 			->orderBy('name', 'ASC')
@@ -30,7 +30,7 @@ class UserListController extends Controller
 			->when($request->has('role'), function (Builder $query) use ($request) {
 				return $query->where('role', $request->get('role'));
 			})
-			->paginate($request->get('per_page', $per_page));
+			->paginate($per_page);
 
 		return Inertia::render('app/Users', [
 			'users' => Inertia::defer(fn () => SimpleProfileResource::collection($users)),

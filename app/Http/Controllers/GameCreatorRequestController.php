@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\GameCreatorRequest;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
 class GameCreatorRequestController extends Controller
@@ -14,14 +14,12 @@ class GameCreatorRequestController extends Controller
 	 */
 	public function __invoke(): RedirectResponse
 	{
-		$user = Auth::user();
-
-		if (!GameCreatorRequest::where('user_id', $user->id)->exists()) {
+		if (!GameCreatorRequest::where('user_id', request()->user()->id)->exists()) {
 			$request = GameCreatorRequest::make([
 				'slug' => Str::uuid()
 			]);
 
-			$request->user()->associate($user);
+			$request->user()->associate(request()->user());
 			$request->save();
 		}
 

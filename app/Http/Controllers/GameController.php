@@ -241,13 +241,16 @@ class GameController extends Controller
 	 */
 	public function destroy(Game $game): RedirectResponse
 	{
-		ManageMedia::deleteDirectoryWithMedia("games/{$game->slug}", [...$game->media, $game->thumbnail]);
+		$path = "games/{$game->slug}";
+		$media = [...$game->media, $game->thumbnail];
 
 		DB::transaction(function () use ($game) {
 			$game->reports()->delete();
 			$game->discussions()->delete();
 			$game->delete();
 		});
+
+		ManageMedia::deleteDirectoryWithMedia($path, $media);
 
 		return to_route('games.index', status: 303);
 	}
@@ -263,6 +266,7 @@ class GameController extends Controller
 
 		if ($user->games()->where('game_id', $game->id)->wherePivot('list_type', $list)->exists()) {
 			DB::table('game_user')
+				->where('user_id', $user->id)
 				->where('game_id', $game->id)
 				->where('list_type', $list)
 				->delete();
