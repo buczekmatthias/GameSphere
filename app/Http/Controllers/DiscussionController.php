@@ -11,7 +11,7 @@ use App\Http\Resources\Genre\GenreListResource;
 use App\Models\Discussion;
 use App\Models\Game;
 use App\Models\Genre;
-use App\Services\StoreCommentMedia;
+use App\Services\ManageMedia;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -89,7 +89,7 @@ class DiscussionController extends Controller
 			'content' => $data['content']
 		]);
 
-		$comment->media = StoreCommentMedia::storeFiles($discussion->slug, $comment->slug, $data['media']);
+		$comment->media = ManageMedia::storeCommentMedia($discussion->slug, $comment->slug, $data['media']);
 
 		$comment->user_id = $userId;
 
@@ -127,10 +127,7 @@ class DiscussionController extends Controller
 	public function destroy(Discussion $discussion, Request $request): RedirectResponse
 	{
 		foreach ($discussion->comments as $comment) {
-			foreach ($comment->media as $file) {
-				Storage::delete("discussions/{$discussion->slug}/{$comment->slug}/{$file}");
-			}
-			Storage::delete("discussions/{$discussion->slug}/{$comment->slug}");
+			ManageMedia::deleteDirectoryWithMedia("discussions/{$discussion->slug}/{$comment->slug}", $comment->media);
 		}
 		Storage::deleteDirectory("discussions/{$discussion->slug}");
 

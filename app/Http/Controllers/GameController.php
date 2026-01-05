@@ -13,6 +13,7 @@ use App\Http\Resources\User\SimpleProfileResource;
 use App\Models\Game;
 use App\Models\Genre;
 use App\Models\User;
+use App\Services\ManageMedia;
 use App\Services\UserGameListsServices;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
@@ -35,7 +36,8 @@ class GameController extends Controller
 
 		return Inertia::render('app/game/Index', [
 			'games' => Inertia::defer(fn () => GamesListResource::collection(
-				Game::orderBy('title')
+				Game::gamesWithScore()
+					->orderBy('title')
 					->when(
 						$request->has('title'),
 						function (Builder $query) use ($request) {
@@ -197,13 +199,7 @@ class GameController extends Controller
 		if ($data['thumbnail']) {
 			$thumbnailName = 'thumbnail.'.$data['thumbnail']->extension();
 
-			Storage::delete("{$path}/{$game->thumbnail}");
-
-			Storage::putFileAs(
-				$path,
-				$data['thumbnail'],
-				$thumbnailName
-			);
+			ManageMedia::replaceFile($path, $game->thumbnail, $data['thumbnail'], $thumbnailName);
 
 			$game->thumbnail = $thumbnailName;
 		}
@@ -220,10 +216,7 @@ class GameController extends Controller
 		$tempMedia = [];
 
 		if (array_key_exists('media_to_delete', $data)) {
-			foreach ($data['media_to_delete'] as $f) {
-				Storage::delete("{$path}/{$f}");
-			}
-			$tempMedia = array_diff($game->media, $data['media_to_delete']);
+			$tempMedia = ManageMedia::updateMedia($path, $game->media, $data['media_to_delete']);
 		}
 
 		if (array_key_exists('media', $data)) {
@@ -248,15 +241,7 @@ class GameController extends Controller
 	 */
 	public function destroy(Game $game): RedirectResponse
 	{
-		Storage::delete("games/{$game->slug}/{$game->thumbnail}");
-
-		if ($game->media) {
-			foreach ($game->media as $file) {
-				Storage::delete("games/{$game->slug}/{$file}");
-			}
-		}
-
-		Storage::deleteDirectory("games/{$game->slug}");
+		ManageMedia::deleteDirectoryWithMedia("games/{$game->slug}", [...$game->media, $game->thumbnail]);
 
 		DB::transaction(function () use ($game) {
 			$game->reports()->delete();

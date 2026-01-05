@@ -3,12 +3,14 @@
 namespace App\Models;
 
 use App\Enum\GameCollectionType;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Support\Facades\DB;
 
 class Game extends Model
 {
@@ -33,6 +35,7 @@ class Game extends Model
 		return [
 			'media' => 'array',
 			'released_at' => 'date:Y-m-d',
+			'list_types' => 'array',
 		];
 	}
 
@@ -75,5 +78,40 @@ class Game extends Model
 	public function isGameReleased(): bool
 	{
 		return $this->released_at <= now()->endOfDay();
+	}
+
+	public function scopeGamesWithScore(Builder $query): Builder
+	{
+		return $query
+			->select('games.*')
+			->selectSub(
+				fn ($q) => $q->from('reviews')
+					->whereColumn('reviews.game_id', 'games.id')
+					->selectRaw("COALESCE(
+									AVG(
+										(CAST(ratings->>'gameplay' AS DECIMAL) + 
+										CAST(ratings->>'graphics' AS DECIMAL) + 
+										CAST(ratings->>'storyline' AS DECIMAL) + 
+										CAST(ratings->>'replayability' AS DECIMAL) + 
+										CAST(ratings->>'sound_and_music' AS DECIMAL) + 
+										CAST(ratings->>'performance' AS DECIMAL)) / 6.0
+									),
+									0
+								)"),
+				'score'
+			);
+	}
+
+	public function scopeWithLists(Builder $query, User $user): Builder
+	{
+		return $query
+				->addSelect(DB::raw("JSON_AGG(game_user.list_type) as list_types "))
+				->leftJoin('game_user', 'games.id', '=', 'game_user.game_id')
+				->where('game_user.user_id', $user->id)
+				->groupBy(
+					'game_user.game_id',
+					'game_user.user_id',
+					'games.id'
+				);
 	}
 }

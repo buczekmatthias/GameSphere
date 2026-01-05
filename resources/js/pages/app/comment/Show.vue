@@ -2,9 +2,10 @@
 import Comment from '@/components/app/comment/DiscussionComment.vue';
 import FallbackContentAuthor from '@/components/app/FallbackContentAuthor.vue';
 import MainContainer from '@/components/app/MainContainer.vue';
+import TextLink from '@/components/TextLink.vue';
 import AppLayout from '@/layouts/AppLayout.vue';
 import type { BreadcrumbItem, DiscussionComment } from '@/types';
-import { Head, Link } from '@inertiajs/vue3';
+import { Head } from '@inertiajs/vue3';
 import { Calendar, MessageCircle } from 'lucide-vue-next';
 
 const props = defineProps<{
@@ -33,10 +34,8 @@ const breadcrumbs: BreadcrumbItem[] = [
             <div class="flex flex-col gap-4">
                 <div class="flex flex-col gap-4 rounded-md border p-3">
                     <FallbackContentAuthor :user="comment.discussion.author" />
-                    <Link :href="route('discussions.show', { discussion: comment.discussion.slug })">
-                        <p class="text-xl">{{ comment.discussion.title }}</p>
-                    </Link>
-                    <div class="flex gap-5">
+                    <p class="text-xl">{{ comment.discussion.title }}</p>
+                    <div class="flex gap-4">
                         <div class="flex items-center gap-1.5">
                             <Calendar class="mt-0.5 size-4" />
                             <p>{{ comment.discussion.created_at }}</p>
@@ -45,6 +44,13 @@ const breadcrumbs: BreadcrumbItem[] = [
                             <MessageCircle class="mt-0.5 size-4" />
                             <p>{{ comment.discussion.comments_count }}</p>
                         </div>
+                        <TextLink
+                            :href="route('discussions.show', { discussion: comment.discussion.slug })"
+                            v-if="'discussion' in comment"
+                            class="text-sm"
+                        >
+                            View discussion
+                        </TextLink>
                     </div>
                 </div>
             </div>

@@ -4,7 +4,6 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
-use App\Enum\GameCollectionType;
 use App\Enum\UserRole;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -99,31 +98,6 @@ class User extends Authenticatable
 	public function games(): BelongsToMany
 	{
 		return $this->belongsToMany(Game::class);
-	}
-
-	public function wishlist(): BelongsToMany
-	{
-		return $this->games()->wherePivot('list_type', value: GameCollectionType::WISHLIST->value);
-	}
-
-	public function owned(): BelongsToMany
-	{
-		return $this->games()->wherePivot('list_type', value: GameCollectionType::OWNED->value);
-	}
-
-	public function playing(): BelongsToMany
-	{
-		return $this->games()->wherePivot('list_type', value: GameCollectionType::PLAYING->value);
-	}
-
-	public function completed(): BelongsToMany
-	{
-		return $this->games()->wherePivot('list_type', value: GameCollectionType::COMPLETED->value);
-	}
-
-	public function favorite(): BelongsToMany
-	{
-		return $this->games()->wherePivot('list_type', value: GameCollectionType::FAVORITE->value);
 	}
 
 	public function isGameCreator(): bool

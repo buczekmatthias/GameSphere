@@ -7,7 +7,7 @@ use App\Http\Requests\Comment\UpdateRequest;
 use App\Http\Resources\Comment\ShowCommentResource;
 use App\Models\Comment;
 use App\Models\Discussion;
-use App\Services\StoreCommentMedia;
+use App\Services\ManageMedia;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -39,7 +39,11 @@ class CommentController extends Controller
 		$comment = $discussion->comments()->make([...$data, 'slug' => Str::uuid()]);
 		$comment->user()->associate($request->user());
 
-		$comment->media = StoreCommentMedia::storeFiles($discussion->slug, $comment->slug, $data['media']);
+		$comment->media = ManageMedia::storeCommentMedia(
+			$discussion->slug,
+			$comment->slug,
+			$data['media']
+		);
 
 		$comment->save();
 
@@ -62,14 +66,11 @@ class CommentController extends Controller
 	{
 		$comment->content = $request->post('content');
 
-		$to_remove = $request->post('media_to_delete');
-		if ($to_remove) {
-			foreach ($to_remove as $file) {
-				Storage::delete("discussions/{$comment->discussion->slug}/{$comment->slug}/{$file}");
-			}
-
-			$comment->media = array_diff($comment->media, $to_remove);
-		}
+		$comment->media = ManageMedia::updateMedia(
+			"discussions/{$comment->discussion->slug}/{$comment->slug}",
+			$comment->media,
+			$request->post('media_to_delete', []),
+		);
 
 		$comment->save();
 
@@ -83,12 +84,7 @@ class CommentController extends Controller
 	 */
 	public function destroy(Comment $comment, Request $request): RedirectResponse
 	{
-		if ($comment->media) {
-			foreach ($comment->media as $file) {
-				Storage::delete("discussions/{$comment->discussion->slug}/{$comment->slug}/{$file}");
-			}
-		}
-		Storage::deleteDirectory("discussions/{$comment->discussion->slug}/{$comment->slug}");
+		ManageMedia::deleteDirectoryWithMedia("discussions/{$comment->discussion->slug}/{$comment->slug}", $comment->media);
 
 		DB::transaction(function () use ($comment) {
 			$comment->reports()->delete();

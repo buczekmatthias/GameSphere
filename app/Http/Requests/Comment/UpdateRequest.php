@@ -23,7 +23,9 @@ class UpdateRequest extends FormRequest
 	public function rules(): array
 	{
 		return [
-			'content' => ['string', 'required']
+			'content' => ['string', 'required'],
+			'media_to_delete' => ['array'],
+			'media_to_delete.*' => ['string', 'required']
 		];
 	}
 }

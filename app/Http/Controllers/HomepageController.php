@@ -15,7 +15,7 @@ class HomepageController extends Controller
 		return Inertia::render('app/Homepage', [
 			'games' => Inertia::defer(
 				function () use ($type) {
-					$games = Game::query()->with(['reviews:ratings,game_id']);
+					$games = $type === 'upcoming' ? Game::query() : Game::gamesWithScore();
 
 					$games = match ($type) {
 						'newest' => $games->orderBy('released_at', 'DESC')->where('released_at', '<=', now()->endOfDay()),

@@ -5,12 +5,12 @@ namespace App\Http\Controllers\Settings;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Settings\ProfileUpdateRequest;
 use App\Models\GameCreatorRequest;
+use App\Services\ManageMedia;
 use App\Services\UserDeleteServices;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
 use Illuminate\Support\Str;
@@ -75,7 +75,7 @@ class ProfileController extends Controller
 		$user = $request->user();
 
 		if ($request->get('delete_pfp')) {
-			Storage::delete("users/{$user->avatar}");
+			ManageMedia::deleteFile("users/{$user->avatar}");
 
 			$user->avatar = null;
 
@@ -83,13 +83,7 @@ class ProfileController extends Controller
 		} elseif ($pfp) {
 			$pfpName = Str::uuid()."_".now()->timestamp.".".$pfp->extension();
 
-			Storage::delete("users/{$user->avatar}");
-
-			Storage::putFileAs(
-				"users",
-				$pfp,
-				$pfpName
-			);
+			ManageMedia::replaceFile("users", $user->avatar, $pfp, $pfpName);
 
 			$user->avatar = $pfpName;
 

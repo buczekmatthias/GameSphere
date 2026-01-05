@@ -4,7 +4,6 @@ import FallbackContentAuthor from '@/components/app/FallbackContentAuthor.vue';
 import FormActionTap from '@/components/app/FormActionTap.vue';
 import MediaPreview from '@/components/app/MediaPreview.vue';
 import ReportModal from '@/components/app/ReportModal.vue';
-import TextLink from '@/components/TextLink.vue';
 import { DiscussionComment } from '@/types';
 import { Link } from '@inertiajs/vue3';
 
@@ -26,9 +25,6 @@ withDefaults(
         <div class="grid grid-cols-[1fr_auto] gap-2">
             <FallbackContentAuthor :user="comment.user" v-if="'user' in comment" />
             <p class="self-center text-sm text-slate-300">{{ comment.created_at }}</p>
-            <TextLink :href="route('discussions.show', { discussion: comment.discussion.slug })" v-if="'discussion' in comment">
-                View discussion
-            </TextLink>
         </div>
         <p>{{ comment.content }}</p>
 

@@ -80,7 +80,7 @@ export interface Game {
     released_at: string;
     created_at: string;
     updated_at: string;
-    list: string;
+    lists: string[];
     score: number;
     reviews_count: number;
     permissions: Permissions;

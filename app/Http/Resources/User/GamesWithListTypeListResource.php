@@ -16,7 +16,7 @@ class GamesWithListTypeListResource extends GamesListResource
 	{
 		return [
 			...parent::toArray($request),
-			'list' => $this->pivot->list_type
+			'lists' => $this->list_types
 		];
 	}
 }

@@ -8,6 +8,7 @@ use App\Http\Resources\Games\GamesListResource;
 use App\Http\Resources\Games\GameReviewResource;
 use App\Http\Resources\Genre\GenreListResource;
 use App\Http\Resources\PaginatedContentResource;
+use App\Models\Game;
 use Illuminate\Http\Request;
 
 class UserProfileResource extends SimpleProfileResource
@@ -28,8 +29,8 @@ class UserProfileResource extends SimpleProfileResource
 		$tab = $request->route('tab', 'created_games');
 
 		$entries = (match ($tab) {
-			'created_games' => $this->createdGames()->with(['reviews:ratings,game_id'])->orderBy('released_at', 'DESC'),
-			'games' => $this->games()->with(['reviews:ratings,game_id'])->withPivot(['list_type'])->orderBy('released_at', 'DESC'),
+			'created_games' => Game::gamesWithScore()->where('games.user_id', $this->id)->orderBy('title', 'ASC'),
+			'games' => Game::gamesWithScore()->withLists($request->route('user'))->orderBy('title', 'DESC'),
 			'reviews' => $this->reviews()->with(['game'])->orderBy('created_at', 'DESC'),
 			'discussions' => $this->discussions()->with(['discussable'])->withCount(['comments'])->orderBy('created_at', 'DESC'),
 			'genres' => $this->genres()->withCount(['games', 'discussions'])->orderBy('name', 'ASC'),
