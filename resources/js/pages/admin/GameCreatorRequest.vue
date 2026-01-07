@@ -3,7 +3,6 @@ import GameCreatorRequestTable from '@/components/admin/GameCreatorRequestTable.
 import MainContainer from '@/components/app/MainContainer.vue';
 import PaginatedContent from '@/components/app/PaginatedContent.vue';
 import Heading from '@/components/Heading.vue';
-import { getPaginationData } from '@/composables/usePagination';
 import AdminLayout from '@/layouts/AdminLayout.vue';
 import type { Pagination, User as UserType } from '@/types';
 import { Head } from '@inertiajs/vue3';
@@ -28,7 +27,7 @@ const reloadOnly: string[] = ['requests'];
         <MainContainer class="flex flex-col gap-4">
             <Heading title="Requests to become game creator" />
 
-            <PaginatedContent :pagination="getPaginationData(requests)" :reload-only pagination-position="bottom">
+            <PaginatedContent :pagination="requests" :reload-only pagination-position="bottom">
                 <GameCreatorRequestTable :requests="requests.data" />
             </PaginatedContent>
         </MainContainer>

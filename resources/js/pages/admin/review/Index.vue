@@ -14,7 +14,6 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { TableCell, TableRow } from '@/components/ui/table';
-import { getPaginationData } from '@/composables/usePagination';
 import AdminLayout from '@/layouts/AdminLayout.vue';
 import type { Pagination, Review } from '@/types';
 import { Head, Link } from '@inertiajs/vue3';
@@ -45,7 +44,7 @@ const reloadOnly: string[] = ['reviews'];
 
     <AdminLayout>
         <MainContainer class="flex flex-col gap-4">
-            <PaginatedContent :pagination="getPaginationData(reviews)" :reload-only pagination-position="bottom">
+            <PaginatedContent :pagination="reviews" :reload-only pagination-position="bottom">
                 <Table :reload-only :headers="tableHeaders">
                     <TableRow v-for="review in reviews.data" :key="review.slug">
                         <TableCell>{{ review.slug }}</TableCell>

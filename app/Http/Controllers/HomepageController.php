@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Enum\HomepageSortingType;
 use App\Http\Resources\Games\GamesListResource;
 use App\Models\Game;
+use Illuminate\Support\Facades\Cache;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -15,17 +16,19 @@ class HomepageController extends Controller
 		return Inertia::render('app/Homepage', [
 			'games' => Inertia::defer(
 				function () use ($type) {
-					$games = $type === 'upcoming' ? Game::query() : Game::gamesWithScore();
+					return Cache::flexible("homepage_$type", [180, 300], function () use ($type) {
+						$games = $type === 'upcoming' ? Game::query() : Game::gamesWithScore();
 
-					$games = match ($type) {
-						'newest' => $games->orderBy('released_at', 'DESC')->where('released_at', '<=', now()->endOfDay()),
-						'most_popular' => $games->whereHas('favoriteUsers')
-							->withCount('favoriteUsers')
-							->orderBy('favorite_users_count', 'DESC'),
-						'upcoming' => $games->orderBy('released_at', 'DESC')->where('released_at', '>=', now()->startOfDay()->addDay()),
-					};
+						$games = match ($type) {
+							'newest' => $games->orderBy('released_at', 'DESC')->where('released_at', '<=', now()->endOfDay()),
+							'most_popular' => $games->whereHas('favoriteUsers')
+								->withCount('favoriteUsers')
+								->orderBy('favorite_users_count', 'DESC'),
+							'upcoming' => $games->orderBy('released_at', 'DESC')->where('released_at', '>=', now()->startOfDay()->addDay()),
+						};
 
-					return GamesListResource::collection($games->limit(40)->get());
+						return GamesListResource::collection($games->limit(40)->get());
+					});
 				}
 			),
 			'activeType' => $type,

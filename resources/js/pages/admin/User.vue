@@ -17,7 +17,6 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Separator } from '@/components/ui/separator';
 import { TableCell, TableRow } from '@/components/ui/table';
-import { getPaginationData } from '@/composables/usePagination';
 import AdminLayout from '@/layouts/AdminLayout.vue';
 import type { Pagination, User } from '@/types';
 import { Head, Link } from '@inertiajs/vue3';
@@ -80,7 +79,7 @@ const canCurrentUserManageUser = (user: User) => props.roles_user_can_manage.inc
                 </Button>
             </div>
             <Separator />
-            <PaginatedContent pagination-position="bottom" :pagination="getPaginationData(users)" :reload-only>
+            <PaginatedContent pagination-position="bottom" :pagination="users" :reload-only>
                 <Table :reload-only :headers="tableHeaders">
                     <TableRow v-for="user in users.data" :key="user.username">
                         <TableCell>{{ user.name }}</TableCell>

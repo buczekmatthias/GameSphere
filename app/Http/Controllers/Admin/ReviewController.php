@@ -16,11 +16,11 @@ class ReviewController extends Controller
 	/**
 	 * Handle the incoming request.
 	 */
-	public function __invoke(Request $request): Response
+	public function __invoke(): Response
 	{
 		$entries = Review::with(['user', 'game'])->withCount(['reports']);
-		$column = strtolower($request->get('column', 'content'));
-		$order = strtolower($request->get('order', 'asc'));
+		$column = strtolower(request()->get('column', 'content'));
+		$order = strtolower(request()->get('order', 'asc'));
 
 		if (!in_array(strtolower($order), self::ORDER)) {
 			$order = 'asc';

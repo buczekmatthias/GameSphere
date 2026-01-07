@@ -103,7 +103,7 @@ const teleportId = 'tab_switch_teleport';
                     description="No reviews can be posted nor discussions created until release date listed above."
                     class="mb-0!"
                 />
-                <WhenVisible data="reviews">
+                <WhenVisible data="discussions">
                     <template #fallback>
                         <DiscussionSkeleton />
                     </template>

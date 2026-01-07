@@ -14,7 +14,6 @@ use App\Models\Genre;
 use App\Services\ManageMedia;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -24,16 +23,14 @@ use Inertia\Response;
 
 class DiscussionController extends Controller
 {
-	public function index(Request $request): Response
+	public function index(): Response
 	{
 		return Inertia::render('app/discussion/Index', [
 			'discussions' => Inertia::defer(fn () => ListDiscussionResource::collection(
 				Discussion::with(['author', 'discussable'])
 					->when(
-						$request->has('title'),
-						function (Builder $query) use ($request) {
-							return $query->whereLike('title', "%{$request->get('title')}%");
-						}
+						request()->has('title'),
+						fn (Builder $query) => $query->whereLike('title', "%".request()->get('title')."%")
 					)
 					->withCount('comments')
 					->orderBy('created_at', 'DESC')
@@ -123,7 +120,7 @@ class DiscussionController extends Controller
 	/**
 	 * Remove the specified resource from storage.
 	 */
-	public function destroy(Discussion $discussion, Request $request): RedirectResponse
+	public function destroy(Discussion $discussion): RedirectResponse
 	{
 		$path = "discussions/{$discussion->slug}";
 		$comments = $discussion->comments()->select(['slug', 'media'])->get();
@@ -140,7 +137,7 @@ class DiscussionController extends Controller
 
 		Storage::deleteDirectory($path);
 
-		if ($request->get('return_back')) {
+		if (request()->has('return_back')) {
 			return back(303);
 		}
 

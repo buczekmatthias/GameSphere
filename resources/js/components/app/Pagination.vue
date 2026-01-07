@@ -1,44 +1,21 @@
 <script setup lang="ts">
 import { Button } from '@/components/ui/button';
-import {
-    Combobox,
-    ComboboxAnchor,
-    ComboboxEmpty,
-    ComboboxGroup,
-    ComboboxInput,
-    ComboboxItem,
-    ComboboxItemIndicator,
-    ComboboxList,
-    ComboboxTrigger,
-} from '@/components/ui/combobox';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Input } from '@/components/ui/input';
 import { useZiggy } from '@/composables/useZiggy';
-import { cn } from '@/lib/utils';
 import { Pagination, Ziggy } from '@/types';
-import { router } from '@inertiajs/vue3';
-import { Check, ChevronsUpDown, Search } from 'lucide-vue-next';
-import { computed, ComputedRef, ref, watch } from 'vue';
-
-interface ZiggyWithQuery extends Ziggy {
-    query: {
-        per_page?: string;
-    };
-}
+import { Link, router } from '@inertiajs/vue3';
+import { ChevronLeft, ChevronRight } from 'lucide-vue-next';
+import { computed, ComputedRef, ref } from 'vue';
 
 const props = withDefaults(
     defineProps<{
-        customizablePerPage?: boolean;
         pagination: Pagination;
         pageName?: string;
-        prefPerPage?: number[];
         reloadOnly?: string[];
         showCounter?: boolean;
     }>(),
     {
-        customizablePerPage: false,
         pageName: () => 'page',
-        prefPerPage: () => [10, 30, 50, 100],
         reloadOnly: () => [],
         showCounter: true,
     },
@@ -50,79 +27,46 @@ const isNumber = (e: any) => {
     if (!allowed.includes(e.key)) {
         e.preventDefault();
     }
+
+    if (currentPage.value > props.pagination.meta.last_page) {
+        currentPage.value = props.pagination.meta.last_page;
+    }
 };
 
-const ziggy: ComputedRef<ZiggyWithQuery> = useZiggy();
+const ziggy: ComputedRef<Ziggy> = useZiggy();
 
 const currentPage = ref<number>(props.pagination.meta.current_page);
-
-const pages = computed(() => Array.from(Array(props.pagination.meta.last_page).keys(), (_, j) => j + 1));
 
 const rangeString = computed(
     () => `${props.pagination.meta.from} - ${props.pagination.meta.to > props.pagination.meta.total ? props.pagination.meta.total : props.pagination.meta.to} of
             ${props.pagination.meta.total}`,
 );
 
-const preferredPerPage = ref<number>(props.pagination.meta.per_page);
-
-watch(currentPage, () => router.reload({ only: props.reloadOnly, data: { ...ziggy.value.query, [props.pageName]: currentPage.value } }));
-watch(preferredPerPage, () =>
-    router.reload({ only: props.reloadOnly, data: { ...ziggy.value.query, per_page: preferredPerPage.value, [props.pageName]: 1 } }),
-);
+const changePage = () => {
+    router.reload({ only: props.reloadOnly, data: { ...ziggy.value.query, [props.pageName]: currentPage.value } });
+};
 </script>
 
 <template>
     <div class="col-span-full flex items-center gap-2" v-if="pagination.meta.total > 0">
         <p class="mr-auto" v-if="showCounter">{{ rangeString }}</p>
-        <Select v-if="customizablePerPage" v-model="preferredPerPage" required>
-            <SelectTrigger class="cursor-pointer">
-                <SelectValue placeholder="Select items per page" />
-            </SelectTrigger>
-            <SelectContent>
-                <SelectGroup>
-                    <SelectLabel>Items per page</SelectLabel>
-                    <SelectItem :value="item" v-for="item in prefPerPage" :key="item" class="cursor-pointer">
-                        {{ item }}
-                    </SelectItem>
-                </SelectGroup>
-            </SelectContent>
-        </Select>
-        <Combobox v-model="currentPage" by="label" v-if="pages.length > 1">
-            <ComboboxAnchor as-child class="w-28">
-                <ComboboxTrigger as-child>
-                    <Button variant="outline" class="justify-between">
-                        {{ currentPage ?? 'Select page' }}
-
-                        <ChevronsUpDown class="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                    </Button>
-                </ComboboxTrigger>
-            </ComboboxAnchor>
-
-            <ComboboxList>
-                <div class="relative w-full max-w-sm items-center">
-                    <ComboboxInput
-                        @keypress="isNumber"
-                        class="h-10 rounded-none border-0 border-b pl-9 focus-visible:ring-0"
-                        placeholder="Select page..."
-                    />
-                    <span class="absolute inset-y-0 start-0 flex items-center justify-center px-3">
-                        <Search class="text-muted-foreground size-4" />
-                    </span>
-                </div>
-
-                <ComboboxEmpty> No page found. </ComboboxEmpty>
-
-                <ComboboxGroup>
-                    <ScrollArea :class="{ 'h-[50vh]': pages.length > 15 }">
-                        <ComboboxItem v-for="page in pages" :key="page" :value="page" class="cursor-pointer">
-                            {{ page }}
-                            <ComboboxItemIndicator v-if="page === currentPage">
-                                <Check :class="cn('ml-auto h-4 w-4')" />
-                            </ComboboxItemIndicator>
-                        </ComboboxItem>
-                    </ScrollArea>
-                </ComboboxGroup>
-            </ComboboxList>
-        </Combobox>
+        <template v-if="pagination.meta.last_page > 1">
+            <div>
+                <Button variant="outline" as-child :disabled="!pagination.links.prev">
+                    <Link :href="pagination.links.prev || ''" as="button">
+                        <ChevronLeft />
+                    </Link>
+                </Button>
+                <Button variant="outline" :disabled="!pagination.links.next">
+                    <Link :href="pagination.links.next || ''" as="button">
+                        <ChevronRight />
+                    </Link>
+                </Button>
+            </div>
+            <div class="grid max-w-24 grid-cols-[1fr_auto] items-center gap-1">
+                <Input v-model="currentPage" @keyup="isNumber" @keyup.enter="changePage" />
+                <p>/{{ pagination.meta.last_page }}</p>
+            </div>
+        </template>
     </div>
 </template>

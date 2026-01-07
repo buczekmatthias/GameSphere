@@ -5,7 +5,6 @@ import PaginatedContent from '@/components/app/PaginatedContent.vue';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
-import { getPaginationData } from '@/composables/usePagination';
 import { useZiggy } from '@/composables/useZiggy';
 import AppLayout from '@/layouts/AppLayout.vue';
 import type { BreadcrumbItem, Discussion as DiscussionType, Pagination, Ziggy } from '@/types';
@@ -57,7 +56,7 @@ const searchForm = useForm({
                     <Input v-model="searchForm.title" placeholder="Search by title..." />
                     <Button>Search</Button>
                 </form>
-                <PaginatedContent :pagination="getPaginationData(discussions!)" pagination-position="bottom">
+                <PaginatedContent :pagination="discussions!" pagination-position="bottom">
                     <Discussion :discussion="discussion" v-for="discussion in discussions!.data" :key="discussion.slug" />
                 </PaginatedContent>
             </Deferred>

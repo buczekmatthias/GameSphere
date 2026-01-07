@@ -22,11 +22,11 @@ class UserController extends Controller
 	/**
 	 * Handle the incoming request.
 	 */
-	public function index(Request $request): Response
+	public function index(): Response
 	{
 		$entries = User::query();
-		$column = strtolower($request->get('column', 'content'));
-		$order = strtolower($request->get('order', 'asc'));
+		$column = strtolower(request()->get('column', 'content'));
+		$order = strtolower(request()->get('order', 'asc'));
 
 		if (!in_array(strtolower($order), self::ORDER)) {
 			$order = 'asc';
@@ -44,7 +44,7 @@ class UserController extends Controller
 		return Inertia::render('admin/User', [
 			'users' => AdminUserListResource::collection($entries->paginate(50)),
 			'roles' => array_values(array_filter(array_reverse(array_column(UserRole::cases(), 'value')), fn ($i) => $i !== UserRole::DEVELOPER->value)),
-			'roles_user_can_manage' => UserPermissions::getRolesListUserCanManage($request->user()),
+			'roles_user_can_manage' => UserPermissions::getRolesListUserCanManage(request()->user()),
 			'game_creator_requests_count' => GameCreatorRequest::count()
 		]);
 	}
@@ -58,9 +58,9 @@ class UserController extends Controller
 		return back(303);
 	}
 
-	public function destroy(User $user, Request $request): RedirectResponse
+	public function destroy(User $user): RedirectResponse
 	{
-		UserDeleteServices::deleteUser($user, $request->get('with_relations', false));
+		UserDeleteServices::deleteUser($user, request()->get('with_relations', false));
 
 		return back(303);
 	}

@@ -8,7 +8,7 @@ const props = defineProps<{
     query: SearchData;
 }>();
 
-const queriesCount = computed((): number => Object.keys(props.query).filter((key) => key !== 'per_page').length);
+const queriesCount = computed((): number => Object.keys(props.query).length);
 </script>
 
 <template>

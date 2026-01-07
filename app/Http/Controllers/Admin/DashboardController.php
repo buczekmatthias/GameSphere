@@ -64,11 +64,15 @@ class DashboardController extends Controller
 			$startOfMonth = $now->startOfMonth();
 
 			$model = app($class);
-			$results = collect($model->query()
-				->selectRaw(
-					'SUM(CASE WHEN created_at >= ? THEN 1 ELSE 0 END) as this_month, SUM(CASE WHEN created_at >= ? AND created_at < ? THEN 1 ELSE 0 END) as last_month',
-					[$startOfMonth, $now->subMonth()->startOfMonth(), $startOfMonth]
-				)->first());
+			$results = collect(
+				$model
+					->query()
+					->selectRaw(
+						'SUM(CASE WHEN created_at >= ? THEN 1 ELSE 0 END) as this_month,
+						SUM(CASE WHEN created_at >= ? AND created_at < ? THEN 1 ELSE 0 END) as last_month',
+						[$startOfMonth, $now->subMonth()->startOfMonth(), $startOfMonth]
+					)->first()
+			);
 
 			$results->map(fn ($r) => ShorterNumbers::convertIntToHumanReadable($r));
 
@@ -135,9 +139,9 @@ class DashboardController extends Controller
 	private function getTableDataForChart(string $tableName, Carbon $date): Collection
 	{
 		return DB::table($tableName)
-			->select(
-				DB::raw('EXTRACT(MONTH FROM created_at) as month'),
-				DB::raw('COUNT(*) as count')
+			->selectRaw(
+				"EXTRACT(MONTH FROM created_at) as month,
+				COUNT(*) as count"
 			)
 			->where('created_at', '>=', $date)
 			->groupBy('month')

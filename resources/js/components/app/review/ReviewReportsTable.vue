@@ -11,7 +11,6 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { getPaginationData } from '@/composables/usePagination';
 import { Review } from '@/types';
 import { Link } from '@inertiajs/vue3';
 import { Ban, Circle, CircleX, Ellipsis, Trash } from 'lucide-vue-next';
@@ -26,7 +25,7 @@ const reloadOnly: string[] = ['review'];
 <template>
     <template v-if="review.reports.data.length > 0">
         <p class="text-3xl">Reports</p>
-        <PaginatedContent :pagination="getPaginationData(review.reports)" :reload-only pagination-position="bottom">
+        <PaginatedContent :pagination="review.reports" :reload-only pagination-position="bottom">
             <Table>
                 <TableHeader>
                     <TableRow>

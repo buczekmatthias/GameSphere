@@ -5,7 +5,6 @@ import Game from '@/components/app/Game.vue';
 import MainContainer from '@/components/app/MainContainer.vue';
 import PaginatedContent from '@/components/app/PaginatedContent.vue';
 import Heading from '@/components/Heading.vue';
-import { getPaginationData } from '@/composables/usePagination';
 import AppLayout from '@/layouts/AppLayout.vue';
 import type { BreadcrumbItem, Discussion as DiscussionType, Game as GameType, Genre, Pagination } from '@/types';
 import { Head, Link } from '@inertiajs/vue3';
@@ -53,7 +52,7 @@ const breadcrumbs: BreadcrumbItem[] = [
                     <Gamepad2 class="mt-1 size-7" />
                     <p class="text-2xl font-semibold">Games</p>
                 </div>
-                <PaginatedContent :pagination="getPaginationData(genre.games)" page-name="games" pagination-position="bottom">
+                <PaginatedContent :pagination="genre.games" page-name="games" pagination-position="bottom">
                     <div class="games-grid">
                         <Game class="w-full shrink-0" v-for="game in genre.games.data" :key="game.title" :game="game" />
                     </div>
@@ -65,7 +64,7 @@ const breadcrumbs: BreadcrumbItem[] = [
                     <MessageCircle class="mt-1 size-7" />
                     <p class="text-2xl font-semibold">Discussions</p>
                 </div>
-                <PaginatedContent :pagination="getPaginationData(genre.discussions)" page-name="discussions" pagination-position="bottom">
+                <PaginatedContent :pagination="genre.discussions" page-name="discussions" pagination-position="bottom">
                     <div class="flex flex-col gap-2">
                         <Discussion v-for="discussion in genre.discussions.data" :key="discussion.title" :discussion="discussion" />
                     </div>

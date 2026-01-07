@@ -7,7 +7,6 @@ use App\Http\Requests\Report\UpdateReportStatusRequest;
 use App\Http\Resources\Report\UserReportsTableResource;
 use App\Models\Report;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -18,11 +17,11 @@ class ReportController extends Controller
 	/**
 	 * Display a listing of the resource.
 	 */
-	public function index(Request $request): Response
+	public function index(): Response
 	{
 		$entries = Report::with(['reportable', 'user']);
-		$column = strtolower($request->get('column', 'content'));
-		$order = strtolower($request->get('order', 'desc'));
+		$column = strtolower(request()->get('column', 'content'));
+		$order = strtolower(request()->get('order', 'desc'));
 
 		if (!in_array(strtolower($order), self::ORDER)) {
 			$order = 'desc';

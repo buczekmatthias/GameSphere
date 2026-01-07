@@ -5,7 +5,6 @@ import Game from '@/components/app/Game.vue';
 import Genre from '@/components/app/Genre.vue';
 import PaginatedContent from '@/components/app/PaginatedContent.vue';
 import Review from '@/components/app/Review.vue';
-import { getPaginationData } from '@/composables/usePagination';
 import type {
     DiscussionComment,
     Discussion as DiscussionType,
@@ -37,7 +36,7 @@ const commentsData = computed((): DiscussionComment[] => (props.type === 'commen
 <template>
     <div class="flex flex-col gap-4">
         <template v-if="content.data.length > 0">
-            <PaginatedContent :pagination="getPaginationData(content)" :reload-only>
+            <PaginatedContent :pagination="content" :reload-only>
                 <template v-if="type === 'created_games'">
                     <div class="games-grid">
                         <Game v-for="game in gamesData" :key="game.title" :game />

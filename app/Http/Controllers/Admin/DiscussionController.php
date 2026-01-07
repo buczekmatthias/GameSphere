@@ -16,11 +16,11 @@ class DiscussionController extends Controller
 	/**
 	 * Handle the incoming request.
 	 */
-	public function __invoke(Request $request): Response
+	public function __invoke(): Response
 	{
 		$entries = Discussion::with(['author', 'discussable'])->withCount(['comments', 'reports']);
-		$column = strtolower($request->get('column', 'title'));
-		$order = strtolower($request->get('order', 'asc'));
+		$column = strtolower(request()->get('column', 'title'));
+		$order = strtolower(request()->get('order', 'asc'));
 
 		if (!in_array(strtolower($order), self::ORDER)) {
 			$order = 'asc';

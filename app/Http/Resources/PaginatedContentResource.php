@@ -21,7 +21,6 @@ class PaginatedContentResource extends JsonResource
 			'current_page' => $this->resource->currentPage(),
 			'from' => $from,
 			'last_page' => $this->resource->lastPage(),
-			'per_page' => $this->resource->perPage(),
 			'to' => $to,
 			'total' => $this->resource->total(),
 		];
@@ -30,7 +29,11 @@ class PaginatedContentResource extends JsonResource
 
 		return [
 			'data' => ($dataResource ? $dataResource::collection($this->resource->items()) : $this->resource->items()),
-			'meta' => $meta
+			'meta' => $meta,
+			'links' => [
+				'prev' => $this->resource->previousPageUrl(),
+				'next' => $this->resource->nextPageUrl()
+			]
 		];
 	}
 }

@@ -19,6 +19,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
@@ -30,37 +31,31 @@ class GameController extends Controller
 	/**
 	 * Display a listing of the resource.
 	 */
-	public function index(Request $request): Response | RedirectResponse
+	public function index(): Response | RedirectResponse
 	{
-		$per_page = $request->get('per_page', 30);
-
 		return Inertia::render('app/game/Index', [
 			'games' => Inertia::defer(fn () => GamesListResource::collection(
 				Game::gamesWithScore()
 					->orderBy('title')
 					->when(
-						$request->has('title'),
-						function (Builder $query) use ($request) {
-							return $query->whereLike('title', "%{$request->get('title')}%");
-						}
+						request()->has('title'),
+						fn (Builder $query) => $query->whereLike('title', "%".request()->get('title')."%")
 					)
 					->when(
-						$request->has('genre'),
-						function (Builder $query) use ($request) {
-							return $query->where('genre_id', Genre::select('id')->where('name', $request->get('genre'))->first()->id);
-						}
+						request()->has('genre'),
+						fn (Builder $query) => $query->where('genre_id', Genre::select('id')->where('name', request()->get('genre'))->first()->id)
 					)
 					->when(
-						$request->has('released_after') && $request->has('released_before'),
-						function (Builder $query) use ($request) {
-							$released_after = Carbon::createFromFormat('Y-m-d', $request->get('released_after'));
-							$released_before = Carbon::createFromFormat('Y-m-d', $request->get('released_before'));
+						request()->has('released_after') && request()->has('released_before'),
+						function (Builder $query) {
+							$released_after = Carbon::createFromFormat('Y-m-d', request()->get('released_after'));
+							$released_before = Carbon::createFromFormat('Y-m-d', request()->get('released_before'));
 
 							if ($released_before->isBefore($released_after)) {
 								return redirect()->to(
 									url()->current() . '?' . http_build_query(array_merge(
 										request()->query(),
-										['released_before' => $request->get('released_after')]
+										['released_before' => request()->get('released_after')]
 									))
 								);
 							}
@@ -69,21 +64,16 @@ class GameController extends Controller
 						}
 					)
 					->when(
-						$request->has('released_after') && !$request->has('released_before'),
-						function (Builder $query) use ($request) {
-							return $query->whereDate('released_at', '>=', $request->get('released_after'));
-						}
+						request()->has('released_after') && !request()->has('released_before'),
+						fn (Builder $query) => $query->whereDate('released_at', '>=', request()->get('released_after'))
 					)
 					->when(
-						$request->has('released_before') && !$request->has('released_after'),
-						function (Builder $query) use ($request) {
-							return $query->whereDate('released_at', '<=', $request->get('released_before'));
-						}
+						request()->has('released_before') && !request()->has('released_after'),
+						fn (Builder $query) => $query->whereDate('released_at', '<=', request()->get('released_before'))
 					)
-					->paginate($per_page)
+					->paginate(30)
 			)),
-			'per_page' => $per_page,
-			'genres' => Inertia::defer(fn () => Genre::select('name')->orderBy('name', 'ASC')->pluck('name'))
+			'genres' => Inertia::defer(fn () => Cache::flexible('games_index_genres', [180, 300], fn () => Genre::select('name')->orderBy('name', 'ASC')->pluck('name')))
 		]);
 	}
 
@@ -93,7 +83,7 @@ class GameController extends Controller
 	public function create(): Response
 	{
 		return Inertia::render('app/game/Create', [
-			'genres' => Genre::select(['slug', 'name'])->get()
+			'genres' => Genre::select(['slug', 'name'])->orderBy('name')->get()
 		]);
 	}
 
@@ -165,25 +155,56 @@ class GameController extends Controller
 	{
 		$game->load(['genre', 'creator', 'reviews:ratings,game_id'])->loadCount(['reviews']);
 
+		// TODO: Swap to classic tabs and not shadcn
 		return Inertia::render('app/game/Show', [
 			'game' => ShowGameResource::make($game),
 			'userLists' => Inertia::defer(fn () => UserGameListsServices::checkIfGameIsInAnyUserGamesList($game)),
-			'reviews' => Inertia::defer(fn () => GameReviewResource::collection($game->reviews()->with(['user'])->orderBy('created_at', 'DESC')->paginate(30, pageName: 'reviews_page'))),
-			'discussions' => Inertia::defer(fn () => GameDiscussionResource::collection($game->discussions()->with('author')->withCount('comments')->orderBy('created_at', 'DESC')->orderBy('id', 'DESC')->paginate(30, pageName: 'discussions_page'))),
+			'reviews' => Inertia::defer(
+				fn () => Cache::flexible(
+					"games_show_{$game->slug}_reviews_page_".request()->get('reviews_page', 1),
+					[180, 300],
+					function () use ($game) {
+						return GameReviewResource::collection(
+							$game
+								->reviews()
+								->with(['user'])
+								->orderBy('created_at', 'DESC')
+								->paginate(30, pageName: 'reviews_page')
+						);
+					}
+				)
+			),
+			'discussions' => Inertia::defer(
+				fn () => Cache::flexible(
+					"games_show_{$game->slug}_discussions_page_".request()->get('discussions_page', 1),
+					[180, 300],
+					function () use ($game) {
+						return GameDiscussionResource::collection(
+							$game
+								->discussions()
+								->with('author')
+								->withCount('comments')
+								->orderBy('created_at', 'DESC')
+								->orderBy('id', 'DESC')
+								->paginate(30, pageName: 'discussions_page')
+						);
+					}
+				),
+			)
 		]);
 	}
 
 	/**
 	 * Show the form for editing the specified resource.
 	 */
-	public function edit(Game $game, Request $request): Response
+	public function edit(Game $game): Response
 	{
 		$game->load(['genre', 'creator']);
 
 		return Inertia::render('app/game/Edit', [
 			'game' => EditGameResource::make($game),
 			'genres' => Genre::select(['slug', 'name'])->orderBy('name', 'ASC')->get(),
-			'users' => $request->user()?->isStaff() ? SimpleProfileResource::collection(User::permittedToOwnGame()->get()) : null
+			'users' => request()->user()?->isStaff() ? SimpleProfileResource::collection(User::permittedToOwnGame()->get()) : null
 		]);
 	}
 

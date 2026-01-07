@@ -5,13 +5,12 @@ namespace App\Http\Controllers;
 use App\Http\Resources\User\UserProfileResource;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class UserProfileController extends Controller
 {
-	public function __invoke(Request $request, User $user, string $tab = 'created_games'): Response | RedirectResponse
+	public function __invoke(User $user, string $tab = 'created_games'): Response | RedirectResponse
 	{
 		$tabs = ['created_games', 'games', 'genres', 'reviews', 'discussions', 'comments'];
 
@@ -21,7 +20,7 @@ class UserProfileController extends Controller
 
 		return Inertia::render('app/UserProfile', [
 			'user' => UserProfileResource::make($user),
-			'isCurrentUserProfile' => $request->user() ? $user->username === $request->user()->username : false,
+			'isCurrentUserProfile' => $user->username === request()->user()?->username,
 			'tabs' => array_map(fn ($t) => ['name' => $t, 'route' => route('user.profile', ['user' => $user, 'tab' => $t])], $tabs),
 			'activeTab' => $tab
 		]);

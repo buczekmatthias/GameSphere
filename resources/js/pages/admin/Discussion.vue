@@ -14,7 +14,6 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { TableCell, TableRow } from '@/components/ui/table';
-import { getPaginationData } from '@/composables/usePagination';
 import AdminLayout from '@/layouts/AdminLayout.vue';
 import type { Discussion, Pagination } from '@/types';
 import { Head, Link } from '@inertiajs/vue3';
@@ -47,7 +46,7 @@ const reloadOnly: string[] = ['discussions'];
 
     <AdminLayout>
         <MainContainer class="flex flex-col gap-4">
-            <PaginatedContent :pagination="getPaginationData(discussions)" :reload-only pagination-position="bottom">
+            <PaginatedContent :pagination="discussions" :reload-only pagination-position="bottom">
                 <Table :reload-only :headers="tableHeaders">
                     <TableRow v-for="discussion in discussions.data" :key="discussion.slug">
                         <TableCell>{{ discussion.slug }}</TableCell>

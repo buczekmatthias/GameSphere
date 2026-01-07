@@ -15,7 +15,6 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { TableCell, TableRow } from '@/components/ui/table';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { getPaginationData } from '@/composables/usePagination';
 import AdminLayout from '@/layouts/AdminLayout.vue';
 import type { DiscussionComment, Pagination } from '@/types';
 import { Head, Link } from '@inertiajs/vue3';
@@ -49,7 +48,7 @@ const reloadOnly: string[] = ['comments'];
 
     <AdminLayout>
         <MainContainer class="flex flex-col gap-4">
-            <PaginatedContent :pagination="getPaginationData(comments)" :reload-only pagination-position="bottom">
+            <PaginatedContent :pagination="comments" :reload-only pagination-position="bottom">
                 <Table :reload-only :headers="tableHeaders">
                     <TableRow v-for="comment in comments.data" :key="comment.slug">
                         <TableCell>{{ comment.slug }}</TableCell>

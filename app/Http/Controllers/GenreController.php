@@ -7,7 +7,6 @@ use App\Http\Resources\Genre\ShowGenreResource;
 use App\Models\Genre;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -16,9 +15,9 @@ class GenreController extends Controller
 	/**
 	 * Display a listing of the resource.
 	 */
-	public function index(Request $request): Response
+	public function index(): Response
 	{
-		$user = $request->user();
+		$user = request()->user();
 
 		if ($user) {
 			$user->load(['genres']);
@@ -29,10 +28,8 @@ class GenreController extends Controller
 				fn () => GenreListResource::collection(
 					Genre::withCount(['discussions', 'games'])
 						->when(
-							$request->has('name'),
-							function (Builder $query) use ($request) {
-								return $query->whereLike('name', "%{$request->get('name')}%");
-							}
+							request()->has('name'),
+							fn (Builder $query) => $query->whereLike('name', "%".request()->get('name')."%")
 						)
 						->orderBy('name', 'ASC')
 						->paginate(30),
@@ -51,10 +48,10 @@ class GenreController extends Controller
 		]);
 	}
 
-	public function toggleFavoriteGenre(Genre $genre, Request $request): RedirectResponse
+	public function toggleFavoriteGenre(Genre $genre): RedirectResponse
 	{
 		/** @var \App\Models\User */
-		$user = $request->user();
+		$user = request()->user();
 
 		if ($user->genres()->where('genre_id', $genre->id)->exists()) {
 			$user->genres()->detach($genre);

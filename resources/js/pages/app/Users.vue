@@ -8,7 +8,6 @@ import UsersIndexSkeleton from '@/components/fallbacks/UsersIndexSkeleton.vue';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import UserInfo from '@/components/UserInfo.vue';
-import { getPaginationData } from '@/composables/usePagination';
 import { useZiggy } from '@/composables/useZiggy';
 import AppLayout from '@/layouts/AppLayout.vue';
 import type { BreadcrumbItem, Pagination, User, Ziggy } from '@/types';
@@ -16,7 +15,6 @@ import { Deferred, Head, Link, router } from '@inertiajs/vue3';
 import { ComputedRef, ref } from 'vue';
 
 interface SearchData {
-    per_page?: string | number;
     contains?: string;
     role?: string;
 }
@@ -28,7 +26,6 @@ export interface ZiggyWithGamesQuery extends Ziggy {
 defineProps<{
     users?: Pagination & { data: User[] };
     roles: string[];
-    per_page: string | number;
 }>();
 
 const ziggy: ComputedRef<ZiggyWithGamesQuery> = useZiggy();
@@ -45,8 +42,6 @@ const role = ref<string>(ziggy.value.query.role || '');
 
 const searchEntries = () => {
     const data: Partial<SearchData> = {};
-
-    if (ziggy.value.query.per_page) data.per_page = ziggy.value.query.per_page;
 
     if (contains.value) data.contains = contains.value;
 
@@ -74,7 +69,7 @@ const reloadOnly = ['users', 'ziggy'];
                         <Button type="submit" @click="searchEntries">Search</Button>
                     </div>
                     <RoleTabs :roles :ziggy :total="users!.meta.total" :reloadOnly />
-                    <PaginatedContent :customizable-per-page="true" :pagination="getPaginationData(users!)" :reload-only pagination-position="bottom">
+                    <PaginatedContent :pagination="users!" :reload-only pagination-position="bottom">
                         <Link
                             :href="route('user.profile', { user: user.username })"
                             v-for="user in users!.data"

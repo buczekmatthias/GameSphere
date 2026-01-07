@@ -16,7 +16,6 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { TableCell, TableRow } from '@/components/ui/table';
-import { getPaginationData } from '@/composables/usePagination';
 import AdminLayout from '@/layouts/AdminLayout.vue';
 import type { Genre, Pagination } from '@/types';
 import { Head, Link, useForm } from '@inertiajs/vue3';
@@ -81,7 +80,7 @@ const submit = () => {
                 </Dialog>
             </div>
 
-            <PaginatedContent :pagination="getPaginationData(genres)" :reload-only pagination-position="bottom">
+            <PaginatedContent :pagination="genres" :reload-only pagination-position="bottom">
                 <Table :reload-only :headers="tableHeaders">
                     <TableRow v-for="genre in genres.data" :key="genre.slug">
                         <TableCell>{{ genre.slug }}</TableCell>

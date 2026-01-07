@@ -13,7 +13,6 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { TableCell, TableRow } from '@/components/ui/table';
-import { getPaginationData } from '@/composables/usePagination';
 import AdminLayout from '@/layouts/AdminLayout.vue';
 import type { Pagination, Report } from '@/types';
 import { Head, Link } from '@inertiajs/vue3';
@@ -40,7 +39,7 @@ const reloadOnly: string[] = ['reports'];
 
     <AdminLayout>
         <MainContainer class="flex flex-col gap-4">
-            <PaginatedContent :pagination="getPaginationData(reports)" :reload-only pagination-position="bottom">
+            <PaginatedContent :pagination="reports" :reload-only pagination-position="bottom">
                 <Table :reload-only :headers="tableHeaders">
                     <TableRow v-for="report in reports.data" :key="report.slug">
                         <TableCell>{{ report.slug }}</TableCell>

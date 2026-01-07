@@ -12,7 +12,7 @@ import { Deferred } from '@inertiajs/vue3';
 import { DateValue, parseDate } from '@internationalized/date';
 import { useMediaQuery } from '@vueuse/core';
 import { ArrowUpDown } from 'lucide-vue-next';
-import { capitalize, ref, watch } from 'vue';
+import { ref, watch } from 'vue';
 
 export interface FilterData {
     released_after?: string | object;
@@ -106,7 +106,7 @@ watch(
                         <SelectContent>
                             <SelectItem :value="null">No genre</SelectItem>
                             <SelectItem v-for="genre in genres" :key="genre" :value="genre">
-                                {{ capitalize(genre) }}
+                                {{ genre }}
                             </SelectItem>
                         </SelectContent>
                     </Select>

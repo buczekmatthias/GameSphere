@@ -8,7 +8,6 @@ import PaginatedContent from '@/components/app/PaginatedContent.vue';
 import GameSkeleton from '@/components/fallbacks/GameSkeleton.vue';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { getPaginationData } from '@/composables/usePagination';
 import { useZiggy } from '@/composables/useZiggy';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { BreadcrumbItem, Game as GameType, Pagination, Ziggy } from '@/types';
@@ -16,7 +15,6 @@ import { Deferred, Head, router } from '@inertiajs/vue3';
 import { computed, ComputedRef, ref } from 'vue';
 
 export interface SearchData {
-    per_page?: string | number;
     title?: string;
     released_after?: string;
     released_before?: string;
@@ -36,7 +34,6 @@ const breadcrumbs: BreadcrumbItem[] = [
 
 defineProps<{
     games?: Pagination & { data: GameType[] };
-    per_page: number | string;
     genres?: string[];
 }>();
 
@@ -51,8 +48,6 @@ const searchConditions = ref<FilterData>({
 
 const searchEntries = () => {
     let data: Partial<SearchData> = {};
-
-    if (ziggy.value.query.per_page) data.per_page = ziggy.value.query.per_page;
 
     if (title.value) data.title = title.value;
 
@@ -94,13 +89,7 @@ const isQueried = computed(
 
                 <SearchHeaderText :total="games!.meta.total" :query="ziggy.query" v-if="isQueried" />
                 <ContentWithFallback :has-value="games!.data.length > 0">
-                    <PaginatedContent
-                        container-class="games-grid"
-                        :customizable-per-page="true"
-                        :pagination="getPaginationData(games!)"
-                        :reload-only
-                        pagination-position="bottom"
-                    >
+                    <PaginatedContent container-class="games-grid" :pagination="games!" :reload-only pagination-position="bottom">
                         <Game v-for="game in games!.data" :key="game.title" :game />
                     </PaginatedContent>
                 </ContentWithFallback>

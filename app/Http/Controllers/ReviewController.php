@@ -9,7 +9,6 @@ use App\Http\Resources\Games\GamesListResource;
 use App\Http\Resources\Games\GameReviewResource;
 use App\Models\Review;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -52,15 +51,15 @@ class ReviewController extends Controller
 	/**
 	 * Remove the specified resource from storage.
 	 */
-	public function destroy(Review $review, Request $request): RedirectResponse
+	public function destroy(Review $review): RedirectResponse
 	{
 		DB::transaction(function () use ($review) {
 			$review->reports()->delete();
 			$review->delete();
 		});
 
-		if ($request->get('to_route')) {
-			return to_route($request->get('to_route'), 303);
+		if (request()->has('to_route')) {
+			return to_route(request()->get('to_route'), 303);
 		}
 
 		return back(303);

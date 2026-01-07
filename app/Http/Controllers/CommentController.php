@@ -9,7 +9,6 @@ use App\Models\Comment;
 use App\Models\Discussion;
 use App\Services\ManageMedia;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
@@ -81,7 +80,7 @@ class CommentController extends Controller
 	/**
 	 * Remove the specified resource from storage.
 	 */
-	public function destroy(Comment $comment, Request $request): RedirectResponse
+	public function destroy(Comment $comment): RedirectResponse
 	{
 		$media = $comment->media;
 		$path = "discussions/{$comment->discussion->slug}/{$comment->slug}";
@@ -94,7 +93,7 @@ class CommentController extends Controller
 
 		ManageMedia::deleteDirectoryWithMedia($path, $media);
 
-		if ($request->get('to_homepage')) {
+		if (request()->has('to_homepage')) {
 			return to_route('home', status: 303);
 		}
 
