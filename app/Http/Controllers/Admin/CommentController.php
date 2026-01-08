@@ -18,7 +18,9 @@ class CommentController extends Controller
 	 */
 	public function __invoke(): Response
 	{
-		$entries = Comment::with(['user', 'discussion'])->withCount(['reports']);
+		$entries = Comment::select(['slug', 'content', 'media', 'created_at', 'user_id', 'discussion_id'])
+			->with(['user:id,name,username,avatar', 'discussion:id,title,slug'])
+			->withCount(['reports']);
 		$column = strtolower(request()->get('column', 'content'));
 		$order = strtolower(request()->get('order', 'asc'));
 

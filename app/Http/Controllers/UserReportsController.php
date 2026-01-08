@@ -16,7 +16,8 @@ class UserReportsController extends Controller
 	{
 		return Inertia::render('app/Reports', [
 			'reports' => UserReportsTableResource::collection(
-				Report::where('user_id', request()->user()->id)
+				Report::select(['status', 'reason', 'created_at', 'reportable_id', 'reportable_type'])
+				->where('user_id', request()->user()->id)
 				->with(['reportable'])
 				->paginate(25)
 			),

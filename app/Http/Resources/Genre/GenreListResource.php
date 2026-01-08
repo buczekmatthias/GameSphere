@@ -5,7 +5,7 @@ namespace App\Http\Resources\Genre;
 use App\Services\ShorterNumbers;
 use Illuminate\Http\Request;
 
-class GenreListResource extends BaseGenre
+class GenreListResource extends BaseGenreResource
 {
 	/**
 	 * Transform the resource into an array.

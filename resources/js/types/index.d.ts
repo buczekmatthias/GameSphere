@@ -88,6 +88,8 @@ export interface Game {
     reviews_count: number;
     permissions: Permissions;
     is_released: boolean;
+    reviews: Pagination & { data: ReviewType[] };
+    discussions: Pagination & { data: DiscussionType[] };
 }
 
 export interface Genre {
@@ -105,7 +107,6 @@ export interface Review {
     content: string;
     ratings: ReviewRatings;
     avg_rating: number;
-    is_verified: boolean;
     user: User & { is_email_verified: boolean };
     game: Game;
     created_at: string;

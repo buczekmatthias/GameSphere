@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import Table from '@/components/admin/Table.vue';
-import TextLink from '@/components/TextLink.vue';
+import FallbackContentAuthor from '@/components/app/FallbackContentAuthor.vue';
 import { Button } from '@/components/ui/button';
 import {
     DropdownMenu,
@@ -33,11 +33,10 @@ const reloadOnly: string[] = ['requests'];
 <template>
     <template v-if="requests.length > 0">
         <Table :reload-only :headers="tableHeaders">
-            <TableRow v-for="request in requests" :key="request.slug">
-                <TableCell>{{ request.slug }}</TableCell>
+            <TableRow v-for="request in requests" :key="request.user.username">
                 <TableCell>{{ request.user.name }}</TableCell>
-                <TableCell>
-                    <TextLink :href="route('user.profile', { user: request.user.username })">{{ request.user.username }}</TextLink>
+                <TableCell class="min-w-56">
+                    <FallbackContentAuthor :user="request.user" />
                 </TableCell>
                 <TableCell>{{ request.created_at }}</TableCell>
                 <TableCell>

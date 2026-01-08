@@ -22,7 +22,8 @@ class GenreController extends Controller
 	 */
 	public function index(): Response
 	{
-		$entries = Genre::withCount(['discussions', 'games']);
+		$entries = Genre::select(['name', 'slug'])
+			->withCount(['discussions', 'games']);
 		$column = strtolower(request()->get('column', 'name'));
 		$order = strtolower(request()->get('order', 'asc'));
 

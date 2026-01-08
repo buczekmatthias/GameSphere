@@ -29,7 +29,6 @@ defineProps<{
 }>();
 
 const tableHeaders = [
-    { label: 'Slug' },
     { label: 'Title', is_sortable: true, column: 'title' },
     { label: 'Author', is_sortable: true, column: 'author' },
     { label: 'Discussable' },
@@ -49,9 +48,8 @@ const reloadOnly: string[] = ['discussions'];
             <PaginatedContent :pagination="discussions" :reload-only pagination-position="bottom">
                 <Table :reload-only :headers="tableHeaders">
                     <TableRow v-for="discussion in discussions.data" :key="discussion.slug">
-                        <TableCell>{{ discussion.slug }}</TableCell>
                         <TableCell>{{ discussion.title }}</TableCell>
-                        <TableCell>
+                        <TableCell class="min-w-56">
                             <FallbackContentAuthor :user="discussion.author" />
                         </TableCell>
                         <TableCell>

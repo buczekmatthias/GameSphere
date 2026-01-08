@@ -15,7 +15,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { TableCell, TableRow } from '@/components/ui/table';
 import AdminLayout from '@/layouts/AdminLayout.vue';
-import type { Pagination, Review } from '@/types';
+import type { Pagination, Review, ReviewRatings } from '@/types';
 import { Head, Link } from '@inertiajs/vue3';
 import { Ellipsis, Eye, Trash } from 'lucide-vue-next';
 
@@ -28,15 +28,21 @@ defineProps<{
 }>();
 
 const tableHeaders = [
-    { label: 'Slug' },
     { label: 'Content', is_sortable: true, column: 'content' },
     { label: 'Game', is_sortable: true, column: 'game' },
     { label: 'User', is_sortable: true, column: 'user' },
     { label: 'Reports', is_sortable: true, column: 'reports' },
+    { label: 'Score' },
     { label: 'Created at', is_sortable: true, column: 'created_at' },
 ];
 
 const reloadOnly: string[] = ['reviews'];
+
+const getScore = (ratings: ReviewRatings) => {
+    const sum = Object.values(ratings).reduce((a, b) => a + b, 0);
+
+    return (sum / Object.keys(ratings).length).toFixed(2);
+};
 </script>
 
 <template>
@@ -47,15 +53,15 @@ const reloadOnly: string[] = ['reviews'];
             <PaginatedContent :pagination="reviews" :reload-only pagination-position="bottom">
                 <Table :reload-only :headers="tableHeaders">
                     <TableRow v-for="review in reviews.data" :key="review.slug">
-                        <TableCell>{{ review.slug }}</TableCell>
                         <TableCell>{{ review.content }}</TableCell>
                         <TableCell>
                             <TextLink :href="route('games.show', { game: review.game.slug })">{{ review.game.title }}</TextLink>
                         </TableCell>
-                        <TableCell>
+                        <TableCell class="min-w-56">
                             <FallbackContentAuthor :user="review.user" />
                         </TableCell>
                         <TableCell>{{ review.reports_count }}</TableCell>
+                        <TableCell>{{ getScore(review.ratings) }}</TableCell>
                         <TableCell>{{ review.created_at }}</TableCell>
                         <TableCell>
                             <DropdownMenu>

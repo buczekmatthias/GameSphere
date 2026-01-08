@@ -6,15 +6,12 @@ use App\Http\Requests\Discussion\StoreRequest;
 use App\Http\Requests\Discussion\UpdateRequest;
 use App\Http\Resources\Discussion\ListDiscussionResource;
 use App\Http\Resources\Discussion\ShowDiscussionResource;
-use App\Http\Resources\Games\GamesListResource;
-use App\Http\Resources\Genre\GenreListResource;
 use App\Models\Discussion;
 use App\Models\Game;
 use App\Models\Genre;
 use App\Services\ManageMedia;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -27,7 +24,9 @@ class DiscussionController extends Controller
 	{
 		return Inertia::render('app/discussion/Index', [
 			'discussions' => Inertia::defer(fn () => ListDiscussionResource::collection(
-				Discussion::with(['author', 'discussable'])
+				Discussion::with([
+					'author:id,avatar,username,name', 'discussable'
+				])
 					->when(
 						request()->has('title'),
 						fn (Builder $query) => $query->whereLike('title', "%".request()->get('title')."%")
@@ -45,9 +44,9 @@ class DiscussionController extends Controller
 		$item = null;
 
 		if ($type === 'game') {
-			$item = GamesListResource::make(Game::where('slug', $slug)->first());
+			$item = Game::select(['title', 'slug'])->where('slug', $slug)->first();
 		} else {
-			$item = GenreListResource::make(Genre::where('slug', $slug)->first());
+			$item = Genre::select(['slug', 'name'])->where('slug', $slug)->first();
 		}
 
 		return Inertia::render('app/discussion/Create', [
@@ -61,13 +60,13 @@ class DiscussionController extends Controller
 	 */
 	public function store(StoreRequest $request): RedirectResponse
 	{
-		$userId = Auth::user()->id;
+		$userId = $request->user()->id;
 		$data = $request->validated();
 
 		$discussion = (
 			$request->post('type') === 'game'
-			? Game::where('slug', $data['slug'])
-			: Genre::where('slug', $data['slug'])
+			? Game::select(['id'])->where('slug', $data['slug'])
+			: Genre::select(['id'])->where('slug', $data['slug'])
 		)
 			->first()
 			->discussions()
@@ -100,7 +99,11 @@ class DiscussionController extends Controller
 	 */
 	public function show(Discussion $discussion): Response
 	{
-		$discussion->load(['author', 'discussable'])->loadCount('comments');
+		$discussion->load([
+			'author:id,avatar,name,username',
+			'discussable'
+		])
+			->loadCount('comments');
 
 		return Inertia::render('app/discussion/Show', [
 			'discussion' => ShowDiscussionResource::make($discussion),

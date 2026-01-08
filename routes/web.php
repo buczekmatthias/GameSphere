@@ -42,7 +42,10 @@ Route::middleware(['auth'])->group(function () {
 });
 
 Route::get('/users', UserListController::class)->name('users.index');
-Route::resource('games', GameController::class)->only(['index', 'show']);
+Route::controller(GameController::class)->name('games.')->prefix('games')->group(function () {
+	Route::get('/', 'index')->name('index');
+	Route::get('/{game}/{tab?}', 'show')->name('show');
+});
 Route::resource('reviews', ReviewController::class)->only(['show']);
 Route::resource('discussions', DiscussionController::class)->only(['index', 'show']);
 Route::resource('comments', CommentController::class)->only(['show']);

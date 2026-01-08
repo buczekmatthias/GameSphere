@@ -31,23 +31,17 @@ defineProps<{
                 <Table>
                     <TableHeader>
                         <TableRow>
-                            <TableHead class="w-24">#</TableHead>
-                            <TableHead class="w-80">Id</TableHead>
-                            <TableHead>Reason</TableHead>
                             <TableHead class="w-36">Entry type</TableHead>
+                            <TableHead>Reason</TableHead>
                             <TableHead class="w-36">Status</TableHead>
                             <TableHead class="w-36">Created at</TableHead>
-                            <TableHead class="w-6">Actions</TableHead>
+                            <TableHead class="w-6"></TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        <TableRow v-for="(report, i) in reports.data" :key="report.slug">
-                            <TableCell>{{ i + 1 }}</TableCell>
-                            <TableCell>
-                                <TextLink :href="report.reportable">{{ report.slug }}</TextLink>
-                            </TableCell>
-                            <TableCell>{{ report.reason }}</TableCell>
+                        <TableRow v-for="report in reports.data" :key="report.slug">
                             <TableCell>{{ capitalize(report.reportable_type) }}</TableCell>
+                            <TableCell>{{ report.reason }}</TableCell>
                             <TableCell class="capitalize">{{ report.status }}</TableCell>
                             <TableCell>{{ report.created_at }}</TableCell>
                             <TableCell class="text-center">

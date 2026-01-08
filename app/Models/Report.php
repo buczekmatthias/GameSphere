@@ -28,7 +28,23 @@ class Report extends Model
 
 	public function reportable(): MorphTo
 	{
-		return $this->morphTo();
+		return $this->morphTo()->constrain([
+			Comment::class => function ($query) {
+				$query->select('id', 'slug');
+			},
+			Discussion::class => function ($query) {
+				$query->select('id', 'slug');
+			},
+			Game::class => function ($query) {
+				$query->select('id', 'slug');
+			},
+			Review::class => function ($query) {
+				$query->select('id', 'slug');
+			},
+			User::class => function ($query) {
+				$query->select('id', 'username');
+			},
+		]);
 	}
 
 	public function scopeActiveReports(Builder $query): Builder

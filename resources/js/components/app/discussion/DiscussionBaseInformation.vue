@@ -21,6 +21,7 @@ defineProps<{
             <p class="col-span-full mb-2 text-2xl">{{ discussion.title }}</p>
         </div>
         <div class="flex gap-3">
+            <FallbackContentAuthor :user="discussion.author" class="gap-1" />
             <div class="flex flex-wrap items-center gap-1">
                 <Calendar class="h-5" />
                 <p>{{ discussion.created_at }}</p>
@@ -29,7 +30,6 @@ defineProps<{
                 <MessageCircle class="h-5" />
                 <p>{{ discussion.comments_count }}</p>
             </div>
-            <FallbackContentAuthor :user="discussion.author" class="gap-1" />
             <div class="flex items-center gap-1">
                 <template v-if="discussion.discussable">
                     <template v-if="discussion.discussable_type === 'game'">

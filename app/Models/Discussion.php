@@ -31,7 +31,14 @@ class Discussion extends Model
 
 	public function discussable(): MorphTo
 	{
-		return $this->morphTo();
+		return $this->morphTo()->constrain([
+			Game::class => function ($query) {
+				$query->select('id', 'title', 'slug');
+			},
+			Genre::class => function ($query) {
+				$query->select('id', 'name', 'slug');
+			},
+		]);
 	}
 
 	public function comments(): HasMany

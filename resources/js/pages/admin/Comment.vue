@@ -18,7 +18,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import AdminLayout from '@/layouts/AdminLayout.vue';
 import type { DiscussionComment, Pagination } from '@/types';
 import { Head, Link } from '@inertiajs/vue3';
-import { Ellipsis, Trash } from 'lucide-vue-next';
+import { Ellipsis, Eye, Trash } from 'lucide-vue-next';
 
 interface CommentWithReportsCount extends Omit<DiscussionComment, 'media'> {
     reports_count: number;
@@ -31,7 +31,6 @@ defineProps<{
 }>();
 
 const tableHeaders = [
-    { label: 'Slug' },
     { label: 'Content', is_sortable: true, column: 'content' },
     { label: 'User', is_sortable: true, column: 'user' },
     { label: 'Discussion' },
@@ -51,8 +50,7 @@ const reloadOnly: string[] = ['comments'];
             <PaginatedContent :pagination="comments" :reload-only pagination-position="bottom">
                 <Table :reload-only :headers="tableHeaders">
                     <TableRow v-for="comment in comments.data" :key="comment.slug">
-                        <TableCell>{{ comment.slug }}</TableCell>
-                        <TableCell>
+                        <TableCell class="min-w-56">
                             <TooltipProvider>
                                 <Tooltip>
                                     <TooltipTrigger as-child>
@@ -64,7 +62,7 @@ const reloadOnly: string[] = ['comments'];
                                 </Tooltip>
                             </TooltipProvider>
                         </TableCell>
-                        <TableCell>
+                        <TableCell class="min-w-56">
                             <FallbackContentAuthor :user="comment.user" />
                         </TableCell>
                         <TableCell>
@@ -85,6 +83,12 @@ const reloadOnly: string[] = ['comments'];
                                 <DropdownMenuContent class="w-56">
                                     <DropdownMenuLabel>Actions</DropdownMenuLabel>
                                     <DropdownMenuSeparator />
+                                    <DropdownMenuItem as-child>
+                                        <Link :href="route('comments.show', { comment: comment.slug })" class="w-full cursor-pointer">
+                                            <Eye class="size-4" />
+                                            View
+                                        </Link>
+                                    </DropdownMenuItem>
                                     <DropdownMenuItem as-child>
                                         <Link
                                             :href="route('comments.destroy', { comment: comment.slug, return_back: true })"

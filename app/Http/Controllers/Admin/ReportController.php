@@ -19,7 +19,8 @@ class ReportController extends Controller
 	 */
 	public function index(): Response
 	{
-		$entries = Report::with(['reportable', 'user']);
+		$entries = Report::select(['reason', 'reportable_id', 'reportable_type', 'status', 'slug', 'created_at', 'user_id'])
+			->with(['reportable', 'user:id,username,name,avatar']);
 		$column = strtolower(request()->get('column', 'content'));
 		$order = strtolower(request()->get('order', 'desc'));
 

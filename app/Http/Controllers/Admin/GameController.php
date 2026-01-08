@@ -18,7 +18,8 @@ class GameController extends Controller
 	 */
 	public function __invoke(): Response
 	{
-		$entries = Game::with(['creator', 'genre']);
+		$entries = Game::select(['title', 'description', 'media', 'released_at', 'created_at', 'slug', 'user_id', 'genre_id'])
+			->with(['creator:id,username,name,avatar', 'genre:id,name,slug']);
 		$column = strtolower(request()->get('column', 'title'));
 		$order = strtolower(request()->get('order', 'asc'));
 

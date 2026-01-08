@@ -18,7 +18,7 @@ class AdminReviewListResource extends JsonResource
 	{
 		return [
 			'slug' => $this->slug,
-			'content' => Str::limit($this->content, 20, preserveWords: true),
+			'content' => Str::limit($this->content, 40, preserveWords: true),
 			'user' => $this->whenLoaded(
 				'user',
 				fn () => SimpleProfileResource::make($this->user)->toArray($request)
@@ -27,6 +27,7 @@ class AdminReviewListResource extends JsonResource
 				'game',
 				fn () => ['title' => $this->game->title, 'slug' => $this->game->slug]
 			),
+			'ratings' => $this->ratings,
 			'reports_count' => $this->whenCounted('reports'),
 			'created_at' => $this->created_at->format('Y-m-d')
 		];

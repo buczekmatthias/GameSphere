@@ -27,7 +27,6 @@ defineProps<{
 }>();
 
 const tableHeaders = [
-    { label: 'Slug' },
     { label: 'Name', is_sortable: true, column: 'name' },
     { label: 'Discussions', is_sortable: true, column: 'discussions' },
     { label: 'Games', is_sortable: true, column: 'games' },
@@ -83,10 +82,9 @@ const submit = () => {
             <PaginatedContent :pagination="genres" :reload-only pagination-position="bottom">
                 <Table :reload-only :headers="tableHeaders">
                     <TableRow v-for="genre in genres.data" :key="genre.slug">
-                        <TableCell>{{ genre.slug }}</TableCell>
                         <TableCell>{{ genre.name }}</TableCell>
-                        <TableCell class="text-center">{{ genre.discussions_count }}</TableCell>
-                        <TableCell class="text-center">{{ genre.games_count }}</TableCell>
+                        <TableCell>{{ genre.discussions_count }}</TableCell>
+                        <TableCell>{{ genre.games_count }}</TableCell>
                         <TableCell>
                             <DropdownMenu>
                                 <DropdownMenuTrigger as-child>

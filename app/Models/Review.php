@@ -20,7 +20,6 @@ class Review extends Model
 		'slug',
 		'content',
 		'ratings',
-		'is_verified'
 	];
 
 	protected function casts(): array

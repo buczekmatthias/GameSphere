@@ -18,7 +18,9 @@ class DiscussionController extends Controller
 	 */
 	public function __invoke(): Response
 	{
-		$entries = Discussion::with(['author', 'discussable'])->withCount(['comments', 'reports']);
+		$entries = Discussion::select(['slug', 'title', 'discussable_id', 'discussable_type', 'created_at', 'user_id'])
+			->with(['author:id,username,name,avatar', 'discussable'])
+			->withCount(['comments', 'reports']);
 		$column = strtolower(request()->get('column', 'title'));
 		$order = strtolower(request()->get('order', 'asc'));
 

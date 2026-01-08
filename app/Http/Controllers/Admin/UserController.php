@@ -24,7 +24,7 @@ class UserController extends Controller
 	 */
 	public function index(): Response
 	{
-		$entries = User::query();
+		$entries = User::select(['name', 'username', 'role', 'email', 'email_verified_at', 'avatar', 'created_at']);
 		$column = strtolower(request()->get('column', 'content'));
 		$order = strtolower(request()->get('order', 'asc'));
 

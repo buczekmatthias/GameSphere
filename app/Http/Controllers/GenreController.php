@@ -20,13 +20,16 @@ class GenreController extends Controller
 		$user = request()->user();
 
 		if ($user) {
-			$user->load(['genres']);
+			$user->load([
+				'genres:slug'
+			]);
 		}
 
 		return Inertia::render('app/genre/Index', [
 			'genres' => Inertia::defer(
 				fn () => GenreListResource::collection(
-					Genre::withCount(['discussions', 'games'])
+					Genre::select(['name', 'slug'])
+						->withCount(['discussions', 'games'])
 						->when(
 							request()->has('name'),
 							fn (Builder $query) => $query->whereLike('name', "%".request()->get('name')."%")

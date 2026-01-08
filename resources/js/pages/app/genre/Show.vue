@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import CanInteract from '@/components/app/CanInteract.vue';
 import Discussion from '@/components/app/Discussion.vue';
+import FormActionTap from '@/components/app/FormActionTap.vue';
 import Game from '@/components/app/Game.vue';
 import MainContainer from '@/components/app/MainContainer.vue';
 import PaginatedContent from '@/components/app/PaginatedContent.vue';
@@ -8,7 +9,7 @@ import Heading from '@/components/Heading.vue';
 import AppLayout from '@/layouts/AppLayout.vue';
 import type { BreadcrumbItem, Discussion as DiscussionType, Game as GameType, Genre, Pagination } from '@/types';
 import { Head, Link } from '@inertiajs/vue3';
-import { Gamepad2, MessageCircle, Star } from 'lucide-vue-next';
+import { Gamepad2, MessageCircle, Plus, Star } from 'lucide-vue-next';
 
 const props = defineProps<{
     genre: Genre & {
@@ -62,7 +63,15 @@ const breadcrumbs: BreadcrumbItem[] = [
             <div class="flex flex-col gap-4">
                 <div class="flex items-center gap-3">
                     <MessageCircle class="mt-1 size-7" />
-                    <p class="text-2xl font-semibold">Discussions</p>
+                    <p class="mr-auto text-2xl font-semibold">Discussions</p>
+                    <CanInteract>
+                        <Link :href="route('discussions.create', { type: 'genre', slug: genre.slug })">
+                            <FormActionTap>
+                                <Plus class="size-4" />
+                                Create discussion
+                            </FormActionTap>
+                        </Link>
+                    </CanInteract>
                 </div>
                 <PaginatedContent :pagination="genre.discussions" page-name="discussions" pagination-position="bottom">
                     <div class="flex flex-col gap-2">

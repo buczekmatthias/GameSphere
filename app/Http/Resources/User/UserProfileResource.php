@@ -2,7 +2,7 @@
 
 namespace App\Http\Resources\User;
 
-use App\Http\Resources\Comment\ShowCommentResource;
+use App\Http\Resources\Comment\UserProfileCommentResource;
 use App\Http\Resources\Discussion\ListDiscussionResource;
 use App\Http\Resources\Games\GamesListResource;
 use App\Http\Resources\Games\GameReviewResource;
@@ -29,21 +29,36 @@ class UserProfileResource extends SimpleProfileResource
 		$tab = $request->route('tab', 'created_games');
 
 		$entries = (match ($tab) {
-			'created_games' => Game::gamesWithScore()->where('games.user_id', $this->id)->orderBy('title', 'ASC'),
-			'games' => Game::gamesWithScore()->withLists($request->route('user'))->orderBy('title', 'DESC'),
-			'reviews' => $this->reviews()->with(['game'])->orderBy('created_at', 'DESC'),
-			'discussions' => $this->discussions()->with(['discussable'])->withCount(['comments'])->orderBy('created_at', 'DESC'),
-			'genres' => $this->genres()->withCount(['games', 'discussions'])->orderBy('name', 'ASC'),
-			'comments' => $this->comments()->with(['discussion'])->orderBy('created_at', 'DESC')
+			'created_games' => Game::gamesWithScore()
+				->where('games.user_id', $this->id)
+				->orderBy('title', 'ASC'),
+			'games' => Game::gamesWithScore()
+				->withLists($request->route('user'))
+				->orderBy('title', 'DESC'),
+			'genres' => $this->genres()
+				->withCount(['games', 'discussions'])
+				->orderBy('name', 'ASC'),
+			'reviews' => $this->reviews()
+				->select(['reviews.created_at', 'reviews.slug', 'reviews.content', 'reviews.ratings', 'reviews.game_id'])
+				->with(['game:id,title,slug'])
+				->orderBy('created_at', 'DESC'),
+			'discussions' => $this->discussions()
+				->select(['discussions.title', 'discussions.slug', 'discussions.created_at', 'discussions.discussable_id', 'discussions.discussable_type'])
+				->with(['discussable'])
+				->withCount(['comments'])
+				->orderBy('created_at', 'DESC'),
+			'comments' => $this->comments()
+				->with('discussion:id,slug')
+				->orderBy('created_at', 'DESC')
 		})
-		->paginate(
-			match ($tab) {
-				'created_games', 'games' => 30,
-				'genres', 'reviews' => 15,
-				'discussions' => 10,
-				'comments' => 20
-			}
-		);
+			->paginate(
+				match ($tab) {
+					'created_games', 'games' => 30,
+					'genres', 'reviews' => 15,
+					'discussions' => 10,
+					'comments' => 20
+				}
+			);
 
 		return match ($tab) {
 			'created_games' => [
@@ -68,7 +83,7 @@ class UserProfileResource extends SimpleProfileResource
 			],
 			'comments' => [
 				...$data,
-				'comments' => PaginatedContentResource::make($entries)->additional(['data_resource' => ShowCommentResource::class])->toArray($request),
+				'comments' => PaginatedContentResource::make($entries)->additional(['data_resource' => UserProfileCommentResource::class])->toArray($request),
 			],
 		};
 	}

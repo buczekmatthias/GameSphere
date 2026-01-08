@@ -21,11 +21,9 @@ class GameReviewResource extends JsonResource
 	{
 		$data = [
 			'slug' => $this->slug,
-			'shortSlug' => Str::limit($this->slug, 20),
 			'content' => $this->content,
 			'ratings' => $this->ratings,
 			'avg_rating' => round($this->average_rating, 1),
-			'is_verified' => $this->is_verified,
 			'user' => $this->whenLoaded(
 				'user',
 				fn () => [
@@ -46,8 +44,20 @@ class GameReviewResource extends JsonResource
 			],
 		];
 
+		if ($request->routeIs('reviews.show')) {
+			$data['shortSlug'] = Str::limit($this->slug, 20);
+		}
+
 		if ($request->user()?->isStaff() && $request->routeIs('reviews.show')) {
-			$data['reports'] = PaginatedContentResource::make($this->reports()->with(['user'])->orderBy('created_at', 'DESC')->paginate(25))->additional(['data_resource' => UserReportsTableResource::class])->toArray($request);
+			$data['reports'] = PaginatedContentResource::make(
+				$this->reports()
+					->select(['slug', 'status', 'reason', 'created_at', 'reportable_id', 'reportable_type'])
+					->with(['user:id,name,username'])
+					->orderBy('created_at', 'DESC')
+					->paginate(25)
+			)
+				->additional(['data_resource' => UserReportsTableResource::class])
+				->toArray($request);
 		}
 
 		return $data;

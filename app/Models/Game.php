@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enum\GameCollectionType;
+use Closure;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -80,26 +81,35 @@ class Game extends Model
 		return $this->released_at <= now()->endOfDay();
 	}
 
+	public function scopeGetGameWithScore(Builder $query): Builder
+	{
+		return $query
+			->select(['games.*'])
+			->selectSub($this->getScoreSubquery(), 'score');
+	}
+
 	public function scopeGamesWithScore(Builder $query): Builder
 	{
 		return $query
-			->select('games.*')
-			->selectSub(
-				fn ($q) => $q->from('reviews')
-					->whereColumn('reviews.game_id', 'games.id')
-					->selectRaw("COALESCE(
-									AVG(
-										(CAST(ratings->>'gameplay' AS DECIMAL) + 
-										CAST(ratings->>'graphics' AS DECIMAL) + 
-										CAST(ratings->>'storyline' AS DECIMAL) + 
-										CAST(ratings->>'replayability' AS DECIMAL) + 
-										CAST(ratings->>'sound_and_music' AS DECIMAL) + 
-										CAST(ratings->>'performance' AS DECIMAL)) / 6.0
-									),
-									0
-								)"),
-				'score'
-			);
+			->select(['games.title', 'games.slug', 'games.thumbnail'])
+			->selectSub($this->getScoreSubquery(), 'score');
+	}
+
+	private function getScoreSubquery(): Closure
+	{
+		return fn ($q) => $q->from('reviews')
+			->whereColumn('reviews.game_id', 'games.id')
+			->selectRaw("COALESCE(
+            AVG(
+                (CAST(ratings->>'gameplay' AS DECIMAL) + 
+                CAST(ratings->>'graphics' AS DECIMAL) + 
+                CAST(ratings->>'storyline' AS DECIMAL) + 
+                CAST(ratings->>'replayability' AS DECIMAL) + 
+                CAST(ratings->>'sound_and_music' AS DECIMAL) + 
+                CAST(ratings->>'performance' AS DECIMAL)) / 6.0
+            ),
+            0
+        )");
 	}
 
 	public function scopeWithLists(Builder $query, User $user): Builder

@@ -6,7 +6,7 @@ import TextLink from '@/components/TextLink.vue';
 import AppLayout from '@/layouts/AppLayout.vue';
 import type { BreadcrumbItem, DiscussionComment } from '@/types';
 import { Head } from '@inertiajs/vue3';
-import { Calendar, MessageCircle } from 'lucide-vue-next';
+import { Calendar } from 'lucide-vue-next';
 
 const props = defineProps<{
     comment: DiscussionComment;
@@ -39,10 +39,6 @@ const breadcrumbs: BreadcrumbItem[] = [
                         <div class="flex items-center gap-1.5">
                             <Calendar class="mt-0.5 size-4" />
                             <p>{{ comment.discussion.created_at }}</p>
-                        </div>
-                        <div class="flex items-center gap-1.5">
-                            <MessageCircle class="mt-0.5 size-4" />
-                            <p>{{ comment.discussion.comments_count }}</p>
                         </div>
                         <TextLink
                             :href="route('discussions.show', { discussion: comment.discussion.slug })"

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\Comment\StoreRequest;
 use App\Http\Requests\Comment\UpdateRequest;
+use App\Http\Resources\Comment\EditCommentResource;
 use App\Http\Resources\Comment\ShowCommentResource;
 use App\Models\Comment;
 use App\Models\Discussion;
@@ -18,7 +19,11 @@ class CommentController extends Controller
 {
 	public function show(Comment $comment): Response
 	{
-		$comment->load(['user', 'discussion', 'discussion.author']);
+		$comment->load([
+			'user:id,name,username,avatar',
+			'discussion:id,title,created_at,slug,user_id',
+			'discussion.author:id,name,username,avatar'
+		]);
 
 		return Inertia::render('app/comment/Show', [
 			'comment' => ShowCommentResource::make($comment),
@@ -50,10 +55,12 @@ class CommentController extends Controller
 
 	public function edit(Comment $comment): Response
 	{
-		$comment->load(['discussion']);
+		$comment->load([
+			'discussion:id,title,slug'
+		]);
 
 		return Inertia::render('app/comment/Edit', [
-			'comment' => ShowCommentResource::make($comment)
+			'comment' => EditCommentResource::make($comment)
 		]);
 	}
 

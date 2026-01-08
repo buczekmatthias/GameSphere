@@ -17,7 +17,10 @@ class ReviewController extends Controller
 {
 	public function show(Review $review): Response
 	{
-		$review->load(['user', 'game']);
+		$review->load([
+			'user:id,name,username,role,avatar,email_verified_at',
+			'game:id,slug,title,description,thumbnail'
+		]);
 
 		return Inertia::render('app/review/Show', [
 			'review' => GameReviewResource::make($review)

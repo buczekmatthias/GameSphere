@@ -18,7 +18,9 @@ class ReviewController extends Controller
 	 */
 	public function __invoke(): Response
 	{
-		$entries = Review::with(['user', 'game'])->withCount(['reports']);
+		$entries = Review::select(['slug', 'content', 'created_at', 'user_id', 'game_id', 'ratings'])
+			->with(['user:id,name,username,avatar', 'game:id,title,slug'])
+			->withCount(['reports']);
 		$column = strtolower(request()->get('column', 'content'));
 		$order = strtolower(request()->get('order', 'asc'));
 
@@ -36,7 +38,7 @@ class ReviewController extends Controller
 			'reports' => $entries->orderBy('reports_count', $order),
 		};
 
-		return Inertia::render('admin/review/Index', [
+		return Inertia::render('admin/Review', [
 			'reviews' => AdminReviewListResource::collection($entries->paginate(50)),
 		]);
 	}

@@ -4,11 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\Game\EditRequest;
 use App\Http\Requests\Game\StoreRequest;
-use App\Http\Resources\Games\GameDiscussionResource;
 use App\Http\Resources\Games\EditGameResource;
 use App\Http\Resources\Games\GamesListResource;
 use App\Http\Resources\Games\ShowGameResource;
-use App\Http\Resources\Games\GameReviewResource;
 use App\Http\Resources\User\SimpleProfileResource;
 use App\Models\Game;
 use App\Models\Genre;
@@ -94,7 +92,7 @@ class GameController extends Controller
 	{
 		$data = $request->validated();
 
-		$genre = Genre::where('slug', $data['genre'])->first();
+		$genre = Genre::select(['id'])->where('slug', $data['genre'])->first();
 
 		$thumbnailName = 'thumbnail.'.$data['thumbnail']->extension();
 
@@ -151,46 +149,21 @@ class GameController extends Controller
 	/**
 	 * Display the specified resource.
 	 */
-	public function show(Game $game): Response
+	public function show(string $game, string $tab = 'reviews'): Response
 	{
-		$game->load(['genre', 'creator', 'reviews:ratings,game_id'])->loadCount(['reviews']);
+		$g = Game::getGameWithScore()
+			->where('slug', $game)
+			->with([
+				'genre:id,name,slug',
+				'creator:id,name,username',
+			])
+			->withCount(['reviews'])
+			->firstOrFail();
 
-		// TODO: Swap to classic tabs and not shadcn
 		return Inertia::render('app/game/Show', [
-			'game' => ShowGameResource::make($game),
-			'userLists' => Inertia::defer(fn () => UserGameListsServices::checkIfGameIsInAnyUserGamesList($game)),
-			'reviews' => Inertia::defer(
-				fn () => Cache::flexible(
-					"games_show_{$game->slug}_reviews_page_".request()->get('reviews_page', 1),
-					[180, 300],
-					function () use ($game) {
-						return GameReviewResource::collection(
-							$game
-								->reviews()
-								->with(['user'])
-								->orderBy('created_at', 'DESC')
-								->paginate(30, pageName: 'reviews_page')
-						);
-					}
-				)
-			),
-			'discussions' => Inertia::defer(
-				fn () => Cache::flexible(
-					"games_show_{$game->slug}_discussions_page_".request()->get('discussions_page', 1),
-					[180, 300],
-					function () use ($game) {
-						return GameDiscussionResource::collection(
-							$game
-								->discussions()
-								->with('author')
-								->withCount('comments')
-								->orderBy('created_at', 'DESC')
-								->orderBy('id', 'DESC')
-								->paginate(30, pageName: 'discussions_page')
-						);
-					}
-				),
-			)
+			'game' => ShowGameResource::make($g),
+			'userLists' => Inertia::defer(fn () => UserGameListsServices::checkIfGameIsInAnyUserGamesList($g), 'lists'),
+			'tab' => $tab,
 		]);
 	}
 
@@ -199,7 +172,10 @@ class GameController extends Controller
 	 */
 	public function edit(Game $game): Response
 	{
-		$game->load(['genre', 'creator']);
+		$game->load([
+			'genre:id,slug,name',
+			'creator:id,avatar,name,username'
+		]);
 
 		return Inertia::render('app/game/Edit', [
 			'game' => EditGameResource::make($game),

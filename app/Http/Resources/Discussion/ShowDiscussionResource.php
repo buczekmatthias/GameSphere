@@ -30,14 +30,29 @@ class ShowDiscussionResource extends JsonResource
 			'discussable' => $this->whenLoaded(
 				'discussable',
 				fn () => str_contains($this->discussable_type, 'Game')
-					? new DiscussionGameResource($this->discussable)
-					: new DiscussionGenreResource($this->discussable)
+					? [
+						'slug' => $this->discussable->slug,
+						'title' => $this->discussable->title
+					]
+					: [
+						'slug' => $this->discussable->slug,
+						'name' => $this->discussable->name
+					]
 			),
 			'discussable_type' => $this->whenLoaded(
 				'discussable',
 				fn () => MorphTypeToLowerString::getTransformedString($this->discussable_type)
 			),
-			'comments' => PaginatedContentResource::make($this->comments()->with('user')->orderBy('created_at', 'ASC')->orderBy('id', 'ASC')->paginate(10))->additional(['data_resource' => DiscussionCommentResource::class])->toArray($request),
+			'comments' => PaginatedContentResource::make(
+				$this->comments()
+					->select(['content', 'media', 'created_at', 'slug', 'user_id'])
+					->with('user:id,name,username,avatar')
+					->orderBy('created_at', 'ASC')
+					->orderBy('id', 'ASC')
+					->paginate(10)
+			)
+				->additional(['data_resource' => DiscussionCommentResource::class])
+				->toArray($request),
 			'comments_count' => $this->whenCounted('comments'),
 			'created_at' => $this->created_at->format('Y-m-d'),
 			'permissions' => [

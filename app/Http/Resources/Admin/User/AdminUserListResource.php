@@ -18,7 +18,7 @@ class AdminUserListResource extends SimpleProfileResource
 		return [
 			...parent::toArray($request),
 			'email' => $this->email,
-			'email_verified_at' => $this->email_verified_at?->format('Y-m-d H:i'),
+			'email_verified_at' => $this->email_verified_at?->format('Y-m-d'),
 			"created_at" => $this->created_at->format('Y-m-d'),
 			'permissions' => [
 				'destroy' => UserPermissions::checkPermissions('delete', $this->resource),

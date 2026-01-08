@@ -33,7 +33,7 @@ defineEmits(['order-choice']);
             <DropdownMenuTrigger as-child>
                 <Button variant="outline"><ArrowUpDown class="size-4" /></Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent class="w-56">
+            <DropdownMenuContent>
                 <DropdownMenuLabel>Sorting</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem @click="$emit('order-choice', 'asc')" class="w-full cursor-pointer">

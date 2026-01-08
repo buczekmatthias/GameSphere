@@ -25,10 +25,9 @@ defineProps<{
 }>();
 
 const tableHeaders = [
-    { label: 'Slug' },
     { label: 'Title', is_sortable: true, column: 'title' },
     { label: 'Description' },
-    { label: 'Media count', is_sortable: true, column: 'media' },
+    { label: 'Media', is_sortable: true, column: 'media' },
     { label: 'Genre', is_sortable: true, column: 'genre' },
     { label: 'Creator', is_sortable: true, column: 'creator' },
     { label: 'Released at', is_sortable: true, column: 'released_at' },
@@ -46,7 +45,6 @@ const reloadOnly: string[] = ['games'];
             <PaginatedContent :pagination="games" :reload-only pagination-position="bottom">
                 <Table :reload-only :headers="tableHeaders">
                     <TableRow v-for="game in games.data" :key="game.slug">
-                        <TableCell>{{ game.slug }}</TableCell>
                         <TableCell>{{ game.title }}</TableCell>
                         <TableCell>
                             <TooltipProvider>
@@ -65,7 +63,7 @@ const reloadOnly: string[] = ['games'];
                             <TextLink :href="route('genres.show', { genre: game.genre.slug })" v-if="game.genre"> {{ game.genre.name }} </TextLink>
                             <p class="text-sm italic" v-else>Deleted genre</p>
                         </TableCell>
-                        <TableCell>
+                        <TableCell class="min-w-56">
                             <FallbackContentAuthor :user="game.creator" />
                         </TableCell>
                         <TableCell>{{ game.released_at }}</TableCell>

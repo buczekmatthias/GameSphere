@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import Table from '@/components/admin/Table.vue';
+import FallbackContentAuthor from '@/components/app/FallbackContentAuthor.vue';
 import MainContainer from '@/components/app/MainContainer.vue';
 import PaginatedContent from '@/components/app/PaginatedContent.vue';
 import TextLink from '@/components/TextLink.vue';
@@ -23,7 +24,6 @@ defineProps<{
 }>();
 
 const tableHeaders = [
-    { label: 'Slug' },
     { label: 'Reason', is_sortable: true, column: 'reason' },
     { label: 'User', is_sortable: true, column: 'user' },
     { label: 'Entry' },
@@ -42,10 +42,9 @@ const reloadOnly: string[] = ['reports'];
             <PaginatedContent :pagination="reports" :reload-only pagination-position="bottom">
                 <Table :reload-only :headers="tableHeaders">
                     <TableRow v-for="report in reports.data" :key="report.slug">
-                        <TableCell>{{ report.slug }}</TableCell>
                         <TableCell>{{ report.reason }}</TableCell>
-                        <TableCell>
-                            <TextLink :href="route('user.profile', { user: report.user.username })">{{ report.user.name }}</TextLink>
+                        <TableCell class="min-w-56">
+                            <FallbackContentAuthor :user="report.user" />
                         </TableCell>
                         <TableCell>
                             <TextLink :href="report.reportable">Show {{ report.reportable_type }}</TextLink>
