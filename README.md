@@ -51,7 +51,7 @@ copy .env.example .env
 php artisan key:generate
 ```
 
-### Fill database credentials in .evn
+### Fill database credentials in .env
 
 ```
 DB_USERNAME=
