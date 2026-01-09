@@ -146,6 +146,7 @@ export interface DiscussionComment {
     created_at: string;
     discussion: Discussion;
     permissions: Permissions;
+    reports: Pagination & { data: Report[] };
 }
 
 export interface DiscussableGame {

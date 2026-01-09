@@ -43,7 +43,7 @@ defineProps<{
             <div class="grid grid-cols-1 grid-rows-4 gap-4 lg:col-start-2 lg:row-start-2">
                 <Trend v-for="[label, entry] in Object.entries(new_entries)" :key="label" :label="label" :entry="entry" />
             </div>
-            <div class="bg-card h-[30rem] rounded-md p-3">
+            <div class="dark:bg-card h-[30rem] rounded-md border p-3 dark:border-none">
                 <AreaChart
                     index="month"
                     :data="chart_data"

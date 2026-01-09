@@ -22,7 +22,7 @@ defineProps<{
 </script>
 
 <template>
-    <div class="bg-card col-span-full">
+    <div class="dark:bg-card col-span-full border dark:border-none">
         <div class="border-b-card-foreground/20 flex items-center justify-between gap-4 border-b border-solid px-3 py-4">
             <p class="text-xl">Active reports</p>
             <Link :href="route('admin.reports.index')" v-if="active_reports.length > 0">

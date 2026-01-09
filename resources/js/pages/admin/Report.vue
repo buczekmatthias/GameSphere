@@ -3,7 +3,6 @@ import Table from '@/components/admin/Table.vue';
 import FallbackContentAuthor from '@/components/app/FallbackContentAuthor.vue';
 import MainContainer from '@/components/app/MainContainer.vue';
 import PaginatedContent from '@/components/app/PaginatedContent.vue';
-import TextLink from '@/components/TextLink.vue';
 import { Button } from '@/components/ui/button';
 import {
     DropdownMenu,
@@ -17,7 +16,8 @@ import { TableCell, TableRow } from '@/components/ui/table';
 import AdminLayout from '@/layouts/AdminLayout.vue';
 import type { Pagination, Report } from '@/types';
 import { Head, Link } from '@inertiajs/vue3';
-import { Ban, Circle, CircleX, Ellipsis, Trash } from 'lucide-vue-next';
+import { Ban, Circle, CircleX, Ellipsis, Eye, Trash } from 'lucide-vue-next';
+import { capitalize } from 'vue';
 
 defineProps<{
     reports: Pagination & { data: Report[] };
@@ -26,7 +26,7 @@ defineProps<{
 const tableHeaders = [
     { label: 'Reason', is_sortable: true, column: 'reason' },
     { label: 'User', is_sortable: true, column: 'user' },
-    { label: 'Entry' },
+    { label: 'Entry type' },
     { label: 'Status', is_sortable: true, column: 'status' },
     { label: 'Created at', is_sortable: true, column: 'created_at' },
 ];
@@ -47,7 +47,7 @@ const reloadOnly: string[] = ['reports'];
                             <FallbackContentAuthor :user="report.user" />
                         </TableCell>
                         <TableCell>
-                            <TextLink :href="report.reportable">Show {{ report.reportable_type }}</TextLink>
+                            {{ capitalize(report.reportable_type) }}
                         </TableCell>
                         <TableCell class="capitalize">{{ report.status }}</TableCell>
                         <TableCell>{{ report.created_at }}</TableCell>
@@ -60,6 +60,13 @@ const reloadOnly: string[] = ['reports'];
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent class="w-56">
                                     <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuItem as-child>
+                                        <Link :href="report.reportable" as="button" class="w-full cursor-pointer">
+                                            <Eye class="size-4" />
+                                            View
+                                        </Link>
+                                    </DropdownMenuItem>
                                     <DropdownMenuSeparator />
                                     <template v-if="report.status !== 'open'">
                                         <DropdownMenuItem as-child>

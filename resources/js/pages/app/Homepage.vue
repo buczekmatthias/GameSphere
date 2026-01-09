@@ -6,14 +6,20 @@ import GameSkeleton from '@/components/fallbacks/GameSkeleton.vue';
 import AppLayout from '@/layouts/AppLayout.vue';
 import type { BreadcrumbItem, Game as GameType } from '@/types';
 import { Deferred, Head } from '@inertiajs/vue3';
+import { capitalize } from 'vue';
 
-const breadcrumbs: BreadcrumbItem[] = [];
-
-defineProps<{
+const props = defineProps<{
     games?: GameType[];
     activeType: string;
     types: TabNavigationItem[];
 }>();
+
+const breadcrumbs: BreadcrumbItem[] = [
+    {
+        title: capitalize(props.activeType.replaceAll('_', ' ')),
+        href: route('home', { type: props.activeType }),
+    },
+];
 </script>
 
 <template>

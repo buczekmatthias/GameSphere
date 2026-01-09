@@ -21,16 +21,14 @@ withDefaults(
 </script>
 
 <template>
-    <div class="flex flex-col gap-4" :class="{ 'bg-card/70 rounded-md px-3 py-2.5': asCard }">
-        <div class="grid grid-cols-[1fr_auto] gap-2">
-            <FallbackContentAuthor :user="comment.user" v-if="'user' in comment" />
-            <p class="self-center text-sm text-slate-300">{{ comment.created_at }}</p>
-        </div>
+    <div class="flex flex-col gap-4" :class="{ 'dark:bg-card/70 rounded-md px-3 py-2.5 shadow-md dark:shadow-none': asCard }">
+        <FallbackContentAuthor :user="comment.user" v-if="'user' in comment" />
         <p>{{ comment.content }}</p>
 
         <MediaPreview :media="comment.media" v-if="comment.media.length > 0" />
 
         <div class="flex w-full items-center gap-5">
+            <p class="text-muted-foreground text-sm">{{ comment.created_at }}</p>
             <ReportModal :contentId="comment.slug" contentType="comment" triggerClass="text-destructive text-sm" />
             <Link
                 as="button"

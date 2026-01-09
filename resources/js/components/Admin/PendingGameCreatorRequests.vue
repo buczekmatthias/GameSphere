@@ -10,7 +10,7 @@ defineProps<{
 </script>
 
 <template>
-    <div class="bg-card col-span-full">
+    <div class="dark:bg-card col-span-full border dark:border-none">
         <div class="border-b-card-foreground/20 flex items-center justify-between gap-4 border-b border-solid px-3 py-4">
             <p class="text-xl">Pending requests to become game creator</p>
             <Link :href="route('admin.game.creator.join')" v-if="pending_requests.length > 0">

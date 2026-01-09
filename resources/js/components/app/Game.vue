@@ -42,7 +42,7 @@ const formatListName = (name: string): string => capitalize(name).replace('_', '
                                     <p class="game-floating-label" @click.prevent>{{ game.lists.length }} lists</p>
                                 </TooltipTrigger>
                                 <TooltipContent side="bottom">
-                                    <ul class="list-inside list-disc">
+                                    <ul class="text-foreground list-inside list-disc">
                                         <li class="py-0.5" v-for="list in game.lists" :key="list">
                                             {{ formatListName(list) }}
                                         </li>

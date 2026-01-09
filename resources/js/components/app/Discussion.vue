@@ -17,9 +17,9 @@ withDefaults(
 
 <template>
     <div class="border-border flex flex-col gap-3 rounded-md border border-solid p-3">
+        <FallbackContentAuthor :user="discussion.author" v-if="showUser" />
         <p class="truncate text-xl font-semibold">{{ discussion.title }}</p>
         <div class="flex flex-wrap items-center gap-3">
-            <FallbackContentAuthor :user="discussion.author" v-if="showUser" />
             <div class="flex gap-0.5">
                 <Calendar class="h-5" />
                 <p class="text-sm">{{ discussion.created_at }}</p>

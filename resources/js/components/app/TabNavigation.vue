@@ -52,8 +52,8 @@ onMounted(() => {
             class="border-b-4 py-2 whitespace-nowrap"
             :class="
                 activeTab === tab.name
-                    ? 'border-b-primary active pointer-events-none text-slate-50'
-                    : 'text-muted-foreground border-transparent duration-150 hover:border-b-slate-200 hover:text-slate-100'
+                    ? 'border-b-primary active pointer-events-none dark:text-slate-50'
+                    : 'text-muted-foreground border-transparent duration-150 hover:border-b-slate-200'
             "
         >
             {{ capitalize(tab.name.replace('_', ' ')) }}

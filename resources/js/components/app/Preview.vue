@@ -39,9 +39,9 @@ const isPreviewOpen = ref<boolean>(false);
             @click.stop
         >
             <div class="grid grid-cols-[1fr_auto] border-b">
-                <p class="truncate p-3.5">{{ item.filename }}</p>
+                <p class="truncate p-3.5 text-slate-50">{{ item.filename }}</p>
                 <button @click="isPreviewOpen = false" class="cursor-pointer border-l p-3.5">
-                    <X class="size-6" />
+                    <X class="size-6 text-slate-50" />
                 </button>
             </div>
             <div class="flex items-center justify-center overflow-hidden p-2">

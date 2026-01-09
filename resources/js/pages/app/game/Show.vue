@@ -68,7 +68,7 @@ const teleportId = 'tab_switch_teleport';
                                 }"
                                 as-child
                             >
-                                <Link :href="route('games.show', { game: game.slug, tab: name })" preserve-scroll :only="['game', 'tab']">
+                                <Link :href="route('games.show', { game: game.slug, tab: name })" preserve-scroll :only="['game', 'tab']" as="button">
                                     <component :is="icon" class="mr-1"></component>
                                     {{ name }}
                                 </Link>

@@ -9,7 +9,7 @@ defineProps<{
 </script>
 
 <template>
-    <div class="bg-card flex flex-col gap-2 rounded-md p-2">
+    <div class="dark:bg-card flex flex-col gap-2 rounded-md border p-2 dark:border-none">
         <p class="capitalize opacity-70">this month {{ label }}</p>
         <div class="mt-auto flex items-center justify-between gap-3">
             <p class="text-xl">{{ entry.this_month }}</p>

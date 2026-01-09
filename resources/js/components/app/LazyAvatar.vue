@@ -7,6 +7,7 @@ const props = defineProps<{
     src?: string;
     alt: string;
     fallback?: string;
+    fallbackTextSize?: string;
     class?: HTMLAttributes['class'];
 }>();
 
@@ -14,7 +15,8 @@ const imageLoaded = ref<boolean>(false);
 const imageError = ref<boolean>(false);
 
 const hasValidSrc = computed(() => {
-    return props.src && props.src.trim() !== '';
+    console.log(typeof props.src, props.src);
+    return props.src && props.src.trim() !== '' && props.src !== undefined;
 });
 
 const instance = getCurrentInstance();
@@ -67,7 +69,7 @@ onUnmounted(() => {
         <img v-lazy="src" :alt="alt" class="h-full w-full object-cover" v-if="hasValidSrc && !imageError" :key="`avatar-${alt}-${src}`" />
         <!-- Fallback -->
         <div v-if="!imageLoaded || imageError" class="bg-muted text-muted-foreground flex h-full w-full items-center justify-center">
-            <span v-if="fallback">{{ fallback }}</span>
+            <span v-if="fallback" :class="fallbackTextSize">{{ fallback }}</span>
             <ImageOff class="size-1/3" v-else />
         </div>
         <!-- Loader -->

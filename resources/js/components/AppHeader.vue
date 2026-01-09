@@ -109,13 +109,7 @@ const mainNavItems: NavItem[] = getAdminNavigationElements();
                                 size="icon"
                                 class="focus-within:ring-primary relative size-10 w-auto rounded-full p-1 focus-within:ring-2"
                             >
-                                <LazyAvatar
-                                    v-if="user.avatar"
-                                    :src="user.avatar"
-                                    :alt="user.name"
-                                    class="size-8 rounded-full"
-                                    :fallback="getInitials(user.name)"
-                                />
+                                <LazyAvatar :src="user.avatar" :alt="user.name" class="size-8 rounded-full" :fallback="getInitials(user.name)" />
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" class="w-56">

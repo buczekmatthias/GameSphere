@@ -2,7 +2,10 @@
 import Comment from '@/components/app/comment/DiscussionComment.vue';
 import FallbackContentAuthor from '@/components/app/FallbackContentAuthor.vue';
 import MainContainer from '@/components/app/MainContainer.vue';
+import ReportsTable from '@/components/app/ReportsTable.vue';
 import TextLink from '@/components/TextLink.vue';
+import { Separator } from '@/components/ui/separator';
+import { userHasSpecialPermissions } from '@/composables/useCanInteract';
 import AppLayout from '@/layouts/AppLayout.vue';
 import type { BreadcrumbItem, DiscussionComment } from '@/types';
 import { Head } from '@inertiajs/vue3';
@@ -50,6 +53,11 @@ const breadcrumbs: BreadcrumbItem[] = [
                     </div>
                 </div>
             </div>
+
+            <template v-if="userHasSpecialPermissions()">
+                <Separator />
+                <ReportsTable :reports="comment.reports" />
+            </template>
         </MainContainer>
     </AppLayout>
 </template>

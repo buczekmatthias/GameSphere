@@ -1,3 +1,4 @@
+p
 <script setup lang="ts">
 import DeleteActionLink from '@/components/app/DeleteActionLink.vue';
 import FallbackContentAuthor from '@/components/app/FallbackContentAuthor.vue';
@@ -23,24 +24,20 @@ withDefaults(
 
 <template>
     <Card class="gap-4">
-        <div class="flex items-center justify-between gap-3">
-            <div class="flex items-center gap-3">
-                <TextLink
-                    v-if="withLink && review.game"
-                    as="button"
-                    :href="route('games.show', { game: review.game.slug })"
-                    class="flex items-center gap-2 self-start"
-                >
-                    {{ review.game.title }}
-                </TextLink>
-                <FallbackContentAuthor :user="review.user" v-if="showUser" />
-            </div>
-            <p class="text-sm text-slate-300">{{ review.created_at }}</p>
-        </div>
+        <FallbackContentAuthor :user="review.user" v-if="showUser" />
         <p>{{ review.content }}</p>
-        <div class="text-destructive flex gap-4 text-sm [&>*]:cursor-pointer">
+        <div class="flex gap-4 text-sm">
+            <p class="text-muted-foreground text-sm">{{ review.created_at }}</p>
             <DeleteActionLink :href="route('reviews.destroy', { review: review.slug })" v-if="review.permissions.destroy" />
             <ReportModal :contentId="review.slug" contentType="review" trigger-class="text-destructive text-sm" />
+            <TextLink
+                v-if="withLink && review.game"
+                as="button"
+                :href="route('games.show', { game: review.game.slug })"
+                class="flex items-center gap-2 self-start"
+            >
+                View "{{ review.game.title }}" game
+            </TextLink>
         </div>
         <Accordion type="single" class="w-full" collapsible>
             <AccordionItem value="rating">

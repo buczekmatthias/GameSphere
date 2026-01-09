@@ -15,31 +15,32 @@ defineProps<{
 </script>
 
 <template>
-    <div class="bg-card/70 flex flex-col gap-4 rounded-md px-3 py-2.5">
-        <div class="flex items-center gap-2">
-            <Lock class="size-5" v-if="discussion.is_locked" />
-            <p class="col-span-full mb-2 text-2xl">{{ discussion.title }}</p>
-        </div>
-        <div class="flex gap-3">
-            <FallbackContentAuthor :user="discussion.author" class="gap-1" />
+    <div class="dark:bg-card/70 flex flex-col gap-4 rounded-md px-3 py-2.5 shadow-lg dark:shadow-none">
+        <FallbackContentAuthor :user="discussion.author" />
+        <p class="col-span-full mb-2 text-2xl">{{ discussion.title }}</p>
+        <div class="flex flex-wrap gap-3">
+            <div class="flex flex-wrap items-center gap-1" v-if="discussion.is_locked">
+                <Lock class="size-5" />
+                <p>Discussion has been locked</p>
+            </div>
             <div class="flex flex-wrap items-center gap-1">
-                <Calendar class="h-5" />
+                <Calendar class="size-5" />
                 <p>{{ discussion.created_at }}</p>
             </div>
             <div class="flex items-center gap-1">
-                <MessageCircle class="h-5" />
+                <MessageCircle class="size-5" />
                 <p>{{ discussion.comments_count }}</p>
             </div>
             <div class="flex items-center gap-1">
                 <template v-if="discussion.discussable">
                     <template v-if="discussion.discussable_type === 'game'">
-                        <Gamepad2 class="h-5" />
+                        <Gamepad2 class="size-5" />
                         <TextLink :href="route('games.show', { game: discussion.discussable.slug })">
                             {{ (discussion.discussable as DiscussableGame).title }}
                         </TextLink>
                     </template>
                     <template v-else>
-                        <Blocks class="h-5" />
+                        <Blocks class="size-5" />
                         <TextLink :href="route('genres.show', { genre: discussion.discussable.slug })">
                             {{ (discussion.discussable as DiscussableGenre).name }}
                         </TextLink>

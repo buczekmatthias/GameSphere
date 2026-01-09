@@ -3,7 +3,7 @@ import DeleteActionLink from '@/components/app/DeleteActionLink.vue';
 import LazyAvatar from '@/components/app/LazyAvatar.vue';
 import MainContainer from '@/components/app/MainContainer.vue';
 import ReportModal from '@/components/app/ReportModal.vue';
-import ReviewReportsTable from '@/components/app/review/ReviewReportsTable.vue';
+import ReportsTable from '@/components/app/ReportsTable.vue';
 import UserRole from '@/components/app/user/UserRole.vue';
 import Heading from '@/components/Heading.vue';
 import { Separator } from '@/components/ui/separator';
@@ -79,7 +79,7 @@ const avgRating = computed(() =>
             </div>
             <template v-if="userHasSpecialPermissions()">
                 <Separator />
-                <ReviewReportsTable :review />
+                <ReportsTable :reports="review.reports" />
             </template>
         </MainContainer>
     </AppLayout>

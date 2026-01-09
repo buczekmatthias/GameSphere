@@ -11,7 +11,7 @@ import { capitalize } from 'vue';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Reports',
+        title: 'My reports',
         href: route('user.reports'),
     },
 ];
@@ -25,7 +25,7 @@ defineProps<{
     <Head title="My reports" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
-        <MainContainer>
+        <MainContainer class="mx-auto flex max-w-5xl flex-col gap-4">
             <Heading title="My reports" />
             <PaginatedContent :pagination="reports" pagination-position="bottom">
                 <Table>

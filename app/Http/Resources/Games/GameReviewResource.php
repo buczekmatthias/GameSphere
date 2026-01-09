@@ -51,7 +51,7 @@ class GameReviewResource extends JsonResource
 		if ($request->user()?->isStaff() && $request->routeIs('reviews.show')) {
 			$data['reports'] = PaginatedContentResource::make(
 				$this->reports()
-					->select(['slug', 'status', 'reason', 'created_at', 'reportable_id', 'reportable_type'])
+					->select(['slug', 'status', 'reason', 'created_at', 'user_id', 'reportable_id', 'reportable_type'])
 					->with(['user:id,name,username'])
 					->orderBy('created_at', 'DESC')
 					->paginate(25)

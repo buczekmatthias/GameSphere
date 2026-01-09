@@ -2,6 +2,8 @@
 
 namespace App\Http\Resources\Comment;
 
+use App\Http\Resources\PaginatedContentResource;
+use App\Http\Resources\Report\UserReportsTableResource;
 use App\Http\Resources\User\SimpleProfileResource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -15,7 +17,7 @@ class ShowCommentResource extends UserProfileCommentResource
 	 */
 	public function toArray(Request $request): array
 	{
-		return [
+		$data = [
 			...parent::toArray($request),
 			'shortSlug' => Str::limit($this->slug, 20),
 			'user' => $this->whenLoaded(
@@ -33,5 +35,19 @@ class ShowCommentResource extends UserProfileCommentResource
 				]
 			),
 		];
+
+		if ($request->user()?->isStaff() && $request->routeIs('comments.show')) {
+			$data['reports'] = PaginatedContentResource::make(
+				$this->reports()
+					->select(['slug', 'status', 'reason', 'created_at', 'user_id', 'reportable_id', 'reportable_type'])
+					->with(['user:id,name,username'])
+					->orderBy('created_at', 'DESC')
+					->paginate(25)
+			)
+				->additional(['data_resource' => UserReportsTableResource::class])
+				->toArray($request);
+		}
+
+		return $data;
 	}
 }

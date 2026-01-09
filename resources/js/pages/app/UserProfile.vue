@@ -13,7 +13,7 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import type { BreadcrumbItem, Discussion, DiscussionComment, Game, Genre, Pagination, Review, User } from '@/types';
 import { Head, Link } from '@inertiajs/vue3';
 import { CheckCircle, Settings } from 'lucide-vue-next';
-import { capitalize, computed } from 'vue';
+import { capitalize } from 'vue';
 
 interface UserProfile extends User {
     created_games: Pagination & { data: Game[] };
@@ -47,8 +47,6 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 const { getInitials } = useInitials();
-
-const showAvatar = computed(() => props.user.avatar !== '');
 </script>
 
 <template>
@@ -63,8 +61,8 @@ const showAvatar = computed(() => props.user.avatar !== '');
                 <LazyAvatar
                     :src="user.avatar"
                     :alt="user.name"
-                    v-if="showAvatar"
                     :fallback="getInitials(user.name)"
+                    fallback-text-size="text-3xl"
                     class="h-56 w-44 lg:row-span-2"
                 />
                 <div class="flex flex-col gap-3 lg:col-start-3 lg:row-end-1">

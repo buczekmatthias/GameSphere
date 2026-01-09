@@ -19,6 +19,7 @@ class UserReportsController extends Controller
 				Report::select(['status', 'reason', 'created_at', 'reportable_id', 'reportable_type'])
 				->where('user_id', request()->user()->id)
 				->with(['reportable'])
+				->orderBy('created_at', 'DESC')
 				->paginate(25)
 			),
 		]);
