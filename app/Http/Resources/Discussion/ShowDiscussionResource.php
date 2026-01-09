@@ -51,7 +51,7 @@ class ShowDiscussionResource extends JsonResource
 					->orderBy('id', 'ASC')
 					->paginate(10)
 			)
-				->additional(['data_resource' => DiscussionCommentResource::class])
+				->additional(['data_resource' => DiscussionCommentResource::class, 'data_to_pass' => ['discussion' => ['slug' => $this->slug]]])
 				->toArray($request),
 			'comments_count' => $this->whenCounted('comments'),
 			'created_at' => $this->created_at->format('Y-m-d'),

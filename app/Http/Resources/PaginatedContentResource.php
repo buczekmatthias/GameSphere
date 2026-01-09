@@ -26,9 +26,10 @@ class PaginatedContentResource extends JsonResource
 		];
 
 		$dataResource = $this->additional['data_resource'] ?? null;
+		$dataToPass = $this->additional['data_to_pass'] ?? [];
 
 		return [
-			'data' => ($dataResource ? $dataResource::collection($this->resource->items()) : $this->resource->items()),
+			'data' => ($dataResource ? $dataResource::collection($this->resource->items())->additional($dataToPass)->map(fn($item) => $item->additional($dataToPass)) : $this->resource->items()),
 			'meta' => $meta,
 			'links' => [
 				'prev' => $this->resource->previousPageUrl(),

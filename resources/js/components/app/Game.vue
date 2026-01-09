@@ -61,6 +61,6 @@ const formatListName = (name: string): string => capitalize(name).replace('_', '
             </div>
         </div>
 
-        <p class="self-start truncate">{{ game.title }}</p>
+        <p class="max-w-full self-start truncate">{{ game.title }}</p>
     </Link>
 </template>

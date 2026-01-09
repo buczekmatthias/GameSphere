@@ -24,7 +24,7 @@ class DiscussionCommentResource extends JsonResource
 					collect($this->media)
 					->map(
 						function (string $file) {
-							$path = "discussions/{$this->discussion->slug}/{$this->slug}/{$file}";
+							$path = "discussions/{$this->additional['discussion']['slug']}/{$this->slug}/{$file}";
 
 							return [
 								'filename' => $file,
