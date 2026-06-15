@@ -1,6 +1,6 @@
 # GameSphere
 
-A template for community-driven platform where gamers can review games, discover new titles, track progress on upcoming games and discuss about games.
+A community-driven platform where gamers can review games, discover new titles, track progress on upcoming games and discuss about games.
 
 ## Stack
 
