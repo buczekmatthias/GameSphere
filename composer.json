@@ -1,8 +1,8 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
-    "name": "laravel/vue-starter-kit",
+    "name": "hazy/gamesphere",
     "type": "project",
-    "description": "The skeleton application for the Laravel framework.",
+    "description": "A community-driven platform where gamers can review games, discover new titles, track progress on upcoming games and discuss about games.",
     "keywords": [
         "laravel",
         "framework"
