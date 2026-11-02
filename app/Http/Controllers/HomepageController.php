@@ -11,31 +11,36 @@ use Inertia\Response;
 
 class HomepageController extends Controller
 {
-	public function __invoke(string $type = 'newest'): Response
-	{
-		return Inertia::render('app/Homepage', [
-			'games' => Inertia::defer(
-				function () use ($type) {
-					return Cache::flexible("homepage_$type", [180, 300], function () use ($type) {
-						$games = $type === 'upcoming' ? Game::query() : Game::gamesWithScore();
+    public function __invoke(string $type = 'newest'): Response
+    {
+        return Inertia::render('app/Homepage', [
+            'games' => Inertia::defer(
+                function () use ($type) {
+                    return Cache::flexible("homepage_$type", [180, 300], function () use ($type) {
+                        $games = $type === 'upcoming' ? Game::query() : Game::gamesWithScore();
 
-						$games = match ($type) {
-							'newest' => $games->orderBy('released_at', 'DESC')->where('released_at', '<=', now()->endOfDay()),
-							'most_popular' => $games->whereHas('favoriteUsers')
-								->withCount('favoriteUsers')
-								->orderBy('favorite_users_count', 'DESC'),
-							'upcoming' => $games->orderBy('released_at', 'DESC')->where('released_at', '>=', now()->startOfDay()->addDay()),
-						};
+                        $games = match ($type) {
+                            'newest' => $games
+                                ->orderBy('released_at', 'DESC')
+                                ->where('released_at', '<=', now()->endOfDay()),
+                            'most_popular' => $games->whereHas('favoriteUsers')
+                                ->withCount('favoriteUsers')
+                                ->orderBy('favorite_users_count', 'DESC'),
+                            'upcoming' => $games
+                                ->select(['games.title', 'games.slug', 'games.thumbnail', 'games.released_at'])
+                                ->orderBy('released_at', 'DESC')
+                                ->whereBetween('released_at', [now()->startOfDay()->addDay(), now()->endOfYear()->addYear()->addDay()]),
+                        };
 
-						return GamesListResource::collection($games->limit(40)->get());
-					});
-				}
-			),
-			'activeType' => $type,
-			'types' => array_map(
-				fn ($t) => ['name' => $t, 'route' => route('home', ['type' => $t])],
-				array_column(HomepageSortingType::cases(), 'value')
-			)
-		]);
-	}
+                        return GamesListResource::collection($games->limit(40)->get());
+                    });
+                }
+            ),
+            'activeType' => $type,
+            'types' => array_map(
+                fn ($t) => ['name' => $t, 'route' => route('home', ['type' => $t])],
+                array_column(HomepageSortingType::cases(), 'value')
+            )
+        ]);
+    }
 }

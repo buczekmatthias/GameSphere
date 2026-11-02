@@ -15,91 +15,91 @@ use Illuminate\Support\Facades\DB;
 
 class Game extends Model
 {
-	use HasFactory;
+    use HasFactory;
 
-	public function getRouteKeyName(): string
-	{
-		return 'slug';
-	}
+    public function getRouteKeyName(): string
+    {
+        return 'slug';
+    }
 
-	protected $fillable = [
-		'slug',
-		'title',
-		'description',
-		'thumbnail',
-		'media',
-		'released_at',
-	];
+    protected $fillable = [
+        'slug',
+        'title',
+        'description',
+        'thumbnail',
+        'media',
+        'released_at',
+    ];
 
-	protected function casts(): array
-	{
-		return [
-			'media' => 'array',
-			'released_at' => 'date:Y-m-d',
-			'list_types' => 'array',
-		];
-	}
+    protected function casts(): array
+    {
+        return [
+            'media' => 'array',
+            'released_at' => 'date:Y-m-d',
+            'list_types' => 'array',
+        ];
+    }
 
-	public function creator(): BelongsTo
-	{
-		return $this->belongsTo(User::class, 'user_id');
-	}
+    public function creator(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
 
-	public function reviews(): HasMany
-	{
-		return $this->hasMany(Review::class);
-	}
+    public function reviews(): HasMany
+    {
+        return $this->hasMany(Review::class);
+    }
 
-	public function genre(): BelongsTo
-	{
-		return $this->belongsTo(Genre::class);
-	}
+    public function genre(): BelongsTo
+    {
+        return $this->belongsTo(Genre::class);
+    }
 
-	public function discussions(): MorphMany
-	{
-		return $this->morphMany(Discussion::class, 'discussable');
-	}
+    public function discussions(): MorphMany
+    {
+        return $this->morphMany(Discussion::class, 'discussable');
+    }
 
-	public function reports(): MorphMany
-	{
-		return $this->morphMany(Report::class, 'reportable');
-	}
+    public function reports(): MorphMany
+    {
+        return $this->morphMany(Report::class, 'reportable');
+    }
 
-	public function users(): BelongsToMany
-	{
-		return $this->belongsToMany(User::class, 'game_user')
-					->withPivot('list_type');
-	}
+    public function users(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'game_user')
+                    ->withPivot('list_type');
+    }
 
-	public function favoriteUsers(): BelongsToMany
-	{
-		return $this->users()->wherePivot('list_type', GameCollectionType::FAVORITE->value);
-	}
+    public function favoriteUsers(): BelongsToMany
+    {
+        return $this->users()->wherePivot('list_type', GameCollectionType::FAVORITE->value);
+    }
 
-	public function isGameReleased(): bool
-	{
-		return $this->released_at <= now()->endOfDay();
-	}
+    public function isGameReleased(): bool
+    {
+        return $this->released_at <= now()->endOfDay();
+    }
 
-	public function scopeGetGameWithScore(Builder $query): Builder
-	{
-		return $query
-			->select(['games.*'])
-			->selectSub($this->getScoreSubquery(), 'score');
-	}
+    public function scopeGetGameWithScore(Builder $query): Builder
+    {
+        return $query
+            ->select(['games.*'])
+            ->selectSub($this->getScoreSubquery(), 'score');
+    }
 
-	public function scopeGamesWithScore(Builder $query): Builder
-	{
-		return $query
-			->select(['games.title', 'games.slug', 'games.thumbnail'])
-			->selectSub($this->getScoreSubquery(), 'score');
-	}
+    public function scopeGamesWithScore(Builder $query): Builder
+    {
+        return $query
+            ->select(['games.title', 'games.slug', 'games.thumbnail', 'games.released_at'])
+            ->selectSub($this->getScoreSubquery(), 'score');
+    }
 
-	private function getScoreSubquery(): Closure
-	{
-		return fn ($q) => $q->from('reviews')
-			->whereColumn('reviews.game_id', 'games.id')
-			->selectRaw("COALESCE(
+    private function getScoreSubquery(): Closure
+    {
+        return fn ($q) => $q->from('reviews')
+            ->whereColumn('reviews.game_id', 'games.id')
+            ->selectRaw("COALESCE(
             AVG(
                 (CAST(ratings->>'gameplay' AS DECIMAL) + 
                 CAST(ratings->>'graphics' AS DECIMAL) + 
@@ -110,18 +110,18 @@ class Game extends Model
             ),
             0
         )");
-	}
+    }
 
-	public function scopeWithLists(Builder $query, User $user): Builder
-	{
-		return $query
-				->addSelect(DB::raw("JSON_AGG(game_user.list_type) as list_types "))
-				->leftJoin('game_user', 'games.id', '=', 'game_user.game_id')
-				->where('game_user.user_id', $user->id)
-				->groupBy(
-					'game_user.game_id',
-					'game_user.user_id',
-					'games.id'
-				);
-	}
+    public function scopeWithLists(Builder $query, User $user): Builder
+    {
+        return $query
+                ->addSelect(DB::raw("JSON_AGG(game_user.list_type) as list_types "))
+                ->leftJoin('game_user', 'games.id', '=', 'game_user.game_id')
+                ->where('game_user.user_id', $user->id)
+                ->groupBy(
+                    'game_user.game_id',
+                    'game_user.user_id',
+                    'games.id'
+                );
+    }
 }
