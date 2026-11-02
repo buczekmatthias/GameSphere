@@ -17,79 +17,79 @@ use Illuminate\Support\Str;
 
 class ProfileController extends Controller
 {
-	/**
-	 * Show the user's profile settings page.
-	 */
-	public function edit(Request $request): Response
-	{
-		return Inertia::render('app/settings/Profile', [
-			'mustVerifyEmail' => $request->user() instanceof MustVerifyEmail,
-			'status' => $request->session()->get('status'),
-			'appliedToBecomeGameCreator' => $request->user()->role === 'user' ? GameCreatorRequest::where('user_id', $request->user()->id)->exists() : true
-		]);
-	}
+    /**
+     * Show the user's profile settings page.
+     */
+    public function edit(Request $request): Response
+    {
+        return Inertia::render('app/settings/Profile', [
+            'mustVerifyEmail' => $request->user() instanceof MustVerifyEmail,
+            'status' => $request->session()->get('status'),
+            'appliedToBecomeGameCreator' => $request->user()->role === 'user' ? GameCreatorRequest::where('user_id', $request->user()->id)->exists() : true
+        ]);
+    }
 
-	/**
-	 * Update the user's profile information.
-	 */
-	public function update(ProfileUpdateRequest $request): RedirectResponse
-	{
-		$request->user()->fill($request->validated());
+    /**
+     * Update the user's profile information.
+     */
+    public function update(ProfileUpdateRequest $request): RedirectResponse
+    {
+        $request->user()->fill($request->validated());
 
-		if ($request->user()->isDirty('email')) {
-			$request->user()->email_verified_at = null;
-		}
+        if ($request->user()->isDirty('email')) {
+            $request->user()->email_verified_at = null;
+        }
 
-		$request->user()->save();
+        $request->user()->save();
 
-		return to_route('profile.edit');
-	}
+        return to_route('settings.profile.edit');
+    }
 
-	/**
-	 * Delete the user's profile.
-	 */
-	public function destroy(Request $request): RedirectResponse
-	{
-		$request->validate([
-			'password' => ['required', 'current_password'],
-		]);
+    /**
+     * Delete the user's profile.
+     */
+    public function destroy(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'password' => ['required', 'current_password'],
+        ]);
 
-		$user = $request->user();
+        $user = $request->user();
 
-		Auth::logout();
+        Auth::logout();
 
-		UserDeleteServices::deleteUser($user);
+        UserDeleteServices::deleteUser($user);
 
-		$request->session()->invalidate();
-		$request->session()->regenerateToken();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
 
-		return redirect('/');
-	}
+        return redirect('/');
+    }
 
-	public function updateProfilePicture(Request $request): RedirectResponse
-	{
-		$pfp = $request->validate([
-			'pfp' => ['image', 'nullable'],
-		])['pfp'] ?? null;
+    public function updateProfilePicture(Request $request): RedirectResponse
+    {
+        $pfp = $request->validate([
+            'pfp' => ['image', 'nullable'],
+        ])['pfp'] ?? null;
 
-		$user = $request->user();
+        $user = $request->user();
 
-		if ($request->get('delete_pfp')) {
-			ManageMedia::deleteFile("users/{$user->avatar}");
+        if ($request->get('delete_pfp')) {
+            ManageMedia::deleteFile("users/{$user->avatar}");
 
-			$user->avatar = null;
+            $user->avatar = null;
 
-			$user->save();
-		} elseif ($pfp) {
-			$pfpName = Str::uuid()."_".now()->timestamp.".".$pfp->extension();
+            $user->save();
+        } elseif ($pfp) {
+            $pfpName = Str::uuid()."_".now()->timestamp.".".$pfp->extension();
 
-			ManageMedia::replaceFile("users", $user->avatar, $pfp, $pfpName);
+            ManageMedia::replaceFile("users", $user->avatar, $pfp, $pfpName);
 
-			$user->avatar = $pfpName;
+            $user->avatar = $pfpName;
 
-			$user->save();
-		}
+            $user->save();
+        }
 
-		return to_route('settings.profile.edit');
-	}
+        return to_route('settings.profile.edit');
+    }
 }
