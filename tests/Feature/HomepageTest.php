@@ -18,7 +18,7 @@ test('anyone can visit homepage', function () {
 });
 
 test('homepage displays only newest games (before end of today)', function () {
-    User::factory()->create(['role' => UserRole::GAME_CREATOR->value]);
+    User::factory()->create(['role' => UserRole::GAME_CREATOR]);
     Genre::factory()->create();
     Game::factory()->create(['released_at' => now()->startOfDay()->subDay()]);
     Game::factory()->create(['released_at' => now()->endOfWeek()]);
@@ -43,7 +43,7 @@ test('homepage displays only newest games (before end of today)', function () {
 });
 
 test('homepage displays only most popular games (ones that were marked as favorite by users)', function () {
-    $user = User::factory()->create(['role' => UserRole::GAME_CREATOR->value]);
+    $user = User::factory()->create(['role' => UserRole::GAME_CREATOR]);
     Genre::factory()->create();
     $game = Game::factory()->create(['released_at' => now()->startOfWeek()->subDay()]);
     Game::factory()->create(['released_at' => now()->startOfMonth()]);
@@ -70,7 +70,7 @@ test('homepage displays only most popular games (ones that were marked as favori
 });
 
 test('homepage displays only upcoming games (between tomorrow and end of next year)', function () {
-    User::factory()->create(['role' => UserRole::GAME_CREATOR->value]);
+    User::factory()->create(['role' => UserRole::GAME_CREATOR]);
     Genre::factory()->create();
     Game::factory()->create(['released_at' => now()->startOfWeek()->subDay()]);
     Game::factory()->create(['released_at' => now()->endOfWeek()->addDay()]);

@@ -8,25 +8,25 @@ use Illuminate\Database\Seeder;
 
 class UserSeeder extends Seeder
 {
-	/**
-	 * Run the database seeds.
-	 */
-	public function run(): void
-	{
-		User::factory()->create([
-			'name' => 'Admin',
-			'email' => 'admin@test.com',
-			'username' => 'admin_account',
-			'role' => UserRole::DEVELOPER->value
-		]);
+    /**
+     * Run the database seeds.
+     */
+    public function run(): void
+    {
+        User::factory()->create([
+            'name' => 'Admin',
+            'email' => 'admin@test.com',
+            'username' => 'admin_account',
+            'role' => UserRole::DEVELOPER
+        ]);
 
-		User::factory(1000)->create();
+        User::factory(1000)->create();
 
-		$users = User::where('role', UserRole::USER->value)->inRandomOrder()->limit(15)->get();
+        $users = User::where('role', UserRole::USER)->inRandomOrder()->limit(15)->get();
 
-		foreach ($users as $u) {
-			$u->role = UserRole::GAME_CREATOR->value;
-			$u->save();
-		}
-	}
+        foreach ($users as $u) {
+            $u->role = UserRole::GAME_CREATOR;
+            $u->save();
+        }
+    }
 }
