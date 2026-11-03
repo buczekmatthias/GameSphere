@@ -24,6 +24,9 @@ COPY --from=node:24-slim /usr/local/lib/node_modules /usr/local/lib/node_modules
 RUN ln -s ../lib/node_modules/npm/bin/npm-cli.js /usr/local/bin/npm \
     && ln -s ../lib/node_modules/npm/bin/npx-cli.js /usr/local/bin/npx
 
+COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
 RUN groupadd -g ${GID} ${USER_NAME} \
     && useradd -m -u ${UID} -g ${GID} -s /bin/bash ${USER_NAME}
 
@@ -32,3 +35,6 @@ WORKDIR /var/www/html
 USER ${USER_NAME}
 
 EXPOSE 9000 5173
+
+ENTRYPOINT [ "entrypoint.sh" ]
+CMD [ "php-fpm" ]

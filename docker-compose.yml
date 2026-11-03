@@ -18,10 +18,12 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-    command: >
-      sh -c "composer install --no-interaction &&
-             php artisan migrate --force &&
-             php-fpm"
+    healthcheck:
+      test: ['CMD-SHELL', 'php -r "exit(@fsockopen(\"127.0.0.1\", 9000) ? 0 : 1);"']
+      interval: 5s
+      timeout: 5s
+      retries: 60
+      start_period: 30s
 
   web:
     image: nginx:stable-alpine
@@ -35,7 +37,10 @@ services:
     networks:
       - internal
     depends_on:
-      - app
+      app:
+        condition: service_healthy
+      node:
+        condition: service_healthy
 
   node:
     image: node:24
@@ -47,7 +52,13 @@ services:
       - .:/app
     ports:
       - '5173:5173'
-    command: sh -c "npm install && npm run dev -- --host"
+    command: sh -c "[ node_modules/.package-lock.json -nt package-lock.json ] || npm install; npm run dev -- --host"
+    healthcheck:
+      test: ['CMD-SHELL', 'curl -fs http://localhost:5173/@vite/client > /dev/null || exit 1']
+      interval: 5s
+      timeout: 5s
+      retries: 60
+      start_period: 30s
 
   postgres:
     image: postgres:18

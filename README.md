@@ -1,87 +1,50 @@
 # GameSphere
 
-A community-driven platform where gamers can review games, discover new titles, track progress on upcoming games and discuss about games.
+A community-driven platform where gamers can review games, discover new titles, track progress on upcoming games and discuss games.
 
 ## Stack
 
-- Laravel
-- Vue
-- Inertia.js
-- Tailwind
+- PHP 8.4
+- Laravel 12, Pest
+- Vue 3 with shadcn/vue, VueUse, Lucide Vue and ziggy.js
+- Inertia.js v2
 - TypeScript
-- PostgreSQL
-- shadcn/vue
-- VueUse
-- Lucide Vue
-- ziggy.js
+- PostgreSQL 18
+- Tailwind v4
+- Docker with Compose, nginx, php-fpm
 
-## Installation
+## Quick start
 
-### Clone repository
+Requires Docker with Compose and git.
 
-```
+```shell
 git clone https://github.com/buczekmatthias/GameSphere.git
-```
-
-### Change directory
-
-```
 cd GameSphere
+cp .env.example .env
 ```
 
-### Install dependencies
+Edit `.env` and set `DB_USERNAME` and `DB_PASSWORD` to any value.
 
-```
-composer install
-```
+Changing those credentials after first run won't have an effect until executing `docker compose down -v` which will reset data volume erasing whole database.
 
-```
-npm install
+```shell
+docker compose up -d --build
 ```
 
-### Create .env from .env.example
+The first start takes a minute or two while dependencies install and migrations run.
 
-```
-copy .env.example .env
-```
+To watch progress, run `docker compose logs -f app` (Ctrl+C stops following; the containers keep running).
 
-### Generate app key
+When you see “ready to handle connections”, open http://localhost:8000/.
 
-```
-php artisan key:generate
-```
+Demo admin account (seeded data, local use only): `admin@test.com` / `password`.
 
-### Fill database credentials in .env
+Stop everything with `docker compose down`.
 
-```
-DB_USERNAME=
-DB_PASSWORD=
-```
+## Running tests
 
-### Start your postgres server and create database matching the name from .env file
+Project Docker containers must be running.
 
-### Migrate and seed database
-
-```
-php artisan migrate
-```
-
-```
-php artisan db:seed
-```
-
-### Start application server
-
-```
-composer run dev
-```
-
-### Open browser and head to http://localhost:8000
-
-### Login using these admin account credentials
-
-```
-admin@test.com
-
-password
+```shell
+docker compose exec app php artisan test
 ```
