@@ -19,32 +19,32 @@ Route::get('/{type?}', HomepageController::class)->whereIn('type', array_column(
 Route::get('/u/{user:username}/{tab?}', UserProfileController::class)->name('user.profile');
 
 Route::middleware(['auth'])->group(function () {
-	Route::get('/my-reports', UserReportsController::class)->name('user.reports');
+    Route::get('/my-reports', UserReportsController::class)->name('user.reports');
 
-	Route::post('/become-game-creator', GameCreatorRequestController::class)->middleware('non.game.creator')->name('game.creator.join');
+    Route::post('/become-game-creator', GameCreatorRequestController::class)->middleware('non.game.creator')->name('game.creator.join');
 
-	Route::post('/reports', StoreReportController::class)->name('reports.store');
+    Route::post('/reports', StoreReportController::class)->name('reports.store');
 
-	Route::post('/games/{game}', [GameController::class, 'update'])->name('games.update');
-	Route::post('/games/{game}/toggle-list', [GameController::class, 'toggleGameOnList'])->name('games.lists.toggle');
-	Route::resource('games', GameController::class)->middleware(['game.creator'])->except(['index', 'show']);
+    Route::post('/games/{game}', [GameController::class, 'update'])->name('games.update');
+    Route::post('/games/{game}/toggle-list', [GameController::class, 'toggleGameOnList'])->name('games.lists.toggle');
+    Route::resource('games', GameController::class)->middleware(['game.creator'])->except(['index', 'show', 'update']);
 
-	Route::post('/genres/{genre}/toggle-favorite', [GenreController::class, 'toggleFavoriteGenre'])->name('genres.favorite');
+    Route::post('/genres/{genre}/toggle-favorite', [GenreController::class, 'toggleFavoriteGenre'])->name('genres.favorite');
 
-	Route::get("/games/{game}/reviews/create", [ReviewController::class, 'create'])->name('reviews.create');
-	Route::resource('reviews', ReviewController::class)->only(['store', 'destroy']);
+    Route::get("/games/{game}/reviews/create", [ReviewController::class, 'create'])->name('reviews.create');
+    Route::resource('reviews', ReviewController::class)->only(['store', 'destroy']);
 
-	Route::get("/{type}/{slug}/discussions/create", [DiscussionController::class, 'create'])->name('discussions.create')->whereIn('type', ['game', 'genre']);
-	Route::resource('discussions', DiscussionController::class)->only(['store', 'update', 'destroy']);
-	Route::patch('/discussions/{discussion}/toggle-lock', [DiscussionController::class, 'toggleLock'])->name('discussions.lock.toggle');
+    Route::get("/{type}/{slug}/discussions/create", [DiscussionController::class, 'create'])->name('discussions.create')->whereIn('type', ['game', 'genre']);
+    Route::resource('discussions', DiscussionController::class)->only(['store', 'update', 'destroy']);
+    Route::patch('/discussions/{discussion}/toggle-lock', [DiscussionController::class, 'toggleLock'])->name('discussions.lock.toggle');
 
-	Route::resource('comments', CommentController::class)->only(['store', 'edit', 'update', 'destroy']);
+    Route::resource('comments', CommentController::class)->only(['store', 'edit', 'update', 'destroy']);
 });
 
 Route::get('/users', UserListController::class)->name('users.index');
 Route::controller(GameController::class)->name('games.')->prefix('games')->group(function () {
-	Route::get('/', 'index')->name('index');
-	Route::get('/{game}/{tab?}', 'show')->name('show');
+    Route::get('/', 'index')->name('index');
+    Route::get('/{game}/{tab?}', 'show')->name('show');
 });
 Route::resource('reviews', ReviewController::class)->only(['show']);
 Route::resource('discussions', DiscussionController::class)->only(['index', 'show']);
