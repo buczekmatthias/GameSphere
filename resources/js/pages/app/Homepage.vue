@@ -32,10 +32,17 @@ const breadcrumbs: BreadcrumbItem[] = [
                     <GameSkeleton />
                 </template>
 
-                <div class="games-grid mx-auto max-w-5xl">
-                    <TabNavigation :tabs="types" :active-tab="activeType" :reload-only="['activeType', 'games']" class="col-span-full" />
-                    <Game v-for="game in games" :key="game.title" :game />
-                </div>
+                <template v-if="games">
+                    <div class="games-grid">
+                        <TabNavigation :tabs="types" :active-tab="activeType" :reload-only="['activeType', 'games']" class="col-span-full" />
+                        <template v-if="games.length > 0">
+                            <Game v-for="game in games" :key="game.title" :game />
+                        </template>
+                        <template v-else>
+                            <p class="col-span-full">Nothing to display here</p>
+                        </template>
+                    </div>
+                </template>
             </Deferred>
         </MainContainer>
     </AppLayout>

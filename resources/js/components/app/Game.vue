@@ -30,7 +30,7 @@ const formatListName = (name: string): string => capitalize(name).replace('_', '
                 class="group-hover:border-primary h-80 w-full border-2 border-solid border-transparent duration-300"
             />
             <div class="absolute top-2 left-2 flex flex-wrap gap-1.5">
-                <div class="game-floating-label">
+                <div class="game-floating-label" v-if="game.score">
                     <Star class="mt-0.5 size-5" />
                     <p>{{ game.score || 'No reviews' }}</p>
                 </div>

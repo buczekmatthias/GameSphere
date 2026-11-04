@@ -15,7 +15,7 @@ defineProps<{
         <div class="flex divide-x">
             <div class="flex items-center gap-2.5 pr-3">
                 <Star class="mt-0.5 size-5" />
-                <p>{{ game.score }}</p>
+                <p>{{ game.score || '0.0' }}</p>
             </div>
             <p class="pl-3">{{ game.reviews_count }} review(s)</p>
         </div>
