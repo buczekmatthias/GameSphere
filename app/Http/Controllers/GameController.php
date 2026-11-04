@@ -20,6 +20,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -145,6 +146,8 @@ class GameController extends Controller
      */
     public function edit(Game $game): Response
     {
+        Gate::authorize('update', $game);
+
         $game->load([
             'genre:id,slug,name',
             'creator:id,avatar,name,username'
@@ -153,7 +156,6 @@ class GameController extends Controller
         return Inertia::render('app/game/Edit', [
             'game' => EditGameResource::make($game),
             'genres' => Genre::select(['slug', 'name'])->orderBy('name', 'ASC')->get(),
-            'users' => request()->user()?->isStaff() ? SimpleProfileResource::collection(User::permittedToOwnGame()->get()) : null
         ]);
     }
 
@@ -162,6 +164,8 @@ class GameController extends Controller
      */
     public function update(Game $game, EditRequest $request): RedirectResponse
     {
+        Gate::authorize('update', $game);
+
         $data = $request->validated();
 
         $path = "games/{$game->slug}";
@@ -177,7 +181,6 @@ class GameController extends Controller
         $game->title = $data['title'];
         $game->description = $data['description'];
         $game->genre_id = Genre::select('id')->where('slug', $data['genre'])->first()->id;
-        $game->user_id = User::select('id')->where('username', $data['creator'])->first()->id;
 
         if ($data['released_at']) {
             $game->released_at = $data['released_at'];
