@@ -22,10 +22,10 @@ test('games.edit passes only for owner or staff', function (string $actor, int $
     $game = Game::factory()->for($genre)->for($owner, 'creator')->create();
 
     $user = match($actor) {
-        'owner'      => $owner,
-        'moderator'  => User::factory()->create(['role' => UserRole::MODERATOR]),
-        'admin'      => User::factory()->create(['role' => UserRole::ADMIN]),
-        'dev'      => User::factory()->create(['role' => UserRole::DEVELOPER]),
+        'owner' => $owner,
+        'moderator' => User::factory()->create(['role' => UserRole::MODERATOR]),
+        'admin' => User::factory()->create(['role' => UserRole::ADMIN]),
+        'dev' => User::factory()->create(['role' => UserRole::DEVELOPER]),
         'creator' => User::factory()->create(['role' => UserRole::GAME_CREATOR]),
         'user' => User::factory()->create(['role' => UserRole::USER]),
     };
@@ -34,10 +34,10 @@ test('games.edit passes only for owner or staff', function (string $actor, int $
 
     $response->assertStatus($expectedStatus);
 })->with([
-    'owner can'      => ['owner', 200],
-    'moderator can'  => ['moderator', 200],
-    'admin can'      => ['admin', 200],
-    'dev can'      => ['dev', 200],
+    'owner can' => ['owner', 200],
+    'moderator can' => ['moderator', 200],
+    'admin can' => ['admin', 200],
+    'dev can' => ['dev', 200],
     'non-owner creator cannot' => ['creator', 403],
     'regular user cannot' => ['user', 403],
 ]);

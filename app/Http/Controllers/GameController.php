@@ -70,7 +70,7 @@ class GameController extends Controller
 
         $thumbnailName = 'thumbnail.'.$data['thumbnail']->extension();
 
-        $game = $genre->games()->make([...$data, 'slug' => Str::uuid(), 'thumbnail' => $thumbnailName]);
+        $game = $genre->games()->make([...$data, 'slug' => Str::uuid(), 'thumbnail' => $thumbnailName, 'media' => []]);
         $game->creator()->associate($request->user());
 
         $path = "games/{$game->slug}";
