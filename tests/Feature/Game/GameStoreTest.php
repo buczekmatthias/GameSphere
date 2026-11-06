@@ -4,24 +4,14 @@ use App\Enum\UserRole;
 use App\Models\Game;
 use App\Models\Genre;
 use App\Models\User;
-use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 
-function validGamePayload(Genre $genre, array $overrides = []): array
-{
-    return array_merge([
-        'title'       => 'Example title',
-        'description' => str_repeat('a', 50),
-        'thumbnail'   => UploadedFile::fake()->image('thumbnail.png'),
-        'released_at' => now()->format('Y-m-d'),
-        'genre'       => $genre->slug,
-    ], $overrides);
-}
-
+beforeEach(function () {
+    Storage::fake('public');
+});
 
 test('games.store redirects to login page for guest', function () {
     $genre = Genre::factory()->create();
-    Storage::fake('public');
 
     $response = $this->post('/games', validGamePayload($genre));
 
@@ -30,7 +20,6 @@ test('games.store redirects to login page for guest', function () {
 
 test('games.store fails for regular user', function () {
     $genre = Genre::factory()->create();
-    Storage::fake('public');
 
     $response = $this->actingAs(User::factory()->create(['role' => UserRole::USER]))->post('/games', validGamePayload($genre));
 
@@ -42,7 +31,6 @@ test('games.store fails for regular user', function () {
 test('any authorized user with role different than USER can access games.store and create game when request is valid', function (UserRole $role) {
     $genre = Genre::factory()->create();
     $user = User::factory()->create(['role' => $role]);
-    Storage::fake('public');
     $payload = validGamePayload($genre);
 
     $response = $this->actingAs($user)->post('/games', $payload);
@@ -61,6 +49,9 @@ test('any authorized user with role different than USER can access games.store a
 
 
     Storage::disk('public')->assertExists("games/{$game->slug}/{$game->thumbnail}");
+    Storage::disk('public')->assertExists("games/{$game->slug}/{$game->slug}-media-0.png");
+    Storage::disk('public')->assertExists("games/{$game->slug}/{$game->slug}-media-1.png");
+    Storage::disk('public')->assertExists("games/{$game->slug}/{$game->slug}-media-2.png");
 })->with([
     'game creator' => UserRole::GAME_CREATOR,
     'moderator' => UserRole::MODERATOR,
@@ -80,7 +71,6 @@ test('games.store redirects with errors when mandatory data are missing', functi
 
 test('games.store will redirect with errors on invalid data', function (string $field, mixed $value) {
     $genre = Genre::factory()->create();
-    Storage::fake('public');
     $date = now()->format('Y-m-d');
 
     $response = $this

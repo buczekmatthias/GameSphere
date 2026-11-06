@@ -11,6 +11,9 @@
 |
 */
 
+use App\Models\Genre;
+use Illuminate\Http\UploadedFile;
+
 pest()->extend(Tests\TestCase::class)
     ->use(Illuminate\Foundation\Testing\RefreshDatabase::class)
     ->in('Feature');
@@ -44,4 +47,20 @@ expect()->extend('toBeOne', function () {
 function something()
 {
     // ..
+}
+
+function validGamePayload(Genre $genre, array $overrides = []): array
+{
+    return array_merge([
+        'title'       => 'Example title',
+        'description' => str_repeat('a', 50),
+        'thumbnail'   => UploadedFile::fake()->image('thumbnail.png'),
+        'media' => [
+            UploadedFile::fake()->image('image-1.png'),
+            UploadedFile::fake()->image('image-2.png'),
+            UploadedFile::fake()->image('image-3.png'),
+        ],
+        'released_at' => now()->format('Y-m-d'),
+        'genre'       => $genre->slug,
+    ], $overrides);
 }
