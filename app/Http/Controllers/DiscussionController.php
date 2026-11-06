@@ -20,137 +20,137 @@ use Inertia\Response;
 
 class DiscussionController extends Controller
 {
-	public function index(): Response
-	{
-		return Inertia::render('app/discussion/Index', [
-			'discussions' => Inertia::defer(fn () => ListDiscussionResource::collection(
-				Discussion::with([
-					'author:id,avatar,username,name', 'discussable'
-				])
-					->when(
-						request()->has('title'),
-						fn (Builder $query) => $query->whereLike('title', "%".request()->get('title')."%")
-					)
-					->withCount('comments')
-					->orderBy('created_at', 'DESC')
-					->orderBy('id', 'ASC')
-					->paginate(15)
-			))
-		]);
-	}
+    public function index(): Response
+    {
+        return Inertia::render('app/discussion/Index', [
+            'discussions' => Inertia::defer(fn () => ListDiscussionResource::collection(
+                Discussion::with([
+                    'author:id,avatar,username,name', 'discussable'
+                ])
+                    ->when(
+                        request()->has('title'),
+                        fn (Builder $query) => $query->whereLike('title', "%".request()->get('title')."%")
+                    )
+                    ->withCount('comments')
+                    ->orderBy('created_at', 'DESC')
+                    ->orderBy('id', 'ASC')
+                    ->paginate(15)
+            ))
+        ]);
+    }
 
-	public function create(string $type, string $slug): Response
-	{
-		$item = null;
+    public function create(string $type, string $slug): Response
+    {
+        $item = null;
 
-		if ($type === 'game') {
-			$item = Game::select(['title', 'slug'])->where('slug', $slug)->first();
-		} else {
-			$item = Genre::select(['slug', 'name'])->where('slug', $slug)->first();
-		}
+        if ($type === 'game') {
+            $item = Game::select(['title', 'slug'])->where('slug', $slug)->first();
+        } else {
+            $item = Genre::select(['slug', 'name'])->where('slug', $slug)->first();
+        }
 
-		return Inertia::render('app/discussion/Create', [
-			'type' => $type,
-			'item' => $item
-		]);
-	}
+        return Inertia::render('app/discussion/Create', [
+            'type' => $type,
+            'item' => $item
+        ]);
+    }
 
-	/**
-	 * Store a newly created resource in storage.
-	 */
-	public function store(StoreRequest $request): RedirectResponse
-	{
-		$userId = $request->user()->id;
-		$data = $request->validated();
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(StoreRequest $request): RedirectResponse
+    {
+        $userId = $request->user()->id;
+        $data = $request->validated();
 
-		$discussion = (
-			$request->post('type') === 'game'
-			? Game::select(['id'])->where('slug', $data['slug'])
-			: Genre::select(['id'])->where('slug', $data['slug'])
-		)
-			->first()
-			->discussions()
-			->make([
-				'slug' => Str::uuid(),
-				'title' => $data['title']
-			]);
+        $discussion = (
+            $request->post('type') === 'game'
+            ? Game::select(['id'])->where('slug', $data['slug'])
+            : Genre::select(['id'])->where('slug', $data['slug'])
+        )
+            ->first()
+            ->discussions()
+            ->make([
+                'slug' => Str::uuid(),
+                'title' => $data['title']
+            ]);
 
-		$discussion->user_id = $userId;
-		$discussion->save();
+        $discussion->user_id = $userId;
+        $discussion->save();
 
-		Storage::makeDirectory("discussions/{$discussion->slug}");
+        Storage::makeDirectory("discussions/{$discussion->slug}");
 
-		$comment = $discussion->comments()->make([
-			'slug' => Str::uuid(),
-			'content' => $data['content']
-		]);
+        $comment = $discussion->comments()->make([
+            'slug' => Str::uuid(),
+            'content' => $data['content']
+        ]);
 
-		$comment->media = ManageMedia::storeCommentMedia($discussion->slug, $comment->slug, $data['media']);
+        $comment->media = ManageMedia::storeCommentMedia($discussion->slug, $comment->slug, $data['media']);
 
-		$comment->user_id = $userId;
+        $comment->user_id = $userId;
 
-		$comment->save();
+        $comment->save();
 
-		return to_route('discussions.show', ['discussion' => $discussion->slug]);
-	}
+        return to_route('discussions.show', ['discussion' => $discussion->slug]);
+    }
 
-	/**
-	 * Display the specified resource.
-	 */
-	public function show(Discussion $discussion): Response
-	{
-		$discussion->load([
-			'author:id,avatar,name,username',
-			'discussable'
-		])
-			->loadCount('comments');
+    /**
+     * Display the specified resource.
+     */
+    public function show(Discussion $discussion): Response
+    {
+        $discussion->load([
+            'author:id,avatar,name,username',
+            'discussable'
+        ])
+            ->loadCount('comments');
 
-		return Inertia::render('app/discussion/Show', [
-			'discussion' => ShowDiscussionResource::make($discussion),
-		]);
-	}
+        return Inertia::render('app/discussion/Show', [
+            'discussion' => ShowDiscussionResource::make($discussion),
+        ]);
+    }
 
-	/**
-	 * Update the specified resource in storage.
-	 */
-	public function update(Discussion $discussion, UpdateRequest $request): RedirectResponse
-	{
-		$discussion->update($request->validated());
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Discussion $discussion, UpdateRequest $request): RedirectResponse
+    {
+        $discussion->update($request->validated());
 
-		return back(303);
-	}
+        return back();
+    }
 
-	/**
-	 * Remove the specified resource from storage.
-	 */
-	public function destroy(Discussion $discussion): RedirectResponse
-	{
-		$path = "discussions/{$discussion->slug}";
-		$comments = $discussion->comments()->select(['slug', 'media'])->get();
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(Discussion $discussion): RedirectResponse
+    {
+        $path = "discussions/{$discussion->slug}";
+        $comments = $discussion->comments()->select(['slug', 'media'])->get();
 
-		DB::transaction(function () use ($discussion) {
-			$discussion->reports()->delete();
+        DB::transaction(function () use ($discussion) {
+            $discussion->reports()->delete();
 
-			$discussion->delete();
-		});
+            $discussion->delete();
+        });
 
-		foreach ($comments as $comment) {
-			ManageMedia::deleteDirectoryWithMedia("{$path}/{$comment->slug}", $comment->media);
-		}
+        foreach ($comments as $comment) {
+            ManageMedia::deleteDirectoryWithMedia("{$path}/{$comment->slug}", $comment->media);
+        }
 
-		Storage::deleteDirectory($path);
+        Storage::deleteDirectory($path);
 
-		if (request()->has('return_back')) {
-			return back(303);
-		}
+        if (request()->has('return_back')) {
+            return back();
+        }
 
-		return to_route('discussions.index', status: 303);
-	}
+        return to_route('discussions.index');
+    }
 
-	public function toggleLock(Discussion $discussion): RedirectResponse
-	{
-		$discussion->update(['is_locked' => !$discussion->is_locked]);
+    public function toggleLock(Discussion $discussion): RedirectResponse
+    {
+        $discussion->update(['is_locked' => !$discussion->is_locked]);
 
-		return back(303);
-	}
+        return back();
+    }
 }

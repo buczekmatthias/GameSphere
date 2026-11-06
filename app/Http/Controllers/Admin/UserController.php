@@ -55,13 +55,13 @@ class UserController extends Controller
             'role' => $request->validated()['role']
         ]);
 
-        return back(303);
+        return back();
     }
 
     public function destroy(User $user): RedirectResponse
     {
         UserDeleteServices::deleteUser($user, request()->get('with_relations', false));
 
-        return back(303);
+        return back();
     }
 }

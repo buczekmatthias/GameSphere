@@ -12,54 +12,54 @@ use Inertia\Response;
 
 class ReportController extends Controller
 {
-	private const SORT_COLUMNS = ['reason', 'user', 'status', 'created_at'];
+    private const SORT_COLUMNS = ['reason', 'user', 'status', 'created_at'];
 
-	/**
-	 * Display a listing of the resource.
-	 */
-	public function index(): Response
-	{
-		$entries = Report::select(['reason', 'reportable_id', 'reportable_type', 'status', 'slug', 'created_at', 'user_id'])
-			->with(['reportable', 'user:id,username,name,avatar']);
-		$column = strtolower(request()->get('column', 'content'));
-		$order = strtolower(request()->get('order', 'desc'));
+    /**
+     * Display a listing of the resource.
+     */
+    public function index(): Response
+    {
+        $entries = Report::select(['reason', 'reportable_id', 'reportable_type', 'status', 'slug', 'created_at', 'user_id'])
+            ->with(['reportable', 'user:id,username,name,avatar']);
+        $column = strtolower(request()->get('column', 'content'));
+        $order = strtolower(request()->get('order', 'desc'));
 
-		if (!in_array(strtolower($order), self::ORDER)) {
-			$order = 'desc';
-		}
-		if (!in_array($column, self::SORT_COLUMNS)) {
-			$column = 'created_at';
-		}
+        if (!in_array(strtolower($order), self::ORDER)) {
+            $order = 'desc';
+        }
+        if (!in_array($column, self::SORT_COLUMNS)) {
+            $column = 'created_at';
+        }
 
-		match ($column) {
-			'user' => $entries->join('users', 'users.id', '=', 'reports.user_id')->orderBy('users.name', $order),
-			default => $entries->orderBy($column, $order),
-		};
+        match ($column) {
+            'user' => $entries->join('users', 'users.id', '=', 'reports.user_id')->orderBy('users.name', $order),
+            default => $entries->orderBy($column, $order),
+        };
 
-		return Inertia::render('admin/Report', [
-			'reports' => UserReportsTableResource::collection($entries->paginate(50))
-		]);
-	}
+        return Inertia::render('admin/Report', [
+            'reports' => UserReportsTableResource::collection($entries->paginate(50))
+        ]);
+    }
 
-	/**
-	 * Update the specified resource in storage.
-	 */
-	public function update(UpdateReportStatusRequest $request, Report $report): RedirectResponse
-	{
-		$report->update([
-			'status' => $request->validated()['status']
-		]);
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(UpdateReportStatusRequest $request, Report $report): RedirectResponse
+    {
+        $report->update([
+            'status' => $request->validated()['status']
+        ]);
 
-		return back(303);
-	}
+        return back();
+    }
 
-	/**
-	 * Remove the specified resource from storage.
-	 */
-	public function destroy(Report $report): RedirectResponse
-	{
-		$report->delete();
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(Report $report): RedirectResponse
+    {
+        $report->delete();
 
-		return back(303);
-	}
+        return back();
+    }
 }
