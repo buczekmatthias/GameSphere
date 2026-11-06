@@ -214,8 +214,10 @@ class GameController extends Controller
      */
     public function destroy(Game $game): RedirectResponse
     {
+        Gate::authorize('delete', $game);
+
         $path = "games/{$game->slug}";
-        $media = [...$game->media, $game->thumbnail];
+        $media = [...($game->media ?? []), $game->thumbnail];
 
         DB::transaction(function () use ($game) {
             $game->reports()->delete();
@@ -225,7 +227,7 @@ class GameController extends Controller
 
         ManageMedia::deleteDirectoryWithMedia($path, $media);
 
-        return to_route('games.index', status: 303);
+        return to_route('games.index');
     }
 
     public function toggleGameOnList(Game $game, Request $request): RedirectResponse
