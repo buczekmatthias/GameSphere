@@ -3,23 +3,24 @@
 namespace App\Http\Middleware;
 
 use App\Models\Game;
+use App\Models\GameCreatorRequest;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class CanBecomeGameCreatorMiddleware
 {
-	/**
-	 * Handle an incoming request.
-	 *
-	 * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
-	 */
-	public function handle(Request $request, Closure $next): Response
-	{
-		if ($request->user()->can('create', Game::class)) {
-			abort(403);
-		}
+    /**
+     * Handle an incoming request.
+     *
+     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
+     */
+    public function handle(Request $request, Closure $next): Response
+    {
+        if ($request->user()->can('create', Game::class) || GameCreatorRequest::where('user_id', request()->user()->id)->exists()) {
+            abort(403);
+        }
 
-		return $next($request);
-	}
+        return $next($request);
+    }
 }
