@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enum\UserRole;
+use App\Http\Requests\User\UserListFilterRequest;
 use App\Http\Resources\User\SimpleProfileResource;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
@@ -14,21 +15,17 @@ class UserListController extends Controller
     /**
      * Handle the incoming request.
      */
-    public function __invoke(): Response
+    public function __invoke(UserListFilterRequest $request): Response
     {
+        $filters = $request->validated();
+
         $users = User::select(['name', 'username', 'role', 'avatar'])
             ->orderBy('name', 'ASC')
-            ->when(
-                request()->has('contains'),
-                fn (Builder $query) => $query->where(
-                    fn ($q) => $q->whereLike('name', "%".request()->get('contains')."%")
-                        ->orWhereLike('username', "%".request()->get('contains')."%")
-                )
-            )
-            ->when(
-                request()->has('role'),
-                fn (Builder $query) => $query->where('role', request()->get('role'))
-            )
+            ->when($filters['contains'] ?? null, fn (Builder $query, string $contains) => $query->where(
+                fn (Builder $q) => $q->whereLike('name', "%{$contains}%")
+                        ->orWhereLike('username', "%{$contains}%")
+            ))
+            ->when($filters['role'] ?? null, fn (Builder $query, string $role) => $query->where('role', $role))
             ->paginate(30);
 
         return Inertia::render('app/Users', [
