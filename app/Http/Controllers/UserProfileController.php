@@ -2,27 +2,26 @@
 
 namespace App\Http\Controllers;
 
+use App\Enum\UserProfileTab;
 use App\Http\Resources\User\UserProfileResource;
 use App\Models\User;
-use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class UserProfileController extends Controller
 {
-	public function __invoke(User $user, string $tab = 'created_games'): Response | RedirectResponse
-	{
-		$tabs = ['created_games', 'games', 'genres', 'reviews', 'discussions', 'comments'];
-
-		if (!in_array($tab, $tabs)) {
-			return to_route('user.profile', ['user' => $user]);
-		}
-
-		return Inertia::render('app/UserProfile', [
-			'user' => UserProfileResource::make($user),
-			'isCurrentUserProfile' => $user->username === request()->user()?->username,
-			'tabs' => array_map(fn ($t) => ['name' => $t, 'route' => route('user.profile', ['user' => $user, 'tab' => $t])], $tabs),
-			'activeTab' => $tab
-		]);
-	}
+    public function __invoke(User $user, UserProfileTab $tab = UserProfileTab::CREATED_GAMES): Response
+    {
+        return Inertia::render('app/UserProfile', [
+            'user' => UserProfileResource::make($user),
+            'tabs' => array_map(
+                fn (UserProfileTab $t) => [
+                    'name'  => $t->value,
+                    'route' => route('user.profile', ['user' => $user, 'tab' => $t]),
+                ],
+                UserProfileTab::cases()
+            ),
+            'activeTab' => $tab->value
+        ]);
+    }
 }

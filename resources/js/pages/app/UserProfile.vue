@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { userCanInteract } from '@/composables/useCanInteract';
 import { useInitials } from '@/composables/useInitials';
+import { useCurrentUser } from '@/composables/useUser';
 import AppLayout from '@/layouts/AppLayout.vue';
 import type { BreadcrumbItem, Discussion, DiscussionComment, Game, Genre, Pagination, Review, User } from '@/types';
 import { Head, Link } from '@inertiajs/vue3';
@@ -26,7 +27,6 @@ interface UserProfile extends User {
 
 const props = defineProps<{
     user: UserProfile;
-    isCurrentUserProfile: boolean;
     tabs: TabNavigationItem[];
     activeTab: 'created_games' | 'games' | 'genres' | 'reviews' | 'discussions' | 'comments';
 }>();
@@ -67,7 +67,7 @@ const { getInitials } = useInitials();
                 />
                 <div class="flex flex-col gap-3 lg:col-start-3 lg:row-end-1">
                     <ReportModal :contentId="user.username" contentType="user" show-icon :show-text="false" />
-                    <Button variant="outline" as-child v-if="isCurrentUserProfile">
+                    <Button variant="outline" as-child v-if="useCurrentUser().value?.username === user.username">
                         <Link :href="route('settings.profile.edit')" as="button">
                             <Settings class="size-4" />
                         </Link>
