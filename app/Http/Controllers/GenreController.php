@@ -47,14 +47,7 @@ class GenreController extends Controller
 
     public function toggleFavoriteGenre(Genre $genre): RedirectResponse
     {
-        /** @var \App\Models\User */
-        $user = request()->user();
-
-        if ($user->genres()->where('genre_id', $genre->id)->exists()) {
-            $user->genres()->detach($genre);
-        } else {
-            $user->genres()->attach($genre);
-        }
+        request()->user()->genres()->toggle($genre);
 
         return back();
     }
