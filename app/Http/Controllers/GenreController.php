@@ -12,56 +12,50 @@ use Inertia\Response;
 
 class GenreController extends Controller
 {
-	/**
-	 * Display a listing of the resource.
-	 */
-	public function index(): Response
-	{
-		$user = request()->user();
+    /**
+     * Display a listing of the resource.
+     */
+    public function index(): Response
+    {
+        request()->user()?->load(['genres:slug']);
 
-		if ($user) {
-			$user->load([
-				'genres:slug'
-			]);
-		}
+        return Inertia::render('app/genre/Index', [
+            'genres' => Inertia::defer(
+                fn () => GenreListResource::collection(
+                    Genre::select(['name', 'slug'])
+                        ->withCount(['discussions', 'games'])
+                        ->when(
+                            request()->has('name'),
+                            fn (Builder $query) => $query->whereLike('name', "%".request()->get('name')."%")
+                        )
+                        ->orderBy('name', 'ASC')
+                        ->paginate(30),
+                )
+            )
+        ]);
+    }
 
-		return Inertia::render('app/genre/Index', [
-			'genres' => Inertia::defer(
-				fn () => GenreListResource::collection(
-					Genre::select(['name', 'slug'])
-						->withCount(['discussions', 'games'])
-						->when(
-							request()->has('name'),
-							fn (Builder $query) => $query->whereLike('name', "%".request()->get('name')."%")
-						)
-						->orderBy('name', 'ASC')
-						->paginate(30),
-				)
-			)
-		]);
-	}
+    /**
+     * Display the specified resource.
+     */
+    public function show(Genre $genre): Response
+    {
+        return Inertia::render('app/genre/Show', [
+            'genre' => ShowGenreResource::make($genre)
+        ]);
+    }
 
-	/**
-	 * Display the specified resource.
-	 */
-	public function show(Genre $genre): Response
-	{
-		return Inertia::render('app/genre/Show', [
-			'genre' => ShowGenreResource::make($genre)
-		]);
-	}
+    public function toggleFavoriteGenre(Genre $genre): RedirectResponse
+    {
+        /** @var \App\Models\User */
+        $user = request()->user();
 
-	public function toggleFavoriteGenre(Genre $genre): RedirectResponse
-	{
-		/** @var \App\Models\User */
-		$user = request()->user();
+        if ($user->genres()->where('genre_id', $genre->id)->exists()) {
+            $user->genres()->detach($genre);
+        } else {
+            $user->genres()->attach($genre);
+        }
 
-		if ($user->genres()->where('genre_id', $genre->id)->exists()) {
-			$user->genres()->detach($genre);
-		} else {
-			$user->genres()->attach($genre);
-		}
-
-		return back();
-	}
+        return back();
+    }
 }
