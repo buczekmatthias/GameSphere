@@ -20,7 +20,7 @@ class GamesListResource extends JsonResource
             'title' => $this->title,
             'thumbnail' => asset(Storage::url("games/{$this->slug}/{$this->thumbnail}")),
             'score' => $this->score ? round($this->score, 1) : null,
-            'released_at' => $this->released_at->format('Y-m-d'),
+            'released_at' => $this->released_at?->format('Y-m-d'),
             'favoriteUsers' => $this->whenCounted('favoriteUsers')
         ];
     }
