@@ -39,16 +39,18 @@ class ReviewController extends Controller
      */
     public function store(StoreRequest $request): RedirectResponse
     {
-        $review = Game::where('slug', $request->post('game_slug'))->first()->reviews()->make([
+        $data = $request->validated();
+
+        $review = Game::where('slug', $data['game_slug'])->first()->reviews()->make([
             'slug' => Str::uuid(),
-            'content' => $request->post('content'),
-            'ratings' => $request->post('ratings')
+            'content' => $data['content'],
+            'ratings' => $data['ratings']
         ]);
 
         $review->user_id = $request->user()->id;
         $review->save();
 
-        return to_route('games.show', ['game' => $request->post('game_slug')]);
+        return to_route('games.show', ['game' => $data['game_slug']]);
     }
 
     /**

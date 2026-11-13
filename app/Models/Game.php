@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enum\GameCollectionType;
+use App\Enum\ReviewKey;
 use Closure;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -97,19 +98,17 @@ class Game extends Model
 
     private function getScoreSubquery(): Closure
     {
+        $keys = ReviewKey::cases();
+
+        $sum = collect($keys)
+            ->map(fn (ReviewKey $key) => "CAST(ratings->>'{$key->value}' AS DECIMAL)")
+            ->implode(' + ');
+
+        $count = count($keys);
+
         return fn ($q) => $q->from('reviews')
             ->whereColumn('reviews.game_id', 'games.id')
-            ->selectRaw("COALESCE(
-            AVG(
-                (CAST(ratings->>'gameplay' AS DECIMAL) + 
-                CAST(ratings->>'graphics' AS DECIMAL) + 
-                CAST(ratings->>'storyline' AS DECIMAL) + 
-                CAST(ratings->>'replayability' AS DECIMAL) + 
-                CAST(ratings->>'sound_and_music' AS DECIMAL) + 
-                CAST(ratings->>'performance' AS DECIMAL)) / 6.0
-            ),
-            0
-        )");
+            ->selectRaw("COALESCE(AVG(({$sum}) / {$count}.0), 0)");
     }
 
     public function scopeWithLists(Builder $query, User $user): Builder
