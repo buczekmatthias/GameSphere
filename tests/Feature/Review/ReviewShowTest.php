@@ -1,20 +1,8 @@
 <?php
 
 use App\Enum\UserRole;
-use App\Models\Game;
-use App\Models\Review;
 use App\Models\User;
 use Inertia\Testing\AssertableInertia;
-
-function getReview(?User $user = null): Review
-{
-    $user = $user ?: User::factory()->create(['role' => UserRole::GAME_CREATOR]);
-
-    return Review::factory()
-        ->for(Game::factory()->for($user, 'creator')->create())
-        ->for($user)
-        ->create();
-}
 
 test('anyone can visit reviews.show', function () {
     $user = User::factory()->create(['role' => UserRole::GAME_CREATOR]);

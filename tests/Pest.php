@@ -11,7 +11,11 @@
 |
 */
 
+use App\Enum\UserRole;
+use App\Models\Game;
 use App\Models\Genre;
+use App\Models\Review;
+use App\Models\User;
 use Illuminate\Http\UploadedFile;
 
 pest()->extend(Tests\TestCase::class)
@@ -63,4 +67,14 @@ function validGamePayload(Genre $genre, array $overrides = []): array
         'released_at' => now()->format('Y-m-d'),
         'genre'       => $genre->slug,
     ], $overrides);
+}
+
+function getReview(?User $user = null): Review
+{
+    $user = $user ?: User::factory()->create(['role' => UserRole::GAME_CREATOR]);
+
+    return Review::factory()
+        ->for(Game::factory()->for($user, 'creator')->create())
+        ->for($user)
+        ->create();
 }
