@@ -72,6 +72,8 @@ class CommentController extends Controller
      */
     public function update(UpdateRequest $request, Comment $comment): RedirectResponse
     {
+        Gate::authorize('update', $comment);
+
         $comment->content = $request->post('content');
 
         $comment->media = ManageMedia::updateMedia(
