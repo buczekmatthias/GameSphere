@@ -8,46 +8,54 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Override;
 
 class Discussion extends Model
 {
-	use HasFactory;
+    use HasFactory;
 
-	public function getRouteKeyName(): string
-	{
-		return 'slug';
-	}
+    public function getRouteKeyName(): string
+    {
+        return 'slug';
+    }
 
-	protected $fillable = [
-		'slug',
-		'title',
-		'is_locked'
-	];
+    protected $fillable = [
+        'slug',
+        'title',
+        'is_locked'
+    ];
 
-	public function author(): BelongsTo
-	{
-		return $this->belongsTo(User::class, 'user_id');
-	}
+    protected function casts()
+    {
+        return [
+            'is_locked' => 'bool'
+        ];
+    }
 
-	public function discussable(): MorphTo
-	{
-		return $this->morphTo()->constrain([
-			Game::class => function ($query) {
-				$query->select('id', 'title', 'slug');
-			},
-			Genre::class => function ($query) {
-				$query->select('id', 'name', 'slug');
-			},
-		]);
-	}
+    public function author(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
 
-	public function comments(): HasMany
-	{
-		return $this->hasMany(Comment::class);
-	}
+    public function discussable(): MorphTo
+    {
+        return $this->morphTo()->constrain([
+            Game::class => function ($query) {
+                $query->select('id', 'title', 'slug');
+            },
+            Genre::class => function ($query) {
+                $query->select('id', 'name', 'slug');
+            },
+        ]);
+    }
 
-	public function reports(): MorphMany
-	{
-		return $this->morphMany(Report::class, 'reportable');
-	}
+    public function comments(): HasMany
+    {
+        return $this->hasMany(Comment::class);
+    }
+
+    public function reports(): MorphMany
+    {
+        return $this->morphMany(Report::class, 'reportable');
+    }
 }
