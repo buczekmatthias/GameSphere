@@ -86,12 +86,15 @@ function getComment(?User $user = null): Comment
     $user = $user ?: User::factory()->create();
 
     return Comment::factory()
-        ->for(
-            Discussion::factory()
-                ->for(Genre::factory()->create(), 'discussable')
-                ->for($user, 'author')
-                ->create()
-        )
+        ->for(getDiscussion($user))
         ->for($user)
         ->create();
 };
+
+function getDiscussion(?User $user = null): Discussion
+{
+    return Discussion::factory()
+        ->for(Genre::factory()->create(), 'discussable')
+        ->for($user, 'author')
+        ->create();
+}
