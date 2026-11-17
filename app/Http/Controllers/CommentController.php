@@ -40,7 +40,7 @@ class CommentController extends Controller
 
         $discussion = Discussion::select(['id', 'slug'])->where('slug', $data['discussion_slug'])->first();
 
-        $comment = $discussion->comments()->make([...$data, 'slug' => Str::uuid()]);
+        $comment = $discussion->comments()->make([...$data, 'slug' => Str::uuid(), 'media' => []]);
         $comment->user()->associate($request->user());
 
         $comment->media = ManageMedia::storeCommentMedia(

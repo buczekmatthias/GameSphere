@@ -9,6 +9,12 @@ final class ManageMedia
 {
     public static function storeCommentMedia(string $discussion_slug, string $comment_slug, array $media = []): array
     {
+        $mediaCount = count($media);
+
+        if ($mediaCount === 0) {
+            return [];
+        }
+
         $path = "discussions/{$discussion_slug}/{$comment_slug}";
         if (!Storage::directoryExists($path)) {
             Storage::makeDirectory($path);
@@ -16,12 +22,10 @@ final class ManageMedia
 
         $tempMedia = [];
 
-        if (count($media) > 0) {
-            foreach ($media as $i => $file) {
-                $fileName = "{$comment_slug}-media-{$i}.{$file->extension()}";
-                Storage::putFileAs($path, $file, $fileName);
-                $tempMedia[] = $fileName;
-            }
+        foreach ($media as $i => $file) {
+            $fileName = "{$comment_slug}-media-{$i}.{$file->extension()}";
+            Storage::putFileAs($path, $file, $fileName);
+            $tempMedia[] = $fileName;
         }
 
         return $tempMedia;
