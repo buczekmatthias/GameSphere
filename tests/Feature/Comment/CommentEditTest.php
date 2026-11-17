@@ -1,28 +1,8 @@
 <?php
 
 use App\Enum\UserRole;
-use App\Models\Comment;
-use App\Models\Discussion;
-use App\Models\Genre;
 use App\Models\User;
 use Inertia\Testing\AssertableInertia;
-
-function getComment(?User $user = null): Comment
-{
-    $user = $user ?: User::factory()->create();
-
-    return Comment::factory()
-        ->for(
-            Discussion::factory()
-                ->for(Genre::factory()->create(), 'discussable')
-                ->for($user, 'author')
-                ->create()
-        )
-        ->for($user)
-        ->create();
-
-};
-
 
 test('comments.edit redirects to login page for guest', function () {
     $comment = getComment();
