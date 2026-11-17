@@ -6,10 +6,10 @@ use App\Models\Genre;
 use App\Models\User;
 use Inertia\Testing\AssertableInertia;
 
-beforeEach(function (?User $user = null) {
+beforeEach(function () {
     $this->discussion = Discussion::factory()
         ->for(Genre::factory()->create(), 'discussable')
-        ->for($user ?: User::factory()->create(), 'author')
+        ->for(User::factory()->create(), 'author')
         ->create();
 });
 
