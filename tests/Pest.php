@@ -12,6 +12,8 @@
 */
 
 use App\Enum\UserRole;
+use App\Models\Comment;
+use App\Models\Discussion;
 use App\Models\Game;
 use App\Models\Genre;
 use App\Models\Review;
@@ -78,3 +80,18 @@ function getReview(?User $user = null): Review
         ->for($user)
         ->create();
 }
+
+function getComment(?User $user = null): Comment
+{
+    $user = $user ?: User::factory()->create();
+
+    return Comment::factory()
+        ->for(
+            Discussion::factory()
+                ->for(Genre::factory()->create(), 'discussable')
+                ->for($user, 'author')
+                ->create()
+        )
+        ->for($user)
+        ->create();
+};
