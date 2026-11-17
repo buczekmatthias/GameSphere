@@ -9,16 +9,17 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class DiscussionFactory extends Factory
 {
-	/**
-	 * Define the model's default state.
-	 *
-	 * @return array<string, mixed>
-	 */
-	public function definition(): array
-	{
-		return [
-			'slug' => fake()->unique()->uuid(),
-			'title' => fake()->sentence()
-		];
-	}
+    /**
+     * Define the model's default state.
+     *
+     * @return array<string, mixed>
+     */
+    public function definition(): array
+    {
+        return [
+            'slug' => fake()->unique()->uuid(),
+            'title' => fake()->sentence(),
+            'is_locked' => false
+        ];
+    }
 }

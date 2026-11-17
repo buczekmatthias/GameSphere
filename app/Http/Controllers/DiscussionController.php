@@ -13,6 +13,7 @@ use App\Services\ManageMedia;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
@@ -149,6 +150,8 @@ class DiscussionController extends Controller
 
     public function toggleLock(Discussion $discussion): RedirectResponse
     {
+        Gate::authorize('lock', $discussion);
+
         $discussion->update(['is_locked' => !$discussion->is_locked]);
 
         return back();
