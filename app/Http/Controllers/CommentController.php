@@ -92,6 +92,8 @@ class CommentController extends Controller
      */
     public function destroy(Comment $comment): RedirectResponse
     {
+        Gate::authorize('delete', $comment);
+
         $media = $comment->media;
         $path = "discussions/{$comment->discussion->slug}/{$comment->slug}";
 
@@ -101,7 +103,7 @@ class CommentController extends Controller
             $comment->delete();
         });
 
-        ManageMedia::deleteDirectoryWithMedia($path, $media);
+        ManageMedia::deleteDirectoryWithMedia($path, $media ?? []);
 
         if (request()->has('to_homepage')) {
             return to_route('home');
