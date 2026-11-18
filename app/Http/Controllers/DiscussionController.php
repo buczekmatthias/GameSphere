@@ -129,6 +129,8 @@ class DiscussionController extends Controller
      */
     public function destroy(Discussion $discussion): RedirectResponse
     {
+        Gate::authorize('delete', $discussion);
+
         $path = "discussions/{$discussion->slug}";
         $comments = $discussion->comments()->select(['slug', 'media'])->get();
 
