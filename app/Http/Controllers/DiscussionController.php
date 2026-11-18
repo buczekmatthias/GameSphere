@@ -65,9 +65,10 @@ class DiscussionController extends Controller
         $data = $request->validated();
 
         $discussion = (
-            $request->post('type') === 'game'
-            ? Game::select(['id'])->where('slug', $data['slug'])
-            : Genre::select(['id'])->where('slug', $data['slug'])
+            match($data['type']) {
+                'games' => Game::select(['id'])->where('slug', $data['slug']),
+                'genres' => Genre::select(['id'])->where('slug', $data['slug'])
+            }
         )
             ->first()
             ->discussions()
