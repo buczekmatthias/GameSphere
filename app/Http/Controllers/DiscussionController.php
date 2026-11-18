@@ -116,6 +116,8 @@ class DiscussionController extends Controller
      */
     public function update(Discussion $discussion, UpdateRequest $request): RedirectResponse
     {
+        Gate::authorize('update', $discussion);
+
         $discussion->update($request->validated());
 
         return back();
