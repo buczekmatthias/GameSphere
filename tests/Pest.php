@@ -16,6 +16,7 @@ use App\Models\Comment;
 use App\Models\Discussion;
 use App\Models\Game;
 use App\Models\Genre;
+use App\Models\Report;
 use App\Models\Review;
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
@@ -99,4 +100,18 @@ function getDiscussion(?User $user = null): Discussion
         ->for(Genre::factory()->create(), 'discussable')
         ->for($user, 'author')
         ->create();
+}
+
+
+function adminUrl(string $routeName, array $models): string
+{
+    $params = collect($models)
+        ->mapWithKeys(fn (string $name) => [$name => match ($name) {
+            'user'   => User::factory()->create(),
+            'genre'  => Genre::factory()->create(),
+            'report' => Report::factory()->create(),
+        }])
+        ->all();
+
+    return route($routeName, $params);
 }
