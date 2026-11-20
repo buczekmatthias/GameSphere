@@ -10,6 +10,13 @@ abstract class SortableListRequest extends FormRequest
     /** @return list<string> */
     abstract protected function sortableColumns(): array;
 
+    abstract protected function defaultColumn(): string;
+
+    protected function defaultOrder(): string
+    {
+        return 'asc';
+    }
+
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -26,6 +33,11 @@ abstract class SortableListRequest extends FormRequest
         if (is_string($this->input('order'))) {
             $this->merge(['order' => strtolower(trim($this->input('order')))]);
         }
+
+        $this->mergeIfMissing([
+            'column' => $this->defaultColumn(),
+            'order'  => $this->defaultOrder(),
+        ]);
     }
 
     /**
