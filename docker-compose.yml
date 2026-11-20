@@ -73,6 +73,7 @@ services:
       POSTGRES_PASSWORD: ${DB_PASSWORD}
     volumes:
       - pgsql_data:/var/lib/postgresql
+      - ./docker/postgres/init-testing.sql:/docker-entrypoint-initdb.d/init-testing.sql
     networks:
       - internal
     healthcheck:
