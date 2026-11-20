@@ -5,13 +5,15 @@ namespace App\Models;
 use App\Enum\ReportReason;
 use App\Enum\ReportStatus;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
-use Override;
 
 class Report extends Model
 {
+    use HasFactory;
+
     public function getRouteKeyName(): string
     {
         return 'slug';
