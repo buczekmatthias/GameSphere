@@ -186,23 +186,20 @@ class GameController extends Controller
             $game->released_at = $data['released_at'];
         }
 
-        $tempMedia = [];
+        $media = $game->media ?? [];
 
-        if (array_key_exists('media_to_delete', $data)) {
-            $tempMedia = ManageMedia::updateMedia($path, $game->media, $data['media_to_delete']);
+        if (!empty($data['media_to_delete'])) {
+            $toDelete = array_values(array_intersect($data['media_to_delete'], $media));
+            $media = ManageMedia::updateMedia($path, $media, $toDelete);
         }
 
-        if (array_key_exists('media', $data)) {
-            $size = sizeof($tempMedia);
-            foreach ($data['media'] as $i => $file) {
-                $s = $i + $size;
-                $fileName = "{$game->slug}-media-{$s}.{$file->extension()}";
-                Storage::putFileAs($path, $file, $fileName);
-                $tempMedia[] = $fileName;
-            }
-
-            $game->media = $tempMedia;
+        foreach ($data['media'] ?? [] as $file) {
+            $fileName = "{$game->slug}-media-".Str::uuid().".{$file->extension()}";
+            Storage::putFileAs($path, $file, $fileName);
+            $media[] = $fileName;
         }
+
+        $game->media = $media;
 
         $game->save();
 
