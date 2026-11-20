@@ -126,6 +126,8 @@ test('games.update will update entry with new data', function () {
 
     $response->assertRedirect();
 
+    $original = $game->media;
+
     $game->refresh();
 
     $this->assertDatabaseHas('games', [
@@ -134,6 +136,16 @@ test('games.update will update entry with new data', function () {
         'description' => $payload['description'],
         'genre_id' => $newGenre->id,
         'released_at' => $payload['released_at'],
-        'media' => json_encode(array_values(array_filter($game->media, fn ($entry) => "{$entry}" !== $payload['media_to_delete'][0]))),
     ]);
+
+    $kept = array_values(array_diff($original, $payload['media_to_delete']));
+
+    expect($game->media)
+        ->toHaveCount(count($kept) + count($payload['media']))
+        ->and(array_slice($game->media, 0, count($kept)))->toBe($kept)
+        ->and($game->media)->toBe(array_values(array_unique($game->media)));
+
+    foreach ($game->media as $name) {
+        Storage::disk('public')->assertExists("games/{$game->slug}/{$name}");
+    }
 });
