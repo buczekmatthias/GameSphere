@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\Genre\GenreListFilterRequest;
 use App\Http\Requests\Admin\Genre\GenreRequest;
 use App\Http\Resources\Admin\Genre\EditGenreResource;
 use App\Http\Resources\Genre\GenreListResource;
@@ -15,28 +16,19 @@ use Inertia\Response;
 
 class GenreController extends Controller
 {
-    private const SORT_COLUMNS = ['name', 'discussions', 'games'];
-
     /**
      * Display a listing of the resource.
      */
-    public function index(): Response
+    public function index(GenreListFilterRequest $request): Response
     {
+        $filter = $request->validated();
+
         $entries = Genre::select(['name', 'slug'])
             ->withCount(['discussions', 'games']);
-        $column = strtolower(request()->get('column', 'name'));
-        $order = strtolower(request()->get('order', 'asc'));
 
-        if (!in_array(strtolower($order), self::ORDER)) {
-            $order = 'asc';
-        }
-        if (!in_array($column, self::SORT_COLUMNS)) {
-            $column = 'name';
-        }
-
-        match ($column) {
-            'name' => $entries->orderBy('name', $order),
-            'discussions', 'games' => $entries->orderBy("{$column}_count", $order),
+        match ($filter['column']) {
+            'name' => $entries->orderBy('name', $filter['order']),
+            'discussions', 'games' => $entries->orderBy("{$filter['column']}_count", $filter['order']),
         };
 
         return Inertia::render('admin/genre/Index', [
