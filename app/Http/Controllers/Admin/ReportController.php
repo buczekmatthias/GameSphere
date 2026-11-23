@@ -7,6 +7,7 @@ use App\Http\Requests\Report\UpdateReportStatusRequest;
 use App\Http\Resources\Report\UserReportsTableResource;
 use App\Models\Report;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -58,6 +59,8 @@ class ReportController extends Controller
      */
     public function destroy(Report $report): RedirectResponse
     {
+        Gate::authorize('delete', $report);
+
         $report->delete();
 
         return back();
