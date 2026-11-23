@@ -45,9 +45,7 @@ class UserController extends Controller
     {
         Gate::authorize('updateRole', $user);
 
-        $user->update([
-            'role' => $request->validated()['role']
-        ]);
+        $user->update($request->validated());
 
         return back();
     }
