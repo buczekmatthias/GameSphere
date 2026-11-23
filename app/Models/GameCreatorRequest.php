@@ -2,22 +2,25 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class GameCreatorRequest extends Model
 {
-	public function getRouteKeyName(): string
-	{
-		return 'slug';
-	}
+    use HasFactory;
 
-	protected $fillable = [
-		'slug'
-	];
+    public function getRouteKeyName(): string
+    {
+        return 'slug';
+    }
 
-	public function user(): BelongsTo
-	{
-		return $this->belongsTo(User::class);
-	}
+    protected $fillable = [
+        'slug'
+    ];
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
 }
