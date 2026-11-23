@@ -21,7 +21,7 @@ class GameCreatorJoinRequestController extends Controller
         return Inertia::render('admin/GameCreatorRequest', [
             'requests' => GameCreatorRequestResource::collection(
                 GameCreatorRequest::select(['slug', 'created_at', 'user_id'])
-                    ->with(['user:username,name,avatar'])
+                    ->with(['user:id,username,name,avatar'])
                     ->orderBy('created_at', 'DESC')
                     ->paginate(50)
             )
