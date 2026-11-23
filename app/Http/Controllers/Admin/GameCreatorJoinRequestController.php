@@ -8,6 +8,7 @@ use App\Http\Resources\Admin\User\GameCreatorRequestResource;
 use App\Models\GameCreatorRequest;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -30,9 +31,10 @@ class GameCreatorJoinRequestController extends Controller
 
     public function acceptRequest(User $user): RedirectResponse
     {
-        $user->role = UserRole::GAME_CREATOR;
-        $user->save();
-        GameCreatorRequest::where('user_id', $user->id)->first()->delete();
+        DB::transaction(function () use ($user) {
+            $user->update(['role' => UserRole::GAME_CREATOR]);
+            GameCreatorRequest::where('user_id', $user->id)->first()->delete();
+        });
 
         return back();
     }

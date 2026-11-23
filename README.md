@@ -1,3 +1,10 @@
+> **Status: modernization in progress.**
+> This is an older project that I'm bringing up to current standards:
+> automated tests and CI (done), then backend refactoring, then a frontend rebuild.
+> Some UI pages may not work as intended until that last step.
+> A legacy version is on the
+> [`stable`](https://github.com/buczekmatthias/GameSphere/tree/stable) branch (may contain some bugs).
+
 # GameSphere
 
 A community-driven platform where gamers can review games, discover new titles, track progress on upcoming games and discuss games.
