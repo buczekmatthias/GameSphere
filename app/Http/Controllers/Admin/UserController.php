@@ -54,6 +54,8 @@ class UserController extends Controller
 
     public function destroy(User $user): RedirectResponse
     {
+        Gate::authorize('delete', $user);
+
         UserDeleteServices::deleteUser($user, request()->get('with_relations', false));
 
         return back();
