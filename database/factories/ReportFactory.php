@@ -4,7 +4,6 @@ namespace Database\Factories;
 
 use App\Enum\ReportReason;
 use App\Enum\ReportStatus;
-use App\Models\Genre;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -24,8 +23,8 @@ class ReportFactory extends Factory
             'slug' => fake()->unique()->uuid(),
             'reason' => collect(array_column(ReportReason::cases(), 'value'))->random(),
             'status' => collect(array_column(ReportStatus::cases(), 'value'))->random(),
-            'reportable_id' => Genre::factory()->create()->id,
-            'reportable_type' => "App\\Models\\Genre",
+            'reportable_id' => User::factory()->create()->id,
+            'reportable_type' => "App\\Models\\User",
             'user_id' => User::factory()->create()->id
         ];
     }
