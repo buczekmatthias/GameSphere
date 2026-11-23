@@ -12,6 +12,7 @@ use App\Models\User;
 use App\Services\UserDeleteServices;
 use App\Services\UserPermissions;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -42,6 +43,8 @@ class UserController extends Controller
 
     public function updateRole(User $user, UpdateRoleRequest $request): RedirectResponse
     {
+        Gate::authorize('updateRole', $user);
+
         $user->update([
             'role' => $request->validated()['role']
         ]);
