@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\Report\ReportListFilterRequest;
 use App\Http\Requests\Report\UpdateReportStatusRequest;
 use App\Http\Resources\Report\UserReportsTableResource;
 use App\Models\Report;
@@ -13,28 +14,19 @@ use Inertia\Response;
 
 class ReportController extends Controller
 {
-    private const SORT_COLUMNS = ['reason', 'user', 'status', 'created_at'];
-
     /**
      * Display a listing of the resource.
      */
-    public function index(): Response
+    public function index(ReportListFilterRequest $request): Response
     {
+        $filter = $request->validated();
+
         $entries = Report::select(['reason', 'reportable_id', 'reportable_type', 'status', 'slug', 'created_at', 'user_id'])
             ->with(['reportable', 'user:id,username,name,avatar']);
-        $column = strtolower(request()->get('column', 'content'));
-        $order = strtolower(request()->get('order', 'desc'));
 
-        if (!in_array(strtolower($order), self::ORDER)) {
-            $order = 'desc';
-        }
-        if (!in_array($column, self::SORT_COLUMNS)) {
-            $column = 'created_at';
-        }
-
-        match ($column) {
-            'user' => $entries->join('users', 'users.id', '=', 'reports.user_id')->orderBy('users.name', $order),
-            default => $entries->orderBy($column, $order),
+        match ($filter['column']) {
+            'user' => $entries->join('users', 'users.id', '=', 'reports.user_id')->orderBy('users.name', $filter['order']),
+            default => $entries->orderBy($filter['column'], $filter['order']),
         };
 
         return Inertia::render('admin/Report', [
