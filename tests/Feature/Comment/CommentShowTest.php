@@ -1,44 +1,28 @@
 <?php
 
 use App\Models\Comment;
-use App\Models\Discussion;
-use App\Models\Genre;
 use App\Models\User;
 use Inertia\Testing\AssertableInertia;
-
-beforeEach(function () {
-    $this->discussion = Discussion::factory()
-        ->for(Genre::factory()->create(), 'discussable')
-        ->for(User::factory()->create(), 'author')
-        ->create();
-});
+use Illuminate\Support\Str;
 
 test('anyone can visit comments.show', function () {
-    $user = User::factory()
-        ->create();
-    $comment = Comment::factory()
-        ->for($this->discussion)
-        ->for($user)
-        ->create();
+    $comment = Comment::factory()->create();
 
-    $guestResponse = $this->get("/comments/{$comment->slug}");
-    $authenticatedResponse = $this->actingAs($user)->get("/comments/{$comment->slug}");
+    $this
+        ->get(route("comments.show", ['comment' => $comment]))
+        ->assertStatus(200);
 
-    $guestResponse->assertStatus(200);
-    $authenticatedResponse->assertStatus(200);
+    $this
+        ->actingAs(User::factory()->create())
+        ->get(route("comments.show", ['comment' => $comment]))
+        ->assertStatus(200);
 });
 
 test('comments.show returns inertia response with comment content', function () {
-    $user = User::factory()
-        ->create();
-    $comment = Comment::factory()
-        ->for($this->discussion)
-        ->for($user)
-        ->create();
+    $comment = Comment::factory()->create();
 
-    $response = $this->get("/comments/{$comment->slug}");
-
-    $response
+    $this
+        ->get(route("comments.show", ['comment' => $comment]))
         ->assertSuccessful()
         ->assertInertia(
             fn (AssertableInertia $page) => $page
@@ -47,4 +31,10 @@ test('comments.show returns inertia response with comment content', function () 
                 ->where('comment.slug', $comment->slug)
                 ->where('comment.content', $comment->content)
         );
+});
+
+test('comments.show returns 404 for missing entry', function () {
+    $this
+        ->get(route("comments.show", ['comment' => Str::uuid()]))
+        ->assertNotFound();
 });

@@ -10,11 +10,9 @@ beforeEach(function () {
 });
 
 test('admin.genres.index returns inertia response with list of genres', function () {
-    $response = $this
+    $this
         ->actingAs(User::factory()->create(['role' => UserRole::ADMIN]))
-        ->get("/admin/genres");
-
-    $response
+        ->get(route("admin.genres.index"))
         ->assertSuccessful()
         ->assertInertia(
             fn (AssertableInertia $page) => $page
@@ -24,11 +22,9 @@ test('admin.genres.index returns inertia response with list of genres', function
 });
 
 test('admin.genres.index will redirect when wrong column or order is provided', function (string $key, string $value) {
-    $response = $this
+    $this
         ->actingAs(User::factory()->create(['role' => UserRole::ADMIN]))
-        ->get("/admin/genres?$key=$value");
-
-    $response
+        ->get(route("admin.genres.index", [$key => $value]))
         ->assertRedirect()
         ->assertSessionHasErrors();
 })->with([

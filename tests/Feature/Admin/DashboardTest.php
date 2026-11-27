@@ -5,11 +5,9 @@ use App\Models\User;
 use Inertia\Testing\AssertableInertia;
 
 test('admin.dashboard returns inertia response with stats', function () {
-    $response = $this
+    $this
         ->actingAs(User::factory()->create(['role' => UserRole::ADMIN->value]))
-        ->get('/admin/dashboard');
-
-    $response
+        ->get(route("admin.dashboard"))
         ->assertSuccessful()
         ->assertInertia(
             fn (AssertableInertia $page) => $page

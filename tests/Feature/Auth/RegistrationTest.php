@@ -1,13 +1,13 @@
 <?php
 
 test('registration screen can be rendered', function () {
-    $response = $this->get('/security/register');
-
-    $response->assertStatus(200);
+    $this
+        ->get(route('security.register'))
+        ->assertStatus(200);
 });
 
 test('new users can register', function () {
-    $response = $this->post('/security/register', [
+    $response = $this->post(route('security.register'), [
         'name' => 'Test User',
         'username' => 'testuser',
         'email' => 'test@example.com',

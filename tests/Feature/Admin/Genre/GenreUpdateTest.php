@@ -3,30 +3,30 @@
 use App\Enum\UserRole;
 use App\Models\Genre;
 use App\Models\User;
+use Illuminate\Support\Str;
 
 test('admin.genres.update properly updates genre name', function () {
     $genre = Genre::factory()->create(['name' => 'default']);
 
-    $response = $this
+    $this
         ->actingAs(User::factory()->create(['role' => UserRole::ADMIN]))
-        ->patch("/admin/genres/{$genre->slug}", [
-            'name' => 'custom'
-        ]);
-
-    $response->assertRedirect();
+        ->patch(
+            route("admin.genres.update", ['genre' => $genre]),
+            ['name' => 'custom']
+        )
+        ->assertRedirect();
 });
 
 test('admin.genres.update will fail with wrong payload', function (string $value) {
     $genre = Genre::factory()->create(['name' => 'default']);
     Genre::factory()->create(['name' => 'custom']);
 
-    $response = $this
+    $this
         ->actingAs(User::factory()->create(['role' => UserRole::ADMIN]))
-        ->patch("/admin/genres/{$genre->slug}", [
-            'name' => $value
-        ]);
-
-    $response
+        ->patch(
+            route("admin.genres.update", ['genre' => $genre]),
+            ['name' => $value]
+        )
         ->assertRedirect()
         ->assertSessionHasErrors('name');
 
@@ -37,3 +37,14 @@ test('admin.genres.update will fail with wrong payload', function (string $value
     'empty name' => '',
     'duplicate name' => 'custom'
 ]);
+
+
+test('admin.genres.update returns 404 for missing entry', function () {
+    $this
+        ->actingAs(User::factory()->create(['role' => UserRole::ADMIN]))
+        ->patch(
+            route("admin.genres.update", ['genre' => Str::uuid()]),
+            ['name' => 'custom']
+        )
+        ->assertNotFound();
+});

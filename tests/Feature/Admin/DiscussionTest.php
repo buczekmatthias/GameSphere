@@ -7,18 +7,13 @@ use App\Models\User;
 use Inertia\Testing\AssertableInertia;
 
 beforeEach(function () {
-    Discussion::factory(5)
-        ->for(Genre::factory()->create(), 'discussable')
-        ->for(User::factory()->create(), 'author')
-        ->create();
+    Discussion::factory(5)->create();
 });
 
 test('admin.discussions.index returns inertia response with list of discussions', function () {
-    $response = $this
+    $this
         ->actingAs(User::factory()->create(['role' => UserRole::ADMIN]))
-        ->get("/admin/discussions");
-
-    $response
+        ->get(route("admin.discussions.index"))
         ->assertSuccessful()
         ->assertInertia(
             fn (AssertableInertia $page) => $page
@@ -28,11 +23,9 @@ test('admin.discussions.index returns inertia response with list of discussions'
 });
 
 test('admin.discussions.index will redirect when wrong column or order is provided', function (string $key, string $value) {
-    $response = $this
+    $this
         ->actingAs(User::factory()->create(['role' => UserRole::ADMIN]))
-        ->get("/admin/discussions?$key=$value");
-
-    $response
+        ->get(route("admin.discussions.index", [$key => $value]))
         ->assertRedirect()
         ->assertSessionHasErrors();
 })->with([

@@ -6,67 +6,61 @@ use App\Models\Genre;
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
-function validGameUpdatePayload(Game $game, Genre $genre, array $overrides = []): array
+function validGameUpdatePayload(array $overrides = []): array
 {
     return array_merge(
-        validGamePayload($genre),
         [
-            'media_to_delete' => [$game->media[0]]
+            'title' => 'New title',
+            'description' => str_repeat('b', 50),
+            'media' => [
+                UploadedFile::fake()->image("image.png"),
+                UploadedFile::fake()->image("image2.png"),
+            ],
         ],
         $overrides
     );
 }
 
-beforeEach(function () {
+test('games.update redirects to login page for guest', function () {
+    $this
+        ->post(route("games.update", ['game' => Game::factory()->create()]))
+        ->assertRedirect(route('security.login'));
+});
+
+test('games.update passes only for owner or staff', function (UserRole|string $role, int $expectedStatus) {
     Storage::fake('public');
-});
 
-test('games.store redirects to login page for guest', function () {
-    $game = Game::factory()
-        ->for(User::factory()->create(['role' => UserRole::GAME_CREATOR]), 'creator')
-        ->for(Genre::factory()->create())
-        ->create();
+    $slug = Str::orderedUuid();
+    $thumbnail = putFakeFile("games/{$slug}");
+    $file = putFakeFile("games/{$slug}");
+    $game = Game::factory()->create(['slug' => $slug, 'media' => [$file], 'thumbnail' => $thumbnail]);
 
-    $response = $this->post("/games/{$game->slug}");
-
-    $response->assertRedirect(route('security.login'));
-});
-
-test('games.store passes only for owner or staff', function (string $actor, int $expectedStatus) {
-    $genre = Genre::factory()->create();
-    $owner = User::factory()->create(['role' =>UserRole::GAME_CREATOR ]);
-    $game = Game::factory()->for($owner, 'creator')->for($genre)->create();
-
-    $user = match($actor) {
-        'owner' => $owner,
-        'moderator' => User::factory()->create(['role' => UserRole::MODERATOR]),
-        'admin' => User::factory()->create(['role' => UserRole::ADMIN]),
-        'dev' => User::factory()->create(['role' => UserRole::DEVELOPER]),
-        'creator' => User::factory()->create(['role' => UserRole::GAME_CREATOR]),
-        'user' => User::factory()->create(['role' => UserRole::USER]),
+    $user = match($role) {
+        'owner' => $game->creator,
+        default => User::factory()->create(['role' => $role]),
     };
 
-    $response = $this->actingAs($user)->post("/games/{$game->slug}", validGamePayload($genre));
-
-    $response->assertStatus($expectedStatus);
+    $this
+        ->actingAs($user)
+        ->post(route("games.update", ['game' => $game]), validGameUpdatePayload())
+        ->assertStatus($expectedStatus);
 })->with([
-    'owner can' => ['owner', 302],
-    'moderator can' => ['moderator', 302],
-    'admin can' => ['admin', 302],
-    'dev can' => ['dev', 302],
-    'non-owner creator cannot' => ['creator', 403],
-    'regular user cannot' => ['user', 403],
+    'owner' => ['owner', 302],
+    'user' => [UserRole::USER, 403],
+    'creator' => [UserRole::GAME_CREATOR, 403],
+    'mod' => [UserRole::MODERATOR, 302],
+    'admin' => [UserRole::ADMIN, 302],
+    'dev' => [UserRole::DEVELOPER, 302],
 ]);
 
 test('games.update redirects with errors when mandatory data are missing', function () {
-    $user = User::factory()->create(['role' => UserRole::GAME_CREATOR]);
-    $genre = Genre::factory()->create();
-    $game = Game::factory()->for($user, 'creator')->for($genre)->create();
+    $game = Game::factory()->create();
 
-    $response = $this->actingAs($user)->post("/games/{$game->slug}");
-
-    $response
+    $this
+        ->actingAs($game->creator)
+        ->post(route("games.update", ['game' => $game]))
         ->assertSessionHasErrors()
         ->assertRedirect();
 
@@ -77,18 +71,17 @@ test('games.update redirects with errors when mandatory data are missing', funct
 });
 
 test('games.update will redirect with errors on invalid data', function (string $field, mixed $value) {
-    $genre = Genre::factory()->create();
-    $user = User::factory()->create(['role' => UserRole::GAME_CREATOR]);
+    Storage::fake('public');
 
-    $this->actingAs($user)->post('/games', validGamePayload($genre));
+    $slug = Str::orderedUuid();
+    $thumbnail = putFakeFile("games/{$slug}");
+    $file = putFakeFile("games/{$slug}");
+    $game = Game::factory()->create(['slug' => $slug, 'media' => [$file], 'thumbnail' => $thumbnail]);
+    $g = $game->genre;
 
-    $game = Game::query()->firstOrFail();
-
-    $response = $this
-        ->actingAs($user)
-        ->post("/games/{$game->slug}", validGameUpdatePayload($game, Genre::factory()->create(), [$field => $value]));
-
-    $response
+    $this
+        ->actingAs($game->creator)
+        ->post(route("games.update", ['game' => $game]), validGameUpdatePayload([$field => $value]))
         ->assertSessionHasErrors($field)
         ->assertRedirect();
 
@@ -98,9 +91,15 @@ test('games.update will redirect with errors on invalid data', function (string 
         'slug' => $game->slug,
         'title' => $game->title,
         'description' => $game->description,
-        'genre_id' => $genre->id,
-        'released_at' => $game->released_at->format("Y-m-d")
+        'genre_id' => $g->id,
+        'released_at' => $game->released_at
     ]);
+
+    expect(count($game->media))->toBe(1);
+
+    Storage::disk('public')->assertExists("games/{$slug}/{$thumbnail}");
+    Storage::disk('public')->assertExists("games/{$slug}/{$file}");
+    Storage::disk('public')->assertCount("games/{$slug}", 2);
 })->with([
     'empty title' => ['title', ''],
     'description too short' => ['description', 'short'],
@@ -112,21 +111,24 @@ test('games.update will redirect with errors on invalid data', function (string 
 ]);
 
 test('games.update will update entry with new data', function () {
-    $genre = Genre::factory()->create();
-    $user = User::factory()->create(['role' => UserRole::GAME_CREATOR]);
+    Storage::fake('public');
 
-    $this->actingAs($user)->post('/games', validGamePayload($genre));
+    $slug = Str::orderedUuid();
+    $thumbnail = putFakeFile("games/{$slug}");
+    $file = putFakeFile("games/{$slug}");
+    $game = Game::factory()->create(['slug' => $slug, 'media' => [$file], 'thumbnail' => $thumbnail, 'title' => 'Example title']);
 
-    $game = Game::query()->firstOrFail();
     $newGenre = Genre::factory()->create();
 
-    $payload = validGameUpdatePayload($game, $newGenre);
-
-    $response = $this->actingAs($user)->post("/games/{$game->slug}", $payload);
-
-    $response->assertRedirect();
+    $payload = validGameUpdatePayload(['genre' => $newGenre->slug, 'media' => [], 'media_to_delete' => [$file]]);
 
     $original = $game->media;
+
+    $this
+        ->actingAs($game->creator)
+        ->post(route("games.update", ['game' => $game]), $payload)
+        ->assertRedirect()
+        ->assertSessionHasNoErrors();
 
     $game->refresh();
 
@@ -135,7 +137,6 @@ test('games.update will update entry with new data', function () {
         'title' => $payload['title'],
         'description' => $payload['description'],
         'genre_id' => $newGenre->id,
-        'released_at' => $payload['released_at'],
     ]);
 
     $kept = array_values(array_diff($original, $payload['media_to_delete']));
@@ -145,7 +146,13 @@ test('games.update will update entry with new data', function () {
         ->and(array_slice($game->media, 0, count($kept)))->toBe($kept)
         ->and($game->media)->toBe(array_values(array_unique($game->media)));
 
-    foreach ($game->media as $name) {
-        Storage::disk('public')->assertExists("games/{$game->slug}/{$name}");
-    }
+    Storage::disk('public')->assertMissing("games/{$game->slug}/{$file}");
+    Storage::disk('public')->assertCount("games/{$game->slug}", 1);
+});
+
+test('games.update will return 404 for missing entry', function () {
+    $this
+        ->actingAs(User::factory()->create())
+        ->post(route("games.update", ['game' => Str::uuid()]), validGameUpdatePayload())
+        ->assertNotFound();
 });

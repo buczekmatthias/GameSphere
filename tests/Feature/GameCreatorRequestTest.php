@@ -3,31 +3,26 @@
 use App\Enum\UserRole;
 use App\Models\GameCreatorRequest;
 use App\Models\User;
-use Illuminate\Support\Str;
 
 test('guest will be redirected to login page', function () {
-    $response = $this->post("/become-game-creator");
-
-    $response->assertRedirect(route('security.login'));
+    $this
+        ->post(route('game.creator.join'))
+        ->assertRedirect(route('security.login'));
 });
 
 test('only regular user who did not apply to become game creator yet can apply', function (UserRole $actor, bool $hasApplied, int $status) {
     $user = User::factory()->create(['role' => $actor]);
 
     if ($hasApplied) {
-        $request = GameCreatorRequest::make([
-                'slug' => Str::uuid()
-            ]);
-
-        $request->user()->associate($user);
-        $request->save();
+        GameCreatorRequest::factory()->create(['user_id' => $user->id]);
 
         $this->assertDatabaseCount('game_creator_requests', 1);
     }
 
-    $response = $this->actingAs($user)->post("/become-game-creator");
-
-    $response->assertStatus($status);
+    $this
+        ->actingAs($user)
+        ->post(route('game.creator.join'))
+        ->assertStatus($status);
 
     $this->assertDatabaseCount('game_creator_requests', match($actor) {
         UserRole::USER => 1,

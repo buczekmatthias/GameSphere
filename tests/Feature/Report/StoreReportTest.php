@@ -13,17 +13,20 @@ function validReportPayload(User $user): array
 }
 
 test('reports.store redirects for guest', function () {
-    $response = $this->post("/reports", validReportPayload(User::factory()->create()));
-
-    $response->assertRedirect(route('security.login'));
+    $this
+        ->post(route("reports.store"), validReportPayload(User::factory()->create()))
+        ->assertRedirect(route('security.login'));
 });
 
 test('reports.store stores new report and redirects', function () {
     $u = User::factory()->create();
     $u2 = User::factory()->create();
-    $response = $this->actingAs($u)->post("/reports", validReportPayload($u2));
-
-    $response->assertRedirect();
+    
+    $this
+        ->actingAs($u)
+        ->post(route("reports.store"), validReportPayload($u2))
+        ->assertRedirect()
+        ->assertSessionHasNoErrors();
 
     $this->assertDatabaseHas('reports', [
         'reason' => ReportReason::TROLLING->value,

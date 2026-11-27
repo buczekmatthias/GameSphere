@@ -1,48 +1,44 @@
 <?php
 
 use App\Enum\UserRole;
+use App\Models\Comment;
 use App\Models\User;
 use Inertia\Testing\AssertableInertia;
+use Illuminate\Support\Str;
 
 test('comments.edit redirects to login page for guest', function () {
-    $comment = getComment();
-    $response = $this->get("/comments/{$comment->slug}/edit");
-
-    $response->assertRedirect(route('security.login'));
+    $this
+        ->get(route("comments.edit", ['comment' => Comment::factory()->create()]))
+        ->assertRedirect(route('security.login'));
 });
 
-test('comments.edit passes only for owner or staff', function (string $actor, int $expectedStatus) {
-    $owner = User::factory()->create(['role' => UserRole::USER]);
-    $comment = getComment($owner);
+test('comments.edit passes only for owner or staff', function (UserRole|string $role, int $expectedStatus) {
+    $comment = Comment::factory()->create();
 
-    $user = match($actor) {
-        'owner' => $owner,
-        'moderator' => User::factory()->create(['role' => UserRole::MODERATOR]),
-        'admin' => User::factory()->create(['role' => UserRole::ADMIN]),
-        'dev' => User::factory()->create(['role' => UserRole::DEVELOPER]),
-        'creator' => User::factory()->create(['role' => UserRole::GAME_CREATOR]),
-        'user' => User::factory()->create(['role' => UserRole::USER]),
+    $user = match($role) {
+        'owner' => $comment->user,
+        default => User::factory()->create(['role' => $role]),
     };
 
-    $response = $this->actingAs($user)->get("/comments/{$comment->slug}/edit");
-
-    $response->assertStatus($expectedStatus);
+    $this
+        ->actingAs($user)
+        ->get(route("comments.edit", ['comment' => $comment]))
+        ->assertStatus($expectedStatus);
 })->with([
-    'owner can' => ['owner', 200],
-    'moderator can' => ['moderator', 200],
-    'admin can' => ['admin', 200],
-    'dev can' => ['dev', 200],
-    'non-owner creator cannot' => ['creator', 403],
-    'regular user cannot' => ['user', 403],
+    'owner' => ['owner', 200],
+    'user' => [UserRole::USER, 403],
+    'creator' => [UserRole::GAME_CREATOR, 403],
+    'mod' => [UserRole::MODERATOR, 200],
+    'admin' => [UserRole::ADMIN, 200],
+    'dev' => [UserRole::DEVELOPER, 200],
 ]);
 
 test('comments.edit provides inertia response with comment', function () {
-    $owner = User::factory()->create();
-    $comment = getComment($owner);
+    $comment = Comment::factory()->create();
 
-    $response = $this->actingAs($owner)->get("/comments/{$comment->slug}/edit");
-
-    $response
+    $this
+        ->actingAs(User::factory()->create(['role' => UserRole::ADMIN]))
+        ->get(route("comments.edit", ['comment' => $comment]))
         ->assertSuccessful()
         ->assertInertia(
             fn (AssertableInertia $page) => $page
@@ -51,4 +47,11 @@ test('comments.edit provides inertia response with comment', function () {
                 ->where('comment.slug', $comment->slug)
                 ->where('comment.content', $comment->content)
         );
+});
+
+test('comments.edit returns 404 for missing entry', function () {
+    $this
+        ->actingAs(User::factory()->create())
+        ->get(route("comments.edit", ['comment' => Str::uuid()]))
+        ->assertNotFound();
 });

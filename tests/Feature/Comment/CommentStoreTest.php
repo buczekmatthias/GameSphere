@@ -2,25 +2,15 @@
 
 use App\Models\Comment;
 use App\Models\Discussion;
-use App\Models\Genre;
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 
-beforeEach(function () {
-    Storage::fake('public');
-});
-
-function validCommentPayload(array $override = []): array
+function validCommentStorePayload(array $override = []): array
 {
-    $discussion = Discussion::factory()
-        ->for(Genre::factory()->create(), 'discussable')
-        ->for(User::factory()->create(), 'author')
-        ->create();
-
     return array_merge(
         [
-            'discussion_slug' => $discussion->slug,
+            'discussion_slug' => Discussion::factory()->create()->slug,
             'content' => 'Valid content',
             'media' => [
                 UploadedFile::fake()->image('image-1.png'),
@@ -33,47 +23,49 @@ function validCommentPayload(array $override = []): array
 }
 
 test('comments.store redirects to login page for guest', function () {
-    $response = $this->post("/comments", validCommentPayload());
-
-    $response->assertRedirect(route('security.login'));
+    $this
+        ->post(route("comments.store"), validCommentStorePayload())
+        ->assertRedirect(route('security.login'));
 });
 
 test('comments.store successfully stores new comment and redirects to discussion page', function () {
-    $payload = validCommentPayload();
+    Storage::fake('public');
+    
+    $payload = validCommentStorePayload();
     $user = User::factory()->create();
 
-    $response = $this
+    $this
         ->actingAs($user)
-        ->post("/comments", $payload);
+        ->post(route("comments.store"), $payload)
+        ->assertRedirect(route("discussions.show", ['discussion' => $payload['discussion_slug']]));
 
-    $response->assertRedirect(route("discussions.show", ['discussion' => $payload['discussion_slug']]));
-
-    $comment = Comment::query()->latest()->first();
+    $comment = Comment::query()->firstOrFail();
 
     $this->assertDatabaseHas('comments', [
         'content' => $payload['content'],
         'user_id' => $user->id
     ]);
 
-    Storage::disk('public')->assertExists("discussions/{$payload['discussion_slug']}/{$comment->slug}/{$comment->slug}-media-0.png");
-    Storage::disk('public')->assertExists("discussions/{$payload['discussion_slug']}/{$comment->slug}/{$comment->slug}-media-1.png");
-    Storage::disk('public')->assertExists("discussions/{$payload['discussion_slug']}/{$comment->slug}/{$comment->slug}-media-2.png");
+    foreach ($comment->media as $file) {
+        Storage::disk('public')->assertExists("discussions/{$payload['discussion_slug']}/{$comment->slug}/{$file}");
+    }
 });
 
 test('comment.store fails with wrong payload', function (string $key, mixed $value) {
-    $payload = validCommentPayload([$key => $value]);
+    Storage::fake('public');
+    
+    $payload = validCommentStorePayload([$key => $value]);
 
     $this->assertDatabaseCount('comments', 0);
 
-    $response = $this
+    $this
         ->actingAs(User::factory()->create())
-        ->post("/comments", $payload);
-
-    $response
-        ->assertRedirect()
+        ->post(route("comments.store"), $payload)->assertRedirect()
         ->assertSessionHasErrors();
 
     $this->assertDatabaseCount('comments', 0);
+    
+    Storage::disk('public')->assertMissing("discussions/{$payload['discussion_slug']}");
 })->with([
     'bad content' => ['content', ''],
     'not valid discussion slug' => ['discussion_slug', 'not-a-uuid'],

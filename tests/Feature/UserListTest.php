@@ -5,19 +5,21 @@ use App\Models\User;
 use Inertia\Testing\AssertableInertia;
 
 test('anyone can visit users.index', function () {
-    $guestResponse = $this->get('/users');
-    $authenticatedResponse = $this->actingAs(User::factory()->create())->get("/users");
+    $this
+        ->get(route("users.index"))
+        ->assertStatus(200);
 
-    $guestResponse->assertStatus(200);
-    $authenticatedResponse->assertStatus(200);
+    $this
+        ->actingAs(User::factory()->create())
+        ->get(route("users.index"))
+        ->assertStatus(200);
 });
 
 test('users.index returns inertia component, list of users and list of roles', function () {
     User::factory(2)->create();
     
-    $response = $this->get("/users");
-
-    $response
+    $this
+        ->get(route("users.index"))
         ->assertSuccessful()
         ->assertInertia(
             fn (AssertableInertia $page) => $page
@@ -34,9 +36,8 @@ test('users.index returns only users matching criteria', function (array $filter
     User::factory()->create(['name' => 'John Doe', 'username' => 'john.doe3', 'role' => UserRole::ADMIN]);
     User::factory()->create(['name' => 'Jane Marx', 'username' => 'jane.marx2', 'role' => UserRole::MODERATOR]);
 
-    $response = $this->get("/users?".http_build_query($filters));
-
-    $response
+    $this
+        ->get(route("users.index", $filters))
         ->assertSuccessful()
         ->assertInertia(
             fn (AssertableInertia $page) => $page

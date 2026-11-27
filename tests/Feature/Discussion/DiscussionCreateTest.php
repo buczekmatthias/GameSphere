@@ -4,23 +4,16 @@ use App\Models\Genre;
 use App\Models\User;
 use Inertia\Testing\AssertableInertia;
 
-beforeEach(function () {
-    $this->genre = Genre::factory()->create();
-});
-
 test('discussions.create will redirect guest to login page', function () {
-    $response = $this->get("/genre/{$this->genre->slug}/discussions/create");
-
-    $response->assertRedirect(route("security.login"));
+    $this
+        ->get(route("discussions.create", ['type' => 'genre', 'slug' => Genre::factory()->create()]))
+        ->assertRedirect(route("security.login"));
 });
 
 test('discussions.create will return inertia response with discussable type and matching item for authenticated user', function () {
-    $response = $this
-        ->actingAs(
-            User::factory()->create()
-        )->get("/genre/{$this->genre->slug}/discussions/create");
-
-    $response
+    $this
+        ->actingAs(User::factory()->create())
+        ->get(route("discussions.create", ['type' => 'genre', 'slug' => Genre::factory()->create()]))
         ->assertSuccessful()
         ->assertInertia(
             fn (AssertableInertia $page) => $page
@@ -31,10 +24,8 @@ test('discussions.create will return inertia response with discussable type and 
 });
 
 test('unknown type in discussions.create will cause 404 (allowed game/genre)', function () {
-    $response = $this
-        ->actingAs(
-            User::factory()->create()
-        )->get("/wrong-type/{$this->genre->slug}/discussions/create");
-
-    $response->assertNotFound();
+    $this
+        ->actingAs(User::factory()->create())
+        ->get(route("discussions.create", ['type' => 'wrong-type', 'slug' => Genre::factory()->create()]))
+        ->assertNotFound();
 });

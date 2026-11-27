@@ -6,19 +6,13 @@ use App\Models\User;
 use Inertia\Testing\AssertableInertia;
 
 beforeEach(function () {
-    $user = User::factory()->create(['role' => UserRole::GAME_CREATOR]);
-
-    Game::factory(5)
-        ->for($user, 'creator')
-        ->create();
+    Game::factory(5)->create();
 });
 
 test('admin.games.index returns inertia response with list of games', function () {
-    $response = $this
+    $this
         ->actingAs(User::factory()->create(['role' => UserRole::ADMIN]))
-        ->get("/admin/games");
-
-    $response
+        ->get(route("admin.games.index"))
         ->assertSuccessful()
         ->assertInertia(
             fn (AssertableInertia $page) => $page
@@ -28,11 +22,9 @@ test('admin.games.index returns inertia response with list of games', function (
 });
 
 test('admin.games.index will redirect when wrong column or order is provided', function (string $key, string $value) {
-    $response = $this
+    $this
         ->actingAs(User::factory()->create(['role' => UserRole::ADMIN]))
-        ->get("/admin/games?$key=$value");
-
-    $response
+        ->get(route("admin.games.index", [$key => $value]))
         ->assertRedirect()
         ->assertSessionHasErrors();
 })->with([

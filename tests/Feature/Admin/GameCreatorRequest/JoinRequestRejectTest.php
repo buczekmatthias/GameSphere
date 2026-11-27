@@ -7,11 +7,10 @@ use App\Models\User;
 test('admin.game.creator.join.reject will remove request and redirect', function () {
     $request = GameCreatorRequest::factory()->create();
 
-    $response = $this
+    $this
         ->actingAs(User::factory()->create(['role' => UserRole::ADMIN]))
-        ->patch("/admin/game-creator-join-requests/{$request->user->username}/reject");
-
-    $response->assertRedirect();
+        ->patch(route("admin.game.creator.join.reject", ['user' => $request->user]))
+        ->assertRedirect();
 
     $this->assertDatabaseMissing('users', [
         'username' => $request->user->username,
@@ -19,4 +18,11 @@ test('admin.game.creator.join.reject will remove request and redirect', function
     ]);
 
     $this->assertDatabaseCount('game_creator_requests', 0);
+});
+
+test('admin.game.creator.join.reject returns 404 for missing entry', function () {
+    $this
+        ->actingAs(User::factory()->create(['role' => UserRole::ADMIN]))
+        ->patch(route("admin.game.creator.join.reject", ['user' => 'inexistent-user']))
+        ->assertNotFound();
 });

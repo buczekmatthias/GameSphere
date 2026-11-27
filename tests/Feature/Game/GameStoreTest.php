@@ -4,54 +4,66 @@ use App\Enum\UserRole;
 use App\Models\Game;
 use App\Models\Genre;
 use App\Models\User;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 
-beforeEach(function () {
-    Storage::fake('public');
-});
+function validGameStorePayload(array $overrides = []): array
+{
+    return array_merge(
+        [
+            'title' => 'Example title',
+            'description' => str_repeat('a', 50),
+            'thumbnail' => UploadedFile::fake()->image('thumbnail.png'),
+            'media' => [
+                UploadedFile::fake()->image('image-1.png'),
+                UploadedFile::fake()->image('image-2.png'),
+                UploadedFile::fake()->image('image-3.png'),
+            ],
+            'released_at' => now()->format('Y-m-d'),
+            'genre' => Genre::factory()->create()->slug,
+        ],
+        $overrides
+    );
+}
 
 test('games.store redirects to login page for guest', function () {
-    $genre = Genre::factory()->create();
-
-    $response = $this->post('/games', validGamePayload($genre));
-
-    $response->assertRedirect(route('security.login'));
+    $this
+        ->post(route("games.store"), validGameStorePayload())
+        ->assertRedirect(route('security.login'));
 });
 
 test('games.store fails for regular user', function () {
-    $genre = Genre::factory()->create();
-
-    $response = $this->actingAs(User::factory()->create(['role' => UserRole::USER]))->post('/games', validGamePayload($genre));
-
-    $response->assertForbidden();
+    $this
+        ->actingAs(User::factory()->create(['role' => UserRole::USER]))
+        ->post(route("games.store"), validGameStorePayload())
+        ->assertForbidden();
 
     $this->assertDatabaseCount('games', 0);
 });
 
 test('any authorized user with role different than USER can access games.store and create game when request is valid', function (UserRole $role) {
-    $genre = Genre::factory()->create();
+    Storage::fake('public');
     $user = User::factory()->create(['role' => $role]);
-    $payload = validGamePayload($genre);
+    $payload = validGameStorePayload();
 
-    $response = $this->actingAs($user)->post('/games', $payload);
-
-    $response
+    $this
+        ->actingAs($user)
+        ->post(route("games.store"), $payload)
         ->assertSessionHasNoErrors()
         ->assertRedirect();
 
-    $game = Game::where('title', $payload['title'])->firstOrFail();
+    $game = Game::query()->firstOrFail();
 
     expect($game->title)->toBe($payload['title'])
-    ->and($game->description)->toBe($payload['description'])
-    ->and($game->released_at->format('Y-m-d'))->toBe($payload['released_at'])
-    ->and($game->genre_id)->toBe($genre->id)
-    ->and($game->user_id)->toBe($user->id);
+        ->and($game->description)->toBe($payload['description'])
+        ->and($game->released_at->format('Y-m-d'))->toBe($payload['released_at'])
+        ->and($game->user_id)->toBe($user->id);
 
 
     Storage::disk('public')->assertExists("games/{$game->slug}/{$game->thumbnail}");
-    Storage::disk('public')->assertExists("games/{$game->slug}/{$game->slug}-media-0.png");
-    Storage::disk('public')->assertExists("games/{$game->slug}/{$game->slug}-media-1.png");
-    Storage::disk('public')->assertExists("games/{$game->slug}/{$game->slug}-media-2.png");
+    foreach ($game->media as $media) {
+        Storage::disk('public')->assertExists("games/{$game->slug}/{$media}");
+    }
 })->with([
     'game creator' => UserRole::GAME_CREATOR,
     'moderator' => UserRole::MODERATOR,
@@ -60,9 +72,9 @@ test('any authorized user with role different than USER can access games.store a
 ]);
 
 test('games.store redirects with errors when mandatory data are missing', function () {
-    $response = $this->actingAs(User::factory()->create())->post('/games');
-
-    $response
+    $this
+        ->actingAs(User::factory()->create())
+        ->post(route("games.store"))
         ->assertSessionHasErrors()
         ->assertRedirect();
 
@@ -70,14 +82,9 @@ test('games.store redirects with errors when mandatory data are missing', functi
 });
 
 test('games.store will redirect with errors on invalid data', function (string $field, mixed $value) {
-    $genre = Genre::factory()->create();
-    $date = now()->format('Y-m-d');
-
-    $response = $this
+    $this
         ->actingAs(User::factory()->create(['role' => UserRole::GAME_CREATOR]))
-        ->post('/games', validGamePayload($genre, [$field => $value]));
-
-    $response
+        ->post(route("games.store"), validGameStorePayload([$field => $value]))
         ->assertSessionHasErrors($field)
         ->assertRedirect();
 

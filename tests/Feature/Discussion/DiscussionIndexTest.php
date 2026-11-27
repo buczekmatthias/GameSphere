@@ -6,27 +6,25 @@ use App\Models\User;
 use Inertia\Testing\AssertableInertia;
 
 beforeEach(function () {
-    $genre = Genre::factory()->create();
-    
     Discussion::factory(5)
-        ->create([
-            'discussable_id' => $genre->id,
-            'discussable_type' => "App\\Models\\Genre"
-        ]);
+        ->for(Genre::factory()->create(), 'discussable')
+        ->create();
 });
 
 test('anyone can visit discussions.index', function () {
-    $guestResponse = $this->get("/discussions");
-    $authenticatedResponse = $this->actingAs(User::factory()->create())->get("/discussions");
+    $this
+        ->get(route("discussions.index"))
+        ->assertStatus(200);
 
-    $guestResponse->assertStatus(200);
-    $authenticatedResponse->assertStatus(200);
+    $this
+        ->actingAs(User::factory()->create())
+        ->get(route("discussions.index"))
+        ->assertStatus(200);
 });
 
 test('discussions.index returns inertia response with list of discussions', function () {
-    $response = $this->get("/discussions");
-
-    $response
+    $this
+        ->get(route("discussions.index"))
         ->assertSuccessful()
         ->assertInertia(
             fn (AssertableInertia $page) => $page

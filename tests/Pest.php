@@ -16,10 +16,11 @@ use App\Models\Comment;
 use App\Models\Discussion;
 use App\Models\Game;
 use App\Models\Genre;
-use App\Models\Report;
 use App\Models\Review;
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 pest()->extend(Tests\TestCase::class)
     ->use(Illuminate\Foundation\Testing\RefreshDatabase::class)
@@ -56,62 +57,14 @@ function something()
     // ..
 }
 
-function validGamePayload(Genre $genre, array $overrides = []): array
+/**
+ * @param string $path Folder path to place fake file in
+ * @return string Returns filename of fake file
+ */
+function putFakeFile(string $path, string $extension = "png"): string
 {
-    return array_merge([
-        'title'       => 'Example title',
-        'description' => str_repeat('a', 50),
-        'thumbnail'   => UploadedFile::fake()->image('thumbnail.png'),
-        'media' => [
-            UploadedFile::fake()->image('image-1.png'),
-            UploadedFile::fake()->image('image-2.png'),
-            UploadedFile::fake()->image('image-3.png'),
-        ],
-        'released_at' => now()->format('Y-m-d'),
-        'genre'       => $genre->slug,
-    ], $overrides);
-}
+    $name = (string) Str::orderedUuid().".{$extension}";
+    Storage::disk('public')->put("{$path}/{$name}", 'fake');
 
-function getReview(?User $user = null): Review
-{
-    $user = $user ?: User::factory()->create(['role' => UserRole::GAME_CREATOR]);
-
-    return Review::factory()
-        ->for(Game::factory()->for($user, 'creator')->create())
-        ->for($user)
-        ->create();
-}
-
-function getComment(?User $user = null): Comment
-{
-    $user = $user ?: User::factory()->create();
-
-    return Comment::factory()
-        ->for(getDiscussion($user))
-        ->for($user)
-        ->create();
-};
-
-function getDiscussion(?User $user = null): Discussion
-{
-    $user = $user ?: User::factory()->create();
-
-    return Discussion::factory()
-        ->for(Genre::factory()->create(), 'discussable')
-        ->for($user, 'author')
-        ->create();
-}
-
-
-function adminUrl(string $routeName, array $models): string
-{
-    $params = collect($models)
-        ->mapWithKeys(fn (string $name) => [$name => match ($name) {
-            'user'   => User::factory()->create(),
-            'genre'  => Genre::factory()->create(),
-            'report' => Report::factory()->create(),
-        }])
-        ->all();
-
-    return route($routeName, $params);
+    return $name;
 }

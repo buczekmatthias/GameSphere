@@ -1,31 +1,29 @@
 <?php
 
 use App\Enum\GameCollectionType;
-use App\Enum\UserRole;
 use App\Models\Game;
-use App\Models\Genre;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Inertia\Testing\AssertableInertia;
 
 test('anyone can visit homepage', function () {
-    $guestResponse = $this->get('/');
-    $authenticatedResponse = $this->actingAs(User::factory()->create())->get("/");
+    $this
+        ->get(route("home"))
+        ->assertStatus(200);
 
-    $guestResponse->assertStatus(200);
-    $authenticatedResponse->assertStatus(200);
+    $this
+        ->actingAs(User::factory()->create())
+        ->get(route("home"))
+        ->assertStatus(200);
 });
 
 test('homepage displays only newest games (before end of today)', function () {
-    User::factory()->create(['role' => UserRole::GAME_CREATOR]);
-    Genre::factory()->create();
     Game::factory()->create(['released_at' => now()->startOfDay()->subDay()]);
     Game::factory()->create(['released_at' => now()->endOfWeek()]);
 
-    $response = $this->get("/newest");
-
-    $response
+    $this
+        ->get(route("home", ['type' => 'newest']))
         ->assertSuccessful()
         ->assertInertia(
             fn (AssertableInertia $page) => $page
@@ -43,16 +41,13 @@ test('homepage displays only newest games (before end of today)', function () {
 });
 
 test('homepage displays only most popular games (ones that were marked as favorite by users)', function () {
-    $user = User::factory()->create(['role' => UserRole::GAME_CREATOR]);
-    Genre::factory()->create();
+    $user = User::factory()->create();
     $game = Game::factory()->create(['released_at' => now()->startOfWeek()->subDay()]);
     Game::factory()->create(['released_at' => now()->startOfMonth()]);
-
     $user->games()->attach($game, ['list_type' => GameCollectionType::FAVORITE->value]);
 
-    $response = $this->get("/most_popular");
-
-    $response
+    $this
+        ->get(route("home", ["type" => "most_popular"]))
         ->assertSuccessful()
         ->assertInertia(
             fn (AssertableInertia $page) => $page
@@ -70,16 +65,12 @@ test('homepage displays only most popular games (ones that were marked as favori
 });
 
 test('homepage displays only upcoming games (between tomorrow and end of next year)', function () {
-    User::factory()->create(['role' => UserRole::GAME_CREATOR]);
-    Genre::factory()->create();
     Game::factory()->create(['released_at' => now()->startOfWeek()->subDay()]);
     Game::factory()->create(['released_at' => now()->endOfWeek()->addDay()]);
     Game::factory()->create(['released_at' => now()->addMonths(8)]);
 
-
-    $response = $this->get("/upcoming");
-
-    $response
+    $this
+        ->get(route("home", ["type" => "upcoming"]))
         ->assertSuccessful()
         ->assertInertia(
             fn (AssertableInertia $page) => $page
