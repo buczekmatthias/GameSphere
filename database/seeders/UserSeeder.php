@@ -20,13 +20,9 @@ class UserSeeder extends Seeder
             'role' => UserRole::DEVELOPER
         ]);
 
-        User::factory(1000)->create();
-
-        $users = User::where('role', UserRole::USER)->inRandomOrder()->limit(15)->get();
-
-        foreach ($users as $u) {
-            $u->role = UserRole::GAME_CREATOR;
-            $u->save();
-        }
+        User::factory(10)->create(['role' => UserRole::ADMIN]);
+        User::factory(25)->create(['role' => UserRole::MODERATOR]);
+        User::factory(500)->create(['role' => UserRole::GAME_CREATOR]);
+        User::factory(1000)->create(['role' => UserRole::USER]);
     }
 }

@@ -9,21 +9,19 @@ use Illuminate\Database\Seeder;
 
 class CommentSeeder extends Seeder
 {
-	/**
-	 * Run the database seeds.
-	 */
-	public function run(): void
-	{
-		$users = User::select('id')->get();
-		$discussions = Discussion::inRandomOrder()->select('id')->limit(100)->get();
+    /**
+     * Run the database seeds.
+     */
+    public function run(): void
+    {
+        $users = User::select('id')->get();
+        $discussions = Discussion::select('id')->get();
 
-		foreach ($discussions as $d) {
-			for ($i = 0; $i < rand(10, 100); $i++) {
-				$c = Comment::factory()->for($d)->make();
-
-				$c->user()->associate(collect($users)->random());
-				$c->save();
-			}
-		}
-	}
+        Comment::factory(500)
+            ->state(fn () => [
+                'user_id' => $users->random(),
+                'discussion_id' => $discussions->random()
+            ])
+            ->create();
+    }
 }

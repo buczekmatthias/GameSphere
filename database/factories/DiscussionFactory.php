@@ -2,6 +2,8 @@
 
 namespace Database\Factories;
 
+use App\Models\Genre;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -19,7 +21,10 @@ class DiscussionFactory extends Factory
         return [
             'slug' => fake()->unique()->uuid(),
             'title' => fake()->sentence(),
-            'is_locked' => false
+            'is_locked' => false,
+            'user_id' => User::factory(),
+            'discussable_type' => "App\\Models\\Genre",
+            'discussable_id' => Genre::factory()
         ];
     }
 }

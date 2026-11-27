@@ -3,6 +3,8 @@
 namespace Database\Factories;
 
 use App\Enum\ReviewKey;
+use App\Models\Game;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -27,7 +29,9 @@ class ReviewFactory extends Factory
                 ReviewKey::REPLAYABILITY->value => fake()->numberBetween(0, 5),
                 ReviewKey::SOUND_AND_MUSIC->value => fake()->numberBetween(0, 5),
                 ReviewKey::PERFORMANCE->value => fake()->numberBetween(0, 5)
-            ]
+            ],
+            'user_id' => User::factory(),
+            'game_id' => Game::factory()
         ];
     }
 }
