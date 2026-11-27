@@ -20,7 +20,7 @@ class GameCreatorRequestFactory extends Factory
     {
         return [
             'slug' => fake()->uuid(),
-            'user_id' => User::factory()->create(['role' => UserRole::USER])->id
+            'user_id' => User::factory()->state(['role' => UserRole::USER])
         ];
     }
 }

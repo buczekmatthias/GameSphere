@@ -9,11 +9,9 @@ use Illuminate\Support\Str;
 test('admin.genres.edit returns inertia response with genre content', function () {
     $genre = Genre::factory()->create();
 
-    $response = $this
+    $this
         ->actingAs(User::factory()->create(['role' => UserRole::ADMIN]))
-        ->get("/admin/genres/{$genre->slug}/edit");
-
-    $response
+        ->get(route("admin.genres.edit", ['genre' => $genre]))
         ->assertSuccessful()
         ->assertInertia(
             fn (AssertableInertia $page) => $page
@@ -25,11 +23,8 @@ test('admin.genres.edit returns inertia response with genre content', function (
 });
 
 test('admin.genres.edit will return 404 for missing genre', function () {
-    $uuid = Str::uuid();
-
-    $response = $this
+    $this
         ->actingAs(User::factory()->create(['role' => UserRole::ADMIN]))
-        ->get("/admin/genres/{$uuid}/edit");
-
-    $response->assertNotFound();
+        ->get(route("admin.genres.edit", ['genre' => Str::uuid()]))
+        ->assertNotFound();
 });

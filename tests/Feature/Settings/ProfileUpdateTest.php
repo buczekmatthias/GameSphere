@@ -5,26 +5,23 @@ use App\Models\User;
 test('profile page is displayed', function () {
     $user = User::factory()->create();
 
-    $response = $this
+    $this
         ->actingAs($user)
-        ->get('/settings/profile');
-
-    $response->assertOk();
+        ->get(route("settings.profile.edit"))
+        ->assertOk();
 });
 
 test('profile information can be updated', function () {
     $user = User::factory()->create();
 
-    $response = $this
+    $this
         ->actingAs($user)
-        ->patch('/settings/profile', [
+        ->patch(route("settings.profile.update"), [
             'name' => 'Test User',
             'email' => 'test@example.com',
-        ]);
-
-    $response
+        ])
         ->assertSessionHasNoErrors()
-        ->assertRedirect('/settings/profile');
+        ->assertRedirect(route("settings.profile.edit"));
 
     $user->refresh();
 
@@ -36,16 +33,14 @@ test('profile information can be updated', function () {
 test('email verification status is unchanged when the email address is unchanged', function () {
     $user = User::factory()->create();
 
-    $response = $this
+    $this
         ->actingAs($user)
-        ->patch('/settings/profile', [
+        ->patch(route("settings.profile.update"), [
             'name' => 'Test User',
             'email' => $user->email,
-        ]);
-
-    $response
+        ])
         ->assertSessionHasNoErrors()
-        ->assertRedirect('/settings/profile');
+        ->assertRedirect(route("settings.profile.edit"));
 
     expect($user->refresh()->email_verified_at)->not->toBeNull();
 });
@@ -53,13 +48,11 @@ test('email verification status is unchanged when the email address is unchanged
 test('user can delete their account', function () {
     $user = User::factory()->create();
 
-    $response = $this
+    $this
         ->actingAs($user)
-        ->delete('/settings/profile', [
+        ->delete(route("settings.profile.destroy"), [
             'password' => 'password',
-        ]);
-
-    $response
+        ])
         ->assertSessionHasNoErrors()
         ->assertRedirect('/');
 
@@ -70,16 +63,14 @@ test('user can delete their account', function () {
 test('correct password must be provided to delete account', function () {
     $user = User::factory()->create();
 
-    $response = $this
+    $this
         ->actingAs($user)
-        ->from('/settings/profile')
-        ->delete('/settings/profile', [
+        ->from(route("settings.profile.edit"))
+        ->delete(route("settings.profile.destroy"), [
             'password' => 'wrong-password',
-        ]);
-
-    $response
+        ])
         ->assertSessionHasErrors('password')
-        ->assertRedirect('/settings/profile');
+        ->assertRedirect(route("settings.profile.edit"));
 
     expect($user->fresh())->not->toBeNull();
 });

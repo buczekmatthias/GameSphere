@@ -1,15 +1,10 @@
 <?php
 
-use App\Models\Comment;
 use App\Models\Discussion;
 use App\Models\Genre;
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
-
-beforeEach(function () {
-    Storage::fake('public');
-});
 
 function validDiscussionStorePayload(array $override = []): array
 {
@@ -29,39 +24,42 @@ function validDiscussionStorePayload(array $override = []): array
 }
 
 test('discussions.store will redirect guest to login page', function () {
-    $response = $this->post("/discussions", validDiscussionStorePayload());
-
-    $response->assertRedirect(route("security.login"));
+    $this
+        ->post(route("discussions.store"), validDiscussionStorePayload())
+        ->assertRedirect(route("security.login"));
 });
 
 test('discussions.store will create new discussion and initial comment with valid payload', function () {
+    Storage::fake('public');
+
     $response = $this
         ->actingAs(User::factory()->create())
-        ->post("/discussions", validDiscussionStorePayload());
+        ->post(route("discussions.store"), validDiscussionStorePayload());
 
-    $this->assertDatabaseCount('discussions', 1);
-    $this->assertDatabaseCount('comments', 1);
+    $this
+        ->assertDatabaseCount('discussions', 1)
+        ->assertDatabaseCount('comments', 1);
     
     $d = Discussion::select('id', 'slug')->with('comments')->first();
     $c = $d->comments->first();
 
     $response->assertRedirect(route('discussions.show', ['discussion' => $d->slug]));
 
-    Storage::disk('public')->assertExists("discussions/{$d->slug}/{$c->slug}/{$c->slug}-media-0.png");
-    Storage::disk('public')->assertExists("discussions/{$d->slug}/{$c->slug}/{$c->slug}-media-1.png");
+    foreach ($c->media as $file) {
+        Storage::disk('public')->assertExists("discussions/{$d->slug}/{$c->slug}/{$file}");
+    }
 });
 
 test('discussions.store will fail on invalid payload', function (string $key, mixed $value) {
-    $response = $this
+    $this
         ->actingAs(User::factory()->create())
-        ->post("/discussions", validDiscussionStorePayload([$key => $value]));
-
-    $response
+        ->post(route("discussions.store"), validDiscussionStorePayload([$key => $value]))
         ->assertRedirect()
         ->assertSessionHasErrors();
 
-    $this->assertDatabaseCount('discussions', 0);
-    $this->assertDatabaseCount('comments', 0);
+    $this
+        ->assertDatabaseCount('discussions', 0)
+        ->assertDatabaseCount('comments', 0);
 })->with([
     'bad title' => ['title', ''],
     'type out of scope (games/genres)' => ['type', 'notes'],

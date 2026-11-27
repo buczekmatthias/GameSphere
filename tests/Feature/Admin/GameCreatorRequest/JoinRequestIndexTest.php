@@ -8,11 +8,9 @@ use Inertia\Testing\AssertableInertia;
 test('admin.game.creator.join returns inertia response with list of requests to acquire game creator role', function () {
     GameCreatorRequest::factory(5)->create();
 
-    $response = $this
+    $this
         ->actingAs(User::factory()->create(['role' => UserRole::ADMIN]))
-        ->get('/admin/game-creator-join-requests');
-
-    $response
+        ->get(route("admin.game.creator.join"))
         ->assertSuccessful()
         ->assertInertia(
             fn (AssertableInertia $page) => $page

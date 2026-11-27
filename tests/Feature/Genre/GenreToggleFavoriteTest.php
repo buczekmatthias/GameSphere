@@ -2,15 +2,17 @@
 
 use App\Models\Genre;
 use App\Models\User;
+use Illuminate\Support\Str;
 
 test('guest will be redirected to login page', function () {
     $genre = Genre::factory()->create();
-    $response = $this->post("/genres/{$genre->slug}/toggle-favorite");
-
-    $response->assertRedirect(route('security.login'));
+    
+    $this
+        ->post(route("genres.favorite", ['genre' => $genre]))
+        ->assertRedirect(route('security.login'));
 });
 
-test('genres.favorite will properlly toggle favorite of genre for authenticated user', function (bool $isAttached) {
+test('genres.favorite will properlly toggle favorite of genre for authenticated user', function (bool $isAttached, int $expectedCount) {
     $user = User::factory()->create();
     $genre = Genre::factory()->create();
 
@@ -18,12 +20,22 @@ test('genres.favorite will properlly toggle favorite of genre for authenticated 
         $user->genres()->attach($genre);
     }
 
-    $response = $this->actingAs($user)->from("/genres/{$genre->slug}")->post("/genres/{$genre->slug}/toggle-favorite");
+    $this
+        ->actingAs($user)
+        ->from(route("genres.show", ['genre' => $genre]))
+        ->post(route("genres.favorite", ['genre' => $genre]))
+        ->assertRedirect(route("genres.show", ['genre' => $genre]))
+        ->assertSessionHasNoErrors();
 
-    $response->assertRedirect(route("genres.show", ['genre' => $genre->slug]));
-
-    $this->assertDatabaseCount('genre_user', $isAttached ? 0 : 1);
+    $this->assertDatabaseCount('genre_user', $expectedCount);
 })->with([
-    'attached' => true,
-    'not attached' => false
+    'attached' => [true, 0],
+    'not attached' => [false, 1]
 ]);
+
+test('genres.favorite will return 404 for missing entry', function () {
+    $this
+        ->actingAs(User::factory()->create())
+        ->post(route("genres.favorite", ['genre' => Str::uuid()]))
+        ->assertNotFound();
+});

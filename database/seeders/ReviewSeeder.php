@@ -9,19 +9,19 @@ use Illuminate\Database\Seeder;
 
 class ReviewSeeder extends Seeder
 {
-	/**
-	 * Run the database seeds.
-	 */
-	public function run(): void
-	{
-		$games = Game::select('id')->get();
-		$users = User::select('id')->get();
+    /**
+     * Run the database seeds.
+     */
+    public function run(): void
+    {
+        $games = Game::select('id')->get();
+        $users = User::select('id')->get();
 
-		for ($i = 0; $i < 5000; $i++) {
-			Review::factory()
-			->for(collect($games)->random())
-			->for(collect($users)->random())
-			->create();
-		}
-	}
+        Review::factory(5000)
+            ->state(fn () => [
+                'game_id' => $games->random(),
+                'user_id' => $users->random()
+            ])
+            ->create();
+    }
 }

@@ -23,9 +23,9 @@ class ReportFactory extends Factory
             'slug' => fake()->unique()->uuid(),
             'reason' => collect(array_column(ReportReason::cases(), 'value'))->random(),
             'status' => collect(array_column(ReportStatus::cases(), 'value'))->random(),
-            'reportable_id' => User::factory()->create()->id,
+            'reportable_id' => User::factory(),
             'reportable_type' => "App\\Models\\User",
-            'user_id' => User::factory()->create()->id
+            'user_id' => User::factory()
         ];
     }
 }

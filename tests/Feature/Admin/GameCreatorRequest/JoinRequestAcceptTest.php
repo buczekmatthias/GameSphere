@@ -7,14 +7,20 @@ use App\Models\User;
 test('admin.game.creator.join.accept will update role of user to game creator and redirect', function () {
     $request = GameCreatorRequest::factory()->create();
 
-    $response = $this
+    $this
         ->actingAs(User::factory()->create(['role' => UserRole::ADMIN]))
-        ->patch("/admin/game-creator-join-requests/{$request->user->username}/accept");
-
-    $response->assertRedirect();
+        ->patch(route("admin.game.creator.join.accept", ['user' => $request->user]))
+        ->assertRedirect();
 
     $this->assertDatabaseHas('users', [
         'username' => $request->user->username,
         'role' => UserRole::GAME_CREATOR->value
     ]);
+});
+
+test('admin.game.creator.join.accept returns 404 for missing entry', function () {
+    $this
+        ->actingAs(User::factory()->create(['role' => UserRole::ADMIN]))
+        ->patch(route("admin.game.creator.join.accept", ['user' => 'inexistent-user']))
+        ->assertNotFound();
 });

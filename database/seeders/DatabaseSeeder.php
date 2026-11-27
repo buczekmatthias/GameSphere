@@ -7,19 +7,20 @@ use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
 {
-	use WithoutModelEvents;
+    use WithoutModelEvents;
 
-	/**
-	 * Seed the application's database.
-	 */
-	public function run(): void
-	{
-		$this->call([
-			UserSeeder::class,
-			GenreSeeder::class,
-			GameSeeder::class,
-			ReviewSeeder::class,
-			CommentSeeder::class
-		]);
-	}
+    /**
+     * Seed the application's database.
+     */
+    public function run(): void
+    {
+        $this->call([
+            UserSeeder::class,
+            GenreSeeder::class,
+            GameSeeder::class,
+            ReviewSeeder::class,
+            DiscussionSeeder::class,
+            CommentSeeder::class
+        ]);
+    }
 }

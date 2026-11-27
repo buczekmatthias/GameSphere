@@ -1,26 +1,28 @@
 <?php
 
-use App\Enum\UserRole;
+use App\Models\Review;
 use App\Models\User;
 use Inertia\Testing\AssertableInertia;
+use Illuminate\Support\Str;
 
 test('anyone can visit reviews.show', function () {
-    $user = User::factory()->create(['role' => UserRole::GAME_CREATOR]);
-    $review = getReview($user);
+    $review = Review::factory()->create();
 
-    $guestResponse = $this->get("/reviews/{$review->slug}");
-    $authenticatedResponse = $this->actingAs(User::factory()->create())->get("/reviews/{$review->slug}");
+    $this
+        ->get(route('reviews.show', ['review' => $review]))
+        ->assertStatus(200);
 
-    $guestResponse->assertStatus(200);
-    $authenticatedResponse->assertStatus(200);
+    $this
+        ->actingAs(User::factory()->create())
+        ->get(route('reviews.show', ['review' => $review]))
+        ->assertStatus(200);
 });
 
 test('reviews.show returns inertia response with review content', function () {
-    $review = getReview();
+    $review = Review::factory()->create();
 
-    $response = $this->get("/reviews/{$review->slug}");
-
-    $response
+    $this
+        ->get(route('reviews.show', ['review' => $review]))
         ->assertSuccessful()
         ->assertInertia(
             fn (AssertableInertia $page) => $page
@@ -29,4 +31,10 @@ test('reviews.show returns inertia response with review content', function () {
                 ->where('review.slug', $review->slug)
                 ->where('review.content', $review->content)
         );
+});
+
+test('reviews.show will return 404 if entry is missing', function () {
+    $this
+        ->get(route('reviews.show', ['review' => Str::uuid()]))
+        ->assertNotFound();
 });

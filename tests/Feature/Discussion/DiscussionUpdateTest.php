@@ -1,54 +1,49 @@
 <?php
 
 use App\Enum\UserRole;
+use App\Models\Discussion;
 use App\Models\User;
+use Illuminate\Support\Str;
 
 test('discussions.update will redirect guest to login page', function () {
-    $discussion = getDiscussion();
-
-    $response = $this->patch("/discussions/{$discussion->slug}");
-
-    $response->assertRedirect(route("security.login"));
+    $this
+        ->patch(route("discussions.update", ['discussion' => Discussion::factory()->create()]))
+        ->assertRedirect(route("security.login"));
 });
 
-test('discussions.update will pass only for owner or staff', function (string $actor, int $expectedStatus) {
-    $discussion = getDiscussion();
+test('discussions.update will pass only for owner or staff', function (UserRole|string $role, int $expectedStatus) {
+    $discussion = Discussion::factory()->create();
 
-    $user = match($actor) {
+    $user = match($role) {
         'owner' => $discussion->author,
-        'moderator' => User::factory()->create(['role' => UserRole::MODERATOR]),
-        'admin' => User::factory()->create(['role' => UserRole::ADMIN]),
-        'dev' => User::factory()->create(['role' => UserRole::DEVELOPER]),
-        'creator' => User::factory()->create(['role' => UserRole::GAME_CREATOR]),
-        'user' => User::factory()->create(['role' => UserRole::USER]),
+        default => User::factory()->create(['role' => $role])
     };
 
-    $response = $this
+    $this
         ->actingAs($user)
-        ->patch("/discussions/{$discussion->slug}", [
+        ->patch(route("discussions.update", ['discussion' => $discussion]), [
             'title' => 'New title'
-        ]);
-
-    $response->assertStatus($expectedStatus);
+        ])
+        ->assertStatus($expectedStatus);
 })->with([
-    'owner can' => ['owner', 302],
-    'moderator can' => ['moderator', 302],
-    'admin can' => ['admin', 302],
-    'dev can' => ['dev', 302],
-    'non-owner creator cannot' => ['creator', 403],
-    'regular user cannot' => ['user', 403],
+    'owner' => ['owner', 302],
+    'user' => [UserRole::USER, 403],
+    'creator' => [UserRole::GAME_CREATOR, 403],
+    'mod' => [UserRole::MODERATOR, 302],
+    'admin' => [UserRole::ADMIN, 302],
+    'dev' => [UserRole::DEVELOPER, 302],
 ]);
 
 test('discussions.update successfully updates discussion content with valid payload', function () {
-    $discussion = getDiscussion();
+    $discussion = Discussion::factory()->create();
 
-    $response = $this
+    $this
         ->actingAs($discussion->author)
-        ->patch("/discussions/{$discussion->slug}", [
+        ->patch(route("discussions.update", ['discussion' => $discussion]), [
             'title' => 'New title'
-        ]);
-
-    $response->assertRedirect();
+        ])
+        ->assertRedirect()
+        ->assertSessionHasNoErrors();
 
     $discussion->refresh();
 
@@ -59,15 +54,13 @@ test('discussions.update successfully updates discussion content with valid payl
 });
 
 test('discussions.update will redirect with error for invalid payload', function () {
-    $discussion = getDiscussion();
+    $discussion = Discussion::factory()->create();
 
-    $response = $this
+    $this
         ->actingAs($discussion->author)
-        ->patch("/discussions/{$discussion->slug}", [
+        ->patch(route("discussions.update", ['discussion' => $discussion]), [
             'title' => ''
-        ]);
-
-    $response
+        ])
         ->assertRedirect()
         ->assertSessionHasErrors('title');
 
@@ -75,4 +68,13 @@ test('discussions.update will redirect with error for invalid payload', function
         'slug' => $discussion->slug,
         'title' => ''
     ]);
+});
+
+test('discussions.update returns 404 for missing entry', function () {
+    $this
+        ->actingAs(User::factory()->create())
+        ->patch(route("discussions.update", ['discussion' => Str::uuid()]), [
+            'title' => ''
+        ])
+        ->assertNotFound();
 });

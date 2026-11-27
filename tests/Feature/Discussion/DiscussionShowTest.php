@@ -1,24 +1,28 @@
 <?php
 
+use App\Models\Discussion;
 use App\Models\User;
 use Inertia\Testing\AssertableInertia;
+use Illuminate\Support\Str;
 
 test('anyone can visit discussions.show', function () {
-    $discussion = getDiscussion();
+    $discussion = Discussion::factory()->create();
 
-    $guestResponse = $this->get("/discussions/{$discussion->slug}");
-    $authenticatedResponse = $this->actingAs(User::factory()->create())->get("/discussions/{$discussion->slug}");
+    $this
+        ->get(route("discussions.show", ['discussion' => $discussion]))
+        ->assertStatus(200);
 
-    $guestResponse->assertStatus(200);
-    $authenticatedResponse->assertStatus(200);
+    $this
+        ->actingAs(User::factory()->create())
+        ->get(route("discussions.show", ['discussion' => $discussion]))
+        ->assertStatus(200);
 });
 
 test('discussions.show returns inertia response with discussion content and comment count', function () {
-    $discussion = getDiscussion();
+    $discussion = Discussion::factory()->create();
 
-    $response = $this->get("/discussions/{$discussion->slug}");
-
-    $response
+    $this
+        ->get(route("discussions.show", ['discussion' => $discussion]))
         ->assertSuccessful()
         ->assertInertia(
             fn (AssertableInertia $page) => $page
@@ -28,4 +32,10 @@ test('discussions.show returns inertia response with discussion content and comm
                 ->where('discussion.title', $discussion->title)
                 ->has('discussion.comments_count')
         );
+});
+
+test('discussions.show returns 404 for missing entries', function () {
+    $this
+        ->get(route("discussions.show", ['discussion' => Str::uuid()]))
+        ->assertNotFound();
 });

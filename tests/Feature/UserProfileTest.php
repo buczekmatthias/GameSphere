@@ -4,28 +4,25 @@ use App\Models\User;
 use Inertia\Testing\AssertableInertia;
 
 test('user.profile passes for anyone', function () {
-    $u = User::factory()->create();
-    $guestResponse = $this->get("/u/{$u->username}");
-    $authenticatedResponse = $this->actingAs(User::factory()->create())->get("/u/{$u->username}");
+    $this
+        ->get(route("user.profile", ['user' => User::factory()->create()]))
+        ->assertStatus(200);
 
-    $guestResponse->assertStatus(200);
-    $authenticatedResponse->assertStatus(200);
+    $this
+        ->actingAs(User::factory()->create())
+        ->get(route("user.profile", ['user' => User::factory()->create()]))
+        ->assertStatus(200);
 });
 
 test('user.profile fails with not found when trying to open tab not specified in UserProfileTab enum', function () {
-    $u = User::factory()->create();
-
-    $response = $this->get("/u/{$u->username}/wrong-value");
-
-    $response->assertNotFound();
+    $this
+        ->get(route("user.profile", ['user' => User::factory()->create(), 'tab' => 'wrong-value']))
+        ->assertNotFound();
 });
 
 test('user.profile returns inertia response with user data, list of tabs and active tab', function () {
-    $u = User::factory()->create();
-
-    $response = $this->get("/u/{$u->username}");
-
-    $response
+    $this
+        ->get(route("user.profile", ['user' => User::factory()->create()]))
         ->assertSuccessful()
         ->assertInertia(
             fn (AssertableInertia $page) => $page
@@ -34,4 +31,10 @@ test('user.profile returns inertia response with user data, list of tabs and act
                 ->has('tabs')
                 ->has('activeTab')
         );
+});
+
+test('user.profile will return 404 for missing entry', function () {
+    $this
+        ->get(route("user.profile", ['user' => 'not-existing']))
+        ->assertNotFound();
 });

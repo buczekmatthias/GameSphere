@@ -5,51 +5,42 @@ use App\Models\Game;
 use App\Models\Genre;
 use App\Models\User;
 use Inertia\Testing\AssertableInertia;
+use Illuminate\Support\Str;
 
 test('games.edit redirects to login page for guest', function () {
-    $genre = Genre::factory()->create();
-    $user = User::factory()->create(['role' => UserRole::GAME_CREATOR]);
-    $game = Game::factory()->for($genre)->for($user, 'creator')->create();
-
-    $response = $this->get("/games/{$game->slug}/edit");
-
-    $response->assertRedirect(route('security.login'));
+    $this
+        ->get(route("games.edit", ['game' => Game::factory()->create()]))
+        ->assertRedirect(route('security.login'));
 });
 
-test('games.edit passes only for owner or staff', function (string $actor, int $expectedStatus) {
-    $genre = Genre::factory()->create();
-    $owner = User::factory()->create(['role' => UserRole::GAME_CREATOR]);
-    $game = Game::factory()->for($genre)->for($owner, 'creator')->create();
+test('games.edit passes only for owner or staff', function (UserRole|string $role, int $expectedStatus) {
+    $game = Game::factory()->create();
 
-    $user = match($actor) {
-        'owner' => $owner,
-        'moderator' => User::factory()->create(['role' => UserRole::MODERATOR]),
-        'admin' => User::factory()->create(['role' => UserRole::ADMIN]),
-        'dev' => User::factory()->create(['role' => UserRole::DEVELOPER]),
-        'creator' => User::factory()->create(['role' => UserRole::GAME_CREATOR]),
-        'user' => User::factory()->create(['role' => UserRole::USER]),
+    $user = match($role) {
+        'owner' => $game->creator,
+        default => User::factory()->create(['role' => $role])
     };
 
-    $response = $this->actingAs($user)->get("/games/{$game->slug}/edit");
-
-    $response->assertStatus($expectedStatus);
+    $this
+        ->actingAs($user)
+        ->get(route("games.edit", ['game' => $game]))
+        ->assertStatus($expectedStatus);
 })->with([
-    'owner can' => ['owner', 200],
-    'moderator can' => ['moderator', 200],
-    'admin can' => ['admin', 200],
-    'dev can' => ['dev', 200],
-    'non-owner creator cannot' => ['creator', 403],
-    'regular user cannot' => ['user', 403],
+    'owner' => ['owner', 200],
+    'user' => [UserRole::USER, 403],
+    'creator' => [UserRole::GAME_CREATOR, 403],
+    'mod' => [UserRole::MODERATOR, 200],
+    'admin' => [UserRole::ADMIN, 200],
+    'dev' => [UserRole::DEVELOPER, 200],
 ]);
 
 test('games.edit provides inertia response with game and list of genres', function () {
     $genres = Genre::factory(5)->create();
-    $owner = User::factory()->create(['role' => UserRole::GAME_CREATOR]);
-    $game = Game::factory()->for($genres->first())->for($owner, 'creator')->create();
+    $game = Game::factory()->for($genres->first())->create();
 
-    $response = $this->actingAs($owner)->get("/games/{$game->slug}/edit");
-
-    $response
+    $this
+        ->actingAs($game->creator)
+        ->get(route("games.edit", ['game' => $game]))
         ->assertSuccessful()
         ->assertInertia(
             fn (AssertableInertia $page) => $page
@@ -59,4 +50,11 @@ test('games.edit provides inertia response with game and list of genres', functi
                 ->where('game.slug', $game->slug)
                 ->where('game.title', $game->title)
         );
+});
+
+test('games.edit will return 404 for missing entry', function () {
+    $this
+        ->actingAs(User::factory()->create(['role' => UserRole::ADMIN]))
+        ->get(route("games.edit", ['game' => Str::uuid()]))
+        ->assertNotFound();
 });

@@ -2,6 +2,8 @@
 
 namespace Database\Factories;
 
+use App\Models\Discussion;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -9,16 +11,18 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class CommentFactory extends Factory
 {
-	/**
-	 * Define the model's default state.
-	 *
-	 * @return array<string, mixed>
-	 */
-	public function definition(): array
-	{
-		return [
-			'slug' => fake()->unique()->uuid(),
-			'content' => fake()->text(500),
-		];
-	}
+    /**
+     * Define the model's default state.
+     *
+     * @return array<string, mixed>
+     */
+    public function definition(): array
+    {
+        return [
+            'slug' => fake()->unique()->uuid(),
+            'content' => fake()->text(500),
+            'discussion_id' => Discussion::factory(),
+            'user_id' => User::factory()
+        ];
+    }
 }

@@ -18,13 +18,15 @@ beforeEach(function () {
         ->for($user, 'author')
         ->create();
 
-    $slug = Str::uuid();
+    $slug = Str::orderedUuid();
+    $fileName = Str::orderedUuid().".png";
+
     $this->comment = Comment::factory()
         ->for($discussion)
         ->for($user)
-        ->create(['slug' => $slug, 'media' => ["discussions/{$discussion->slug}/{$slug}/{$slug}-media-0.png"]]);
+        ->create(['slug' => $slug, 'media' => [$fileName]]);
 
-    Storage::disk('public')->put("discussions/{$discussion->slug}/{$slug}/{$slug}-media-0.png", 'fake');
+    Storage::disk('public')->put("discussions/{$discussion->slug}/{$slug}/{$fileName}", 'fake');
 });
 
 function validCommentUpdatePayload(Comment $comment, array $override = []): array
@@ -32,44 +34,52 @@ function validCommentUpdatePayload(Comment $comment, array $override = []): arra
     return array_merge(
         [
             'content' => 'New content',
-            'media_to_delete' => ["{$comment->slug}-media-0.png"]
+            'media_to_delete' => [collect($comment->media)->first()]
         ],
         $override
     );
 }
 
 test('comments.update redirects to login page for guest', function () {
-    $response = $this->put("/comments/{$this->comment->slug}", validCommentUpdatePayload($this->comment));
+    $comment = Comment::factory()->create();
 
-    $response->assertRedirect(route('security.login'));
+    $this
+        ->patch(route("comments.update", ['comment' => $comment]), validCommentUpdatePayload($comment))
+        ->assertRedirect(route('security.login'));
 });
 
-test('comments.update passes only for owner or staff', function (string $actor, int $expectedStatus) {
-    $user = match($actor) {
-        'owner' => $this->comment->user,
-        'moderator' => User::factory()->create(['role' => UserRole::MODERATOR]),
-        'admin' => User::factory()->create(['role' => UserRole::ADMIN]),
-        'dev' => User::factory()->create(['role' => UserRole::DEVELOPER]),
-        'creator' => User::factory()->create(['role' => UserRole::GAME_CREATOR]),
-        'user' => User::factory()->create(['role' => UserRole::USER]),
+test('comments.update passes only for owner or staff', function (UserRole|string $role, int $expectedStatus) {
+    Storage::fake('public');
+
+    $slug = Str::orderedUuid();
+    $fileName = Str::orderedUuid().".png";
+    $comment = Comment::factory()->create(['slug' => $slug, 'media' => [$fileName], 'content' => 'Old content']);
+
+    $user = match($role) {
+        'owner' => $comment->user,
+        default => User::factory()->create(['role' => $role]),
     };
 
-    $response = $this->actingAs($user)->put("/comments/{$this->comment->slug}", validCommentUpdatePayload($this->comment));
-
-    $response->assertStatus($expectedStatus);
+    $this
+        ->actingAs($user)
+        ->patch(route("comments.update", ['comment' => $comment]), validCommentUpdatePayload($comment))
+        ->assertStatus($expectedStatus)
+        ->assertSessionHasNoErrors();
 })->with([
-    'owner can' => ['owner', 302],
-    'moderator can' => ['moderator', 302],
-    'admin can' => ['admin', 302],
-    'dev can' => ['dev', 302],
-    'non-owner creator cannot' => ['creator', 403],
-    'regular user cannot' => ['user', 403],
+    'owner' => ['owner', 302],
+    'user' => [UserRole::USER, 403],
+    'creator' => [UserRole::GAME_CREATOR, 403],
+    'mod' => [UserRole::MODERATOR, 302],
+    'admin' => [UserRole::ADMIN, 302],
+    'dev' => [UserRole::DEVELOPER, 302],
 ]);
 
 test('comments.update fails with wrong payload', function (string $key, mixed $value) {
-    $response = $this->actingAs($this->comment->user)->put("/comments/{$this->comment->slug}", validCommentUpdatePayload($this->comment, [$key => $value]));
+    $comment = Comment::factory()->create();
 
-    $response
+    $this
+        ->actingAs($comment->user)
+        ->patch(route("comments.update", ['comment' => $comment]), validCommentUpdatePayload($comment, [$key => $value]))
         ->assertRedirect()
         ->assertSessionHasErrors();
 })->with([
@@ -78,17 +88,32 @@ test('comments.update fails with wrong payload', function (string $key, mixed $v
 ]);
 
 test('comments.update properly alters comment', function () {
-    $response = $this->actingAs($this->comment->user)->put("/comments/{$this->comment->slug}", validCommentUpdatePayload($this->comment));
+    Storage::fake('public');
 
-    $response
+    $slug = Str::orderedUuid();
+    $fileName = Str::orderedUuid().".png";
+    $comment = Comment::factory()->create(['slug' => $slug, 'media' => [$fileName], 'content' => 'Old content']);
+
+    $this
+        ->actingAs($comment->user)
+        ->patch(route("comments.update", ['comment' => $comment]), validCommentUpdatePayload($comment))
         ->assertRedirect()
         ->assertSessionHasNoErrors();
 
-    $this->comment->refresh();
+    $comment->refresh();
 
     $this->assertDatabaseHas('comments', [
-        'content' => 'New content'
+        'content' => 'New content',
     ]);
 
-    Storage::disk('public')->assertMissing("discussions/{$this->comment->discussion->slug}/{$this->comment->slug}/{$this->comment->slug}-media-0.png");
+    expect(count($comment->media))->toBe(0);
+
+    Storage::disk('public')->assertMissing("discussions/{$comment->discussion->slug}/{$comment->slug}/{$fileName}");
+});
+
+test('comments.update returns 404 for missing entry', function () {
+    $this
+        ->actingAs(User::factory()->create())
+        ->patch(route("comments.update", ['comment' => Str::uuid()]))
+        ->assertNotFound();
 });

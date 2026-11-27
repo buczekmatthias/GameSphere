@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Enum\UserRole;
-use App\Models\Discussion;
 use App\Models\Game;
 use App\Models\Genre;
 use App\Models\User;
@@ -18,21 +17,13 @@ class GameSeeder extends Seeder
     {
         $genres = Genre::select('id')->get();
         $creators = User::select('id')->where('role', UserRole::GAME_CREATOR)->get();
-        $users = User::select('id')->get();
 
-        for ($i = 0; $i < 100; $i++) {
-            Game::factory()
-            ->for(collect($genres)->random())
-            ->for(collect($creators)->random(), 'creator')
-            ->afterCreating(function (Game $game) use ($users) {
-                for ($i = 0; $i < rand(50, 300); $i++) {
-                    Discussion::factory()
-                    ->for($game, 'discussable')
-                    ->for(collect($users)->random(), 'author')
-                    ->create();
-                }
-            })
+        Game::factory()
+            ->count(100)
+            ->state(fn () => [
+                'genre_id' => $genres->random(),
+                'user_id'  => $creators->random(),
+            ])
             ->create();
-        }
     }
 }

@@ -9,11 +9,9 @@ beforeEach(function () {
 });
 
 test('admin.users.index returns inertia response with list of users', function () {
-    $response = $this
+    $this
         ->actingAs(User::factory()->create(['role' => UserRole::ADMIN]))
-        ->get("/admin/users");
-
-    $response
+        ->get(route("admin.users.index"))
         ->assertSuccessful()
         ->assertInertia(
             fn (AssertableInertia $page) => $page
@@ -26,11 +24,9 @@ test('admin.users.index returns inertia response with list of users', function (
 });
 
 test('admin.users.index will redirect when wrong column or order is provided', function (string $key, string $value) {
-    $response = $this
+    $this
         ->actingAs(User::factory()->create(['role' => UserRole::ADMIN]))
-        ->get("/admin/users?$key=$value");
-
-    $response
+        ->get(route("admin.users.index", [$key => $value]))
         ->assertRedirect()
         ->assertSessionHasErrors();
 })->with([

@@ -1,55 +1,56 @@
 <?php
 
 use App\Enum\UserRole;
+use App\Models\Discussion;
 use App\Models\User;
+use Illuminate\Support\Str;
 
 test('discussions.lock.toggle will redirect guest to login page', function () {
-    $discussion = getDiscussion();
-
-    $response = $this->patch("/discussions/{$discussion->slug}/toggle-lock");
-
-    $response->assertRedirect(route("security.login"));
+    $this
+        ->patch(route("discussions.lock.toggle", ['discussion' => Discussion::factory()->create()]))
+        ->assertRedirect(route("security.login"));
 });
 
-test('discussions.lock.toggle will pass only for owner or staff', function (string $actor, int $expectedStatus) {
-    $discussion = getDiscussion();
+test('discussions.lock.toggle will pass only for owner or staff', function (UserRole|string $role, int $expectedStatus) {
+    $discussion = Discussion::factory()->create();
 
-    $user = match($actor) {
+    $user = match($role) {
         'owner' => $discussion->author,
-        'moderator' => User::factory()->create(['role' => UserRole::MODERATOR]),
-        'admin' => User::factory()->create(['role' => UserRole::ADMIN]),
-        'dev' => User::factory()->create(['role' => UserRole::DEVELOPER]),
-        'creator' => User::factory()->create(['role' => UserRole::GAME_CREATOR]),
-        'user' => User::factory()->create(['role' => UserRole::USER]),
+        default => User::factory()->create(['role' => $role])
     };
 
-    $response = $this
+    $this
         ->actingAs($user)
-        ->patch("/discussions/{$discussion->slug}/toggle-lock");
-
-    $response->assertStatus($expectedStatus);
+        ->patch(route("discussions.lock.toggle", ['discussion' => $discussion]))
+        ->assertStatus($expectedStatus);
 })->with([
-    'owner can' => ['owner', 302],
-    'moderator can' => ['moderator', 302],
-    'admin can' => ['admin', 302],
-    'dev can' => ['dev', 302],
-    'non-owner creator cannot' => ['creator', 403],
-    'regular user cannot' => ['user', 403],
+    'owner' => ['owner', 302],
+    'user' => [UserRole::USER, 403],
+    'creator' => [UserRole::GAME_CREATOR, 403],
+    'mod' => [UserRole::MODERATOR, 302],
+    'admin' => [UserRole::ADMIN, 302],
+    'dev' => [UserRole::DEVELOPER, 302],
 ]);
 
 test('discussions.lock.toggle changes lock status', function () {
-    $discussion = getDiscussion();
+    $discussion = Discussion::factory()->create(['is_locked' => false]);
 
     expect($discussion->is_locked)->toBe(false);
 
-    $response = $this
+    $this
         ->from(route('discussions.show', ['discussion' => $discussion->slug]))
         ->actingAs($discussion->author)
-        ->patch("/discussions/{$discussion->slug}/toggle-lock");
-
-    $response->assertRedirect(route('discussions.show', ['discussion' => $discussion->slug]));
+        ->patch(route("discussions.lock.toggle", ['discussion' => $discussion]))
+        ->assertRedirect(route('discussions.show', ['discussion' => $discussion->slug]));
 
     $discussion->refresh();
 
     expect($discussion->is_locked)->toBe(true);
+});
+
+test('discussions.lock.toggle will return 404 for missing entry', function () {
+    $this
+        ->actingAs(User::factory()->create())
+        ->patch(route("discussions.lock.toggle", ['discussion' => Str::uuid()]))
+        ->assertNotFound();
 });

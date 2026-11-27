@@ -3,30 +3,27 @@
 use App\Models\User;
 
 test('confirm password screen can be rendered', function () {
-    $user = User::factory()->create();
-
-    $response = $this->actingAs($user)->get('/security/confirm-password');
-
-    $response->assertStatus(200);
+    $this
+        ->actingAs(User::factory()->create())
+        ->get(route("security.password.confirm"))
+        ->assertStatus(200);
 });
 
 test('password can be confirmed', function () {
-    $user = User::factory()->create();
-
-    $response = $this->actingAs($user)->post('/security/confirm-password', [
-        'password' => 'password',
-    ]);
-
-    $response->assertRedirect();
-    $response->assertSessionHasNoErrors();
+    $this
+        ->actingAs(User::factory()->create())
+        ->post(route("security.password.confirm"), [
+            'password' => 'password',
+        ])
+        ->assertRedirect()
+        ->assertSessionHasNoErrors();
 });
 
 test('password is not confirmed with invalid password', function () {
-    $user = User::factory()->create();
-
-    $response = $this->actingAs($user)->post('/security/confirm-password', [
-        'password' => 'wrong-password',
-    ]);
-
-    $response->assertSessionHasErrors();
+    $this
+        ->actingAs(User::factory()->create())
+        ->post(route("security.password.confirm"), [
+            'password' => 'wrong-password',
+        ])
+        ->assertSessionHasErrors();
 });

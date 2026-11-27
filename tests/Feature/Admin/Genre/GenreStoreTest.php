@@ -5,13 +5,12 @@ use App\Models\Genre;
 use App\Models\User;
 
 test('admin.genres.store will store new genre properly', function () {
-    $response = $this
+    $this
         ->actingAs(User::factory()->create(['role' => UserRole::ADMIN]))
-        ->post("/admin/genres", [
+        ->post(route("admin.genres.store"), [
             'name' => 'new genre'
-        ]);
-
-    $response->assertRedirect(route('admin.genres.index'));
+        ])
+        ->assertRedirect(route('admin.genres.index'));
 
     $this->assertDatabaseCount('genres', 1);
 });
@@ -23,14 +22,12 @@ test('admin.genres.store will fail with invalid payload', function (string $valu
         $this->assertDatabaseCount('genres', 1);
     }
 
-    $response = $this
+    $this
         ->actingAs(User::factory()->create(['role' => UserRole::ADMIN]))
         ->from(route('admin.genres.index'))
-        ->post("/admin/genres", [
+        ->post(route("admin.genres.store"), [
             'name' => $value
-        ]);
-
-    $response
+        ])
         ->assertRedirect(route('admin.genres.index'))
         ->assertSessionHasErrors('name');
 

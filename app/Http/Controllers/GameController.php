@@ -8,11 +8,8 @@ use App\Http\Requests\Game\StoreRequest;
 use App\Http\Resources\Games\EditGameResource;
 use App\Http\Resources\Games\GamesListResource;
 use App\Http\Resources\Games\ShowGameResource;
-use App\Http\Resources\User\SimpleProfileResource;
 use App\Models\Game;
 use App\Models\Genre;
-use App\Models\User;
-use App\Services\ManageMedia;
 use App\Services\UserGameListsServices;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
@@ -25,6 +22,7 @@ use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 
 class GameController extends Controller
 {
@@ -66,55 +64,65 @@ class GameController extends Controller
     {
         $data = $request->validated();
 
-        $genre = Genre::select(['id'])->where('slug', $data['genre'])->first();
+        $stored = [];
+        $slug = Str::orderedUuid();
+        $path = "games/{$slug}";
 
-        $thumbnailName = 'thumbnail.'.$data['thumbnail']->extension();
+        try {
+            $game = DB::transaction(function () use ($data, $path, $request, $slug, &$stored) {
+                $game = Genre::select(['id'])
+                    ->where('slug', $data['genre'])
+                    ->firstOrFail()
+                    ->games()
+                    ->make([...$data, 'slug' => $slug, 'thumbnail' => '', 'media' => []]);
+                $game->creator()->associate($request->user());
 
-        $game = $genre->games()->make([...$data, 'slug' => Str::uuid(), 'thumbnail' => $thumbnailName, 'media' => []]);
-        $game->creator()->associate($request->user());
+                Storage::makeDirectory($path);
+                $name = "thumbnail-".Str::orderedUuid().".{$data['thumbnail']->extension()}";
+                Storage::putFileAs($path, $data['thumbnail'], $name);
+                $game->thumbnail = $name;
+                $stored[] = $name;
 
-        $path = "games/{$game->slug}";
-        Storage::makeDirectory($path);
+                $media = [];
 
-        Storage::putFileAs(
-            $path,
-            $data['thumbnail'],
-            $thumbnailName
-        );
+                foreach ($data['media'] ?? [] as $file) {
+                    $name = Str::orderedUuid().".{$file->extension()}";
+                    Storage::putFileAs($path, $file, $name);
+                    $media[] = $name;
+                    $stored[] = "{$path}/{$name}";
+                }
+                $game->media = $media;
+                $game->save();
 
-        $tempMedia = [];
+                if (Carbon::parse($data['released_at'])->isAfter(now()->endOfDay())) {
+                    // Game creator discussion, exclusive to game creator and staff
+                    $discussion = $game->discussions()->make([
+                        'slug' => Str::orderedUuid(),
+                        'title' => 'Game creator updates',
+                        'is_locked' => true
+                    ]);
+                    $discussion->author()->associate($request->user());
+                    $discussion->save();
 
-        if (array_key_exists('media', $data)) {
-            foreach ($data['media'] as $i => $file) {
-                $fileName = "{$game->slug}-media-{$i}.{$file->extension()}";
-                Storage::putFileAs($path, $file, $fileName);
-                $tempMedia[] = $fileName;
-            }
+                    // Game discussion, used for users to discuss about it before now() > released_at
+                    $discussion = $game->discussions()->make([
+                        'slug' => Str::orderedUuid(),
+                        'title' => 'Pre-release discussion'
+                    ]);
+                    $discussion->author()->associate($request->user());
+                    $discussion->save();
+                }
 
-            $game->media = $tempMedia;
-        }
+                return $game;
+            });
+        } catch (\Throwable $e) {
+            Storage::delete($stored);
+            Storage::deleteDirectory($path);
+            report($e);
 
-        $game->save();
-
-        if (Carbon::parse($data['released_at']) > now()->endOfDay()) {
-            // Game creator discussion, exclusive to game creator and staff
-            $discussion = $game->discussions()->make([
-                'slug' => Str::uuid(),
-                'title' => 'Game creator updates',
-                'is_locked' => true
+            throw ValidationException::withMessages([
+                'media' => 'Media upload failed. Please try again.'
             ]);
-            $discussion->author()->associate($request->user());
-
-            $discussion->save();
-
-            // Game discussion, used for users to discuss about it before now() > released_at
-            $discussion = $game->discussions()->make([
-                'slug' => Str::uuid(),
-                'title' => 'Pre-release discussion'
-            ]);
-            $discussion->author()->associate($request->user());
-
-            $discussion->save();
         }
 
         return to_route('games.show', ['game' => $game->slug]);
@@ -167,41 +175,61 @@ class GameController extends Controller
         Gate::authorize('update', $game);
 
         $data = $request->validated();
-
         $path = "games/{$game->slug}";
+        $obsolete = [];
+        $stored = [];
 
-        if ($data['thumbnail']) {
-            $thumbnailName = 'thumbnail.'.$data['thumbnail']->extension();
+        try {
+            DB::transaction(function () use ($data, $game, $path, &$obsolete, &$stored) {
+                if (isset($data['thumbnail'])) {
+                    $name = "thumbnail-".Str::orderedUuid().".{$data['thumbnail']->extension()}";
+                    Storage::putFileAs($path, $data['thumbnail'], $name);
+                    $stored[] = "{$path}/{$name}";
+                    $obsolete[] = "{$path}/{$game->thumbnail}";
 
-            ManageMedia::replaceFile($path, $game->thumbnail, $data['thumbnail'], $thumbnailName);
+                    $game->thumbnail = $name;
+                }
 
-            $game->thumbnail = $thumbnailName;
+                $game->title = $data['title'];
+                $game->description = $data['description'];
+
+                if (isset($data['genre'])) {
+                    $game->genre_id = Genre::select('id')->where('slug', $data['genre'])->firstOrFail()->id;
+                }
+
+                if (isset($data['released_at'])) {
+                    $game->released_at = $data['released_at'];
+                }
+
+                $media = $game->media ?? [];
+                $toDelete = array_values(array_intersect($data['media_to_delete'] ?? [], $media));
+                $media = array_values(array_diff($media, $toDelete));
+                $obsolete = array_merge($obsolete, array_map(fn (string $file) => "{$path}/{$file}", $toDelete));
+
+                foreach ($data['media'] ?? [] as $file) {
+                    $name = Str::orderedUuid().".{$file->extension()}";
+                    Storage::putFileAs($path, $file, $name);
+                    $stored[] = "{$path}/{$name}";
+                    $media[] = $name;
+                }
+
+                $game->media = $media;
+                $game->save();
+            });
+        } catch (\Throwable $e) {
+            Storage::delete($stored);
+            report($e);
+
+            throw ValidationException::withMessages([
+                'media' => 'Media upload failed. Please try again.'
+            ]);
         }
 
-        $game->title = $data['title'];
-        $game->description = $data['description'];
-        $game->genre_id = Genre::select('id')->where('slug', $data['genre'])->first()->id;
-
-        if ($data['released_at']) {
-            $game->released_at = $data['released_at'];
+        try {
+            Storage::delete($obsolete);
+        } catch (\Throwable $e) {
+            report($e);
         }
-
-        $media = $game->media ?? [];
-
-        if (!empty($data['media_to_delete'])) {
-            $toDelete = array_values(array_intersect($data['media_to_delete'], $media));
-            $media = ManageMedia::updateMedia($path, $media, $toDelete);
-        }
-
-        foreach ($data['media'] ?? [] as $file) {
-            $fileName = "{$game->slug}-media-".Str::uuid().".{$file->extension()}";
-            Storage::putFileAs($path, $file, $fileName);
-            $media[] = $fileName;
-        }
-
-        $game->media = $media;
-
-        $game->save();
 
         return to_route('games.show', ['game' => $game->slug]);
     }
@@ -214,7 +242,6 @@ class GameController extends Controller
         Gate::authorize('delete', $game);
 
         $path = "games/{$game->slug}";
-        $media = [...($game->media ?? []), $game->thumbnail];
 
         DB::transaction(function () use ($game) {
             $game->reports()->delete();
@@ -222,7 +249,11 @@ class GameController extends Controller
             $game->delete();
         });
 
-        ManageMedia::deleteDirectoryWithMedia($path, $media);
+        try {
+            Storage::deleteDirectory($path);
+        } catch (\Throwable $e) {
+            report($e);
+        }
 
         return to_route('games.index');
     }
