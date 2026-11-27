@@ -34,7 +34,7 @@ class EditRequest extends FormRequest
             'media' => ['array', 'max:'.$availableMediaSlots],
             'media.*' => ['file', 'required', 'mimes:jpg,png,webp,mp4', 'max:20000'],
             'released_at' => ['date', 'nullable'],
-            'genre' => ['uuid', 'exists:genres,slug', 'required'],
+            'genre' => ['uuid', 'exists:genres,slug', 'nullable'],
             'media_to_delete' => ['array', 'max:'.$sizeOfExistingMedia],
             'media_to_delete.*' => ['string', 'required'],
         ];

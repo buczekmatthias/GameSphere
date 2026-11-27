@@ -6,16 +6,18 @@ use App\Http\Requests\Discussion\StoreRequest;
 use App\Http\Requests\Discussion\UpdateRequest;
 use App\Http\Resources\Discussion\ListDiscussionResource;
 use App\Http\Resources\Discussion\ShowDiscussionResource;
+use App\Models\Comment;
 use App\Models\Discussion;
 use App\Models\Game;
 use App\Models\Genre;
-use App\Services\ManageMedia;
+use App\Models\Report;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -42,13 +44,10 @@ class DiscussionController extends Controller
 
     public function create(string $type, string $slug): Response
     {
-        $item = null;
-
-        if ($type === 'game') {
-            $item = Game::select(['title', 'slug'])->where('slug', $slug)->first();
-        } else {
-            $item = Genre::select(['slug', 'name'])->where('slug', $slug)->first();
-        }
+        $item = match($type) {
+            'game' => Game::select(['title', 'slug'])->where('slug', $slug)->firstOrFail(),
+            'genre' => Genre::select(['slug', 'name'])->where('slug', $slug)->firstOrFail(),
+        };
 
         return Inertia::render('app/discussion/Create', [
             'type' => $type,
@@ -63,35 +62,56 @@ class DiscussionController extends Controller
     {
         $userId = $request->user()->id;
         $data = $request->validated();
+        $slug = (string) Str::orderedUuid();
+        $path = "discussions/{$slug}";
+        $stored = [];
+        $discussable = match($data['type']) {
+            'games' => Game::select(['id'])->where('slug', $data['slug'])->firstOrFail(),
+            'genres' => Genre::select(['id'])->where('slug', $data['slug'])->firstOrFail()
+        };
 
-        $discussion = (
-            match($data['type']) {
-                'games' => Game::select(['id'])->where('slug', $data['slug']),
-                'genres' => Genre::select(['id'])->where('slug', $data['slug'])
-            }
-        )
-            ->first()
-            ->discussions()
-            ->make([
-                'slug' => Str::uuid(),
-                'title' => $data['title']
+        try {
+            $discussion = DB::transaction(function () use ($data, $discussable, $path, $slug, $userId, &$stored) {
+                $discussion = $discussable
+                    ->discussions()
+                    ->make([
+                        'slug' => $slug,
+                        'title' => $data['title']
+                    ]);
+                $discussion->user_id = $userId;
+                $discussion->save();
+
+                $commentSlug = (string) Str::orderedUuid();
+                $comment = $discussion->comments()->make([
+                    'slug' => $commentSlug,
+                    'content' => $data['content']
+                ]);
+                $comment->user_id = $userId;
+
+                $media = [];
+                $commentPath = "{$path}/{$commentSlug}";
+
+                foreach ($data['media'] ?? [] as $file) {
+                    $name = (string) Str::orderedUuid().".{$file->extension()}";
+                    Storage::putFileAs($commentPath, $file, $name);
+                    $stored[] = "{$commentPath}/{$name}";
+                    $media[] = $name;
+                }
+
+                $comment->media = $media;
+                $comment->save();
+
+                return $discussion;
+            });
+        } catch (\Throwable $e) {
+            Storage::delete($stored);
+            Storage::deleteDirectory($path);
+            report($e);
+
+            throw ValidationException::withMessages([
+                'media' => 'Media upload failed. Please try again.'
             ]);
-
-        $discussion->user_id = $userId;
-        $discussion->save();
-
-        Storage::makeDirectory("discussions/{$discussion->slug}");
-
-        $comment = $discussion->comments()->make([
-            'slug' => Str::uuid(),
-            'content' => $data['content']
-        ]);
-
-        $comment->media = ManageMedia::storeCommentMedia($discussion->slug, $comment->slug, $data['media']);
-
-        $comment->user_id = $userId;
-
-        $comment->save();
+        }
 
         return to_route('discussions.show', ['discussion' => $discussion->slug]);
     }
@@ -132,25 +152,24 @@ class DiscussionController extends Controller
         Gate::authorize('delete', $discussion);
 
         $path = "discussions/{$discussion->slug}";
-        $comments = $discussion->comments()->select(['slug', 'media'])->get();
 
         DB::transaction(function () use ($discussion) {
+            Report::where('reportable_type', (new Comment)->getMorphClass())
+                ->whereIn('reportable_id', $discussion->comments()->pluck('id'))
+                ->delete();
             $discussion->reports()->delete();
-
             $discussion->delete();
         });
 
-        foreach ($comments as $comment) {
-            ManageMedia::deleteDirectoryWithMedia("{$path}/{$comment->slug}", $comment->media);
+        try {
+            Storage::deleteDirectory($path);
+        } catch (\Throwable $e) {
+            report($e);
         }
 
-        Storage::deleteDirectory($path);
-
-        if (request()->has('return_back')) {
-            return back();
-        }
-
-        return to_route('discussions.index');
+        return request()->has('return_back')
+            ? back()
+            : to_route('discussions.index');
     }
 
     public function toggleLock(Discussion $discussion): RedirectResponse

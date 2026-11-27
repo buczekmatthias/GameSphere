@@ -8,11 +8,12 @@ use App\Http\Resources\Comment\EditCommentResource;
 use App\Http\Resources\Comment\ShowCommentResource;
 use App\Models\Comment;
 use App\Models\Discussion;
-use App\Services\ManageMedia;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -37,19 +38,31 @@ class CommentController extends Controller
     public function store(StoreRequest $request): RedirectResponse
     {
         $data = $request->validated();
+        $slug = (string) Str::orderedUuid();
+        $discussion = Discussion::select(['id', 'slug'])->where('slug', $data['discussion_slug'])->firstOrFail();
+        $path = "discussions/{$discussion->slug}/{$slug}";
 
-        $discussion = Discussion::select(['id', 'slug'])->where('slug', $data['discussion_slug'])->first();
+        try {
+            $comment = $discussion->comments()->make(['slug' => $slug, 'content' => $data['content'], 'media' => []]);
+            $comment->user()->associate($request->user());
 
-        $comment = $discussion->comments()->make([...$data, 'slug' => Str::uuid(), 'media' => []]);
-        $comment->user()->associate($request->user());
+            $media = [];
+            foreach ($data['media'] ?? [] as $file) {
+                $name = Str::orderedUuid().".{$file->extension()}";
+                Storage::putFileAs($path, $file, $name);
+                $media[] = $name;
+            }
 
-        $comment->media = ManageMedia::storeCommentMedia(
-            $discussion->slug,
-            $comment->slug,
-            $data['media']
-        );
+            $comment->media = $media;
+            $comment->save();
+        } catch (\Throwable $e) {
+            Storage::deleteDirectory($path);
+            report($e);
 
-        $comment->save();
+            throw ValidationException::withMessages([
+                'media' => 'Media upload failed. Please try again.'
+            ]);
+        }
 
         return to_route('discussions.show', ['discussion' => $data['discussion_slug']]);
     }
@@ -74,19 +87,33 @@ class CommentController extends Controller
     {
         Gate::authorize('update', $comment);
 
-        $comment->content = $request->post('content');
+        $data = $request->validated();
 
-        $comment->media = ManageMedia::updateMedia(
-            "discussions/{$comment->discussion->slug}/{$comment->slug}",
-            $comment->media,
-            $request->post('media_to_delete', []),
-        );
+        $comment->load('discussion:id,slug');
 
-        $comment->save();
+        $path = "discussions/{$comment->discussion->slug}/{$comment->slug}";
+        $current = $comment->media ?? [];
+        $toDelete = array_values(array_intersect($data['media_to_delete'] ?? [], $current));
+        $media = array_values(array_diff($current, $toDelete));
+        $obsolete = array_map(fn (string $file) => "{$path}/{$file}", $toDelete);
+
+        $comment->update([
+            'content' => $data['content'],
+            'media' => $media
+        ]);
+
+        try {
+            Storage::delete($obsolete);
+            if (count($media) === 0) {
+                Storage::deleteDirectory($path);
+            }
+        } catch (\Throwable $e) {
+            report($e);
+        }
 
         return $request->has('back_to_discussion')
-        ? to_route('discussions.show', ['discussion' => $comment->discussion->slug])
-        : to_route('comments.show', ['comment' => $comment->slug]);
+            ? to_route('discussions.show', ['discussion' => $comment->discussion->slug])
+            : to_route('comments.show', ['comment' => $comment->slug]);
     }
 
     /**
@@ -96,21 +123,21 @@ class CommentController extends Controller
     {
         Gate::authorize('delete', $comment);
 
-        $media = $comment->media;
         $path = "discussions/{$comment->discussion->slug}/{$comment->slug}";
 
         DB::transaction(function () use ($comment) {
             $comment->reports()->delete();
-
             $comment->delete();
         });
 
-        ManageMedia::deleteDirectoryWithMedia($path, $media ?? []);
-
-        if (request()->has('to_homepage')) {
-            return to_route('home');
+        try {
+            Storage::deleteDirectory($path);
+        } catch (\Throwable $e) {
+            report($e);
         }
 
-        return back();
+        return request()->has('to_homepage')
+            ? to_route('home')
+            : back();
     }
 }

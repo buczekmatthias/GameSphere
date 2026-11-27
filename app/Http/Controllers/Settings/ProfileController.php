@@ -5,15 +5,16 @@ namespace App\Http\Controllers\Settings;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Settings\ProfileUpdateRequest;
 use App\Models\GameCreatorRequest;
-use App\Services\ManageMedia;
 use App\Services\UserDeleteServices;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 
 class ProfileController extends Controller
 {
@@ -66,28 +67,52 @@ class ProfileController extends Controller
         return redirect('/');
     }
 
-    public function updateProfilePicture(Request $request): RedirectResponse
+    public function updateAvatar(Request $request): RedirectResponse
     {
-        $pfp = $request->validate([
-            'pfp' => ['image', 'nullable'],
-        ])['pfp'] ?? null;
+        $avatar = $request->validate([
+            'avatar' => ['image', 'required', "mimes:jpg,png", 'max:20000'],
+        ])['avatar'];
 
         $user = $request->user();
+        $name = Str::orderedUuid().".{$avatar->extension()}";
+        $oldAvatar = $user->avatar;
 
-        if ($request->get('delete_pfp')) {
-            ManageMedia::deleteFile("users/{$user->avatar}");
+        try {
+            Storage::putFileAs("users", $avatar, $name);
+            $user->update(['avatar' => $name]);
+        } catch (\Throwable $e) {
+            Storage::delete("users/{$name}");
+            report($e);
 
-            $user->avatar = null;
+            throw ValidationException::withMessages([
+                'avatar' => 'Could not save your picture. Please try again.',
+            ]);
+        }
 
-            $user->save();
-        } elseif ($pfp) {
-            $pfpName = Str::uuid()."_".now()->timestamp.".".$pfp->extension();
+        if ($oldAvatar) {
+            try {
+                Storage::delete("users/{$oldAvatar}");
+            } catch (\Throwable $e) {
+                report($e);
+            }
+        }
 
-            ManageMedia::replaceFile("users", $user->avatar, $pfp, $pfpName);
+        return to_route('settings.profile.edit');
+    }
 
-            $user->avatar = $pfpName;
+    public function removeAvatar(): RedirectResponse
+    {
+        $user = request()->user();
+        $avatar = $user->avatar;
 
-            $user->save();
+        if ($avatar) {
+            $user->update(['avatar' => null]);
+
+            try {
+                Storage::delete("users/{$avatar}");
+            } catch (\Throwable $e) {
+                report($e);
+            }
         }
 
         return to_route('settings.profile.edit');
