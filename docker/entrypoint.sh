@@ -22,4 +22,6 @@ if ! -f config/ziggy.php; then
     php artisan ziggy:generate
 fi
 
+php artisan storage:link
+
 exec "$@"
